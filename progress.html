@@ -1,0 +1,2696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Progress Tracker - Productivity Toolkit</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Track your daily study progress and unlock achievement badges with our comprehensive progress tracker">
+    <meta name="keywords" content="progress tracker, study analytics, productivity, achievements, badges">
+    <link rel="canonical" href="https://ultimateproductivitytimer.netlify.app/progress.html">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Progress Tracker - Productivity Toolkit">
+    <meta property="og:description" content="Track your daily study progress and unlock achievement badges">
+    <meta property="og:image" content="https://ultimateproductivitytimer.netlify.app/assets/images-webp/batch5.webp">
+    <meta property="og:url" content="https://ultimateproductivitytimer.netlify.app/progress.html">
+    <meta property="og:type" content="website">
+
+<!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/icons/icon.png">
+
+    <link rel="stylesheet" href="css/progress.css">
+    <link rel="stylesheet" href="css/progress-mobile.css">
+    <link rel="stylesheet" href="css/cursor.css">
+    <link rel="stylesheet" href="css/ai-mentor.css">
+    <link rel="stylesheet" href="css/toast-notifications.css">
+
+    <!-- reCAPTCHA v3 API -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdPJscrAAAAANzUWzwN62XbCsWP68ymVwB99-Li" defer></script>
+
+    <!-- FIREBASE INTEGRATION: Firebase SDK scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-init.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/firebase-utils.js"></script>
+    <script src="js/ai-logic.js"></script>
+    <script src="js/toast-notifications.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="timer-container">
+        <div class="header-controls">
+            <h1>Daily Progress</h1>
+        </div>
+
+        <div class="content-area">
+            <div class="chart-container" style="max-width: 900px; margin: 0 auto;">
+                <canvas id="progressChart"></canvas>
+            </div>
+            
+            <div class="stats-container">
+                <div id="today-stats" class="stats-box">
+                    <div class="stat-item">
+                        <p>Today: <span id="hours-today">0.00</span> hours</p>
+                    </div>
+                    <div class="stat-item goal-stat">
+                        <p>Goal: <span id="hours-goal">5.70</span> hours to go</p>
+                        <div class="goal-progress-container">
+                            <div class="goal-progress-bar" id="goal-progress-bar"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <p>Weekly Average: <span id="weekly-avg">0.00</span> hours/day <span id="days-studied" class="small-note">(1 day)</span></p>
+                    </div>
+                    <div class="stat-item" id="above-avg-indicator" style="display: none;">
+                        <!-- Above/below average indicator will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Left side: Long-term achievement badges -->
+    <div class="achievement-container">
+        <div class="achievement-tooltip">
+            <div class="achievement-wrapper">
+                <div class="achievement-badge" id="achievement-first">
+                    <div class="achievement-icon">🌱</div>
+                </div>
+            </div>
+            <span class="tooltip-text">First Step - Complete first session</span>
+        </div>
+        <div class="achievement-tooltip">
+            <div class="achievement-wrapper">
+                <div class="achievement-badge" id="achievement-week-warrior">
+                    <div class="achievement-icon">🔥</div>
+                </div>
+            </div>
+            <span class="tooltip-text">Week Warrior - 7 day streak</span>
+        </div>
+        <div class="achievement-tooltip">
+            <div class="achievement-wrapper">
+                <div class="achievement-badge" id="achievement-dedication">
+                    <div class="achievement-icon">💪</div>
+                </div>
+            </div>
+            <span class="tooltip-text">Dedication - 14 day streak</span>
+        </div>
+        <div class="achievement-tooltip">
+            <div class="achievement-wrapper">
+                <div class="achievement-badge" id="achievement-unstoppable">
+                    <div class="achievement-icon">⚡</div>
+                </div>
+            </div>
+            <span class="tooltip-text">Unstoppable - 30 day streak</span>
+        </div>
+        <div class="achievement-tooltip">
+            <div class="achievement-wrapper">
+                <div class="achievement-badge" id="achievement-century">
+                    <div class="achievement-icon">💯</div>
+                </div>
+            </div>
+            <span class="tooltip-text">Century Club - 100 days</span>
+        </div>
+        <div class="achievement-tooltip">
+            <div class="achievement-wrapper">
+                <div class="achievement-badge" id="achievement-marathon">
+                    <div class="achievement-icon">🏃</div>
+                </div>
+            </div>
+            <span class="tooltip-text">Marathon - 100 hours</span>
+        </div>
+        <div class="achievement-tooltip">
+            <div class="achievement-wrapper">
+                <div class="achievement-badge" id="achievement-night-owl">
+                    <div class="achievement-icon">🦉</div>
+                </div>
+            </div>
+            <span class="tooltip-text">Night Owl - 50 days</span>
+        </div>
+        <div class="achievement-tooltip">
+            <div class="achievement-wrapper">
+                <div class="achievement-badge" id="achievement-achiever">
+                    <div class="achievement-icon">🌟</div>
+                </div>
+            </div>
+            <span class="tooltip-text">Overachiever - 200 hours</span>
+        </div>
+        <div class="achievement-tooltip">
+            <div class="achievement-wrapper">
+                <div class="achievement-badge" id="achievement-legend">
+                    <div class="achievement-icon">👑</div>
+                </div>
+            </div>
+            <span class="tooltip-text">Legend - 60 day streak</span>
+        </div>
+    </div>
+
+    <!-- Right side: Daily batch achievements -->
+    <div class="batch-container">
+        <div class="batch-tooltip">
+            <div class="batch-wrapper">
+                <img class="batch" id="batch5" src="assets/images-webp/batch5.webp" alt="Batch 5" width="64" height="64" loading="lazy">
+            </div>
+            <span class="tooltip-text">Unlocks after 14 hours of study</span>
+        </div>
+        <div class="batch-tooltip">
+            <div class="batch-wrapper">
+                <img class="batch" id="batch4" src="assets/images-webp/batch4.webp" alt="Batch 4" width="64" height="64" loading="lazy">
+            </div>
+            <span class="tooltip-text">Unlocks after 12 hours of study</span>
+        </div>
+        <div class="batch-tooltip">
+            <div class="batch-wrapper">
+                <img class="batch" id="batch3" src="assets/images-webp/batch3.webp" alt="Batch 3" width="64" height="64" loading="lazy">
+            </div>
+            <span class="tooltip-text">Unlocks after 10 hours of study</span>
+        </div>
+        <div class="batch-tooltip">
+            <div class="batch-wrapper">
+                <img class="batch" id="batch2" src="assets/images-webp/batch2.webp" alt="Batch 2" width="64" height="64" loading="lazy">
+            </div>
+            <span class="tooltip-text">Unlocks after 8 hours of study</span>
+        </div>
+        <div class="batch-tooltip">
+            <div class="batch-wrapper">
+                <img class="batch" id="batch1" src="assets/images-webp/batch1.webp" alt="Batch 1" width="64" height="64" loading="lazy">
+            </div>
+            <span class="tooltip-text">Unlocks after 6 hours of study</span>
+        </div>
+    </div>
+
+    <!-- Task Breakdown Pie Chart Modal -->
+    <div id="pie-chart-modal" class="pie-chart-modal">
+        <div class="pie-chart-content">
+            <div class="pie-chart-header">
+                <h2>Today's Task Breakdown</h2>
+                <button id="close-pie-chart" class="close-pie-chart-btn">&times;</button>
+            </div>
+            <div class="pie-chart-container">
+                <canvas id="taskPieChart"></canvas>
+                <div id="no-data-message" class="no-data-message" style="display: none;">
+                    <div class="no-data-icon">📊</div>
+                    <h3>No Study Data Yet</h3>
+                    <p>Start a timer to see your task breakdown here!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Heatmap Modal -->
+    <div id="heatmap-modal" class="heatmap-modal">
+        <div class="heatmap-modal-content">
+            <div class="heatmap-header">
+                <h2>📅 Study Activity Heatmap</h2>
+                <button id="close-heatmap" class="close-heatmap-btn">&times;</button>
+            </div>
+            <div class="heatmap-stats-bar">
+                <div class="heatmap-stat-item">
+                    <span class="stat-label">Current Streak</span>
+                    <span class="stat-value" id="current-streak">0 days</span>
+                </div>
+                <div class="heatmap-stat-item">
+                    <span class="stat-label">Longest Streak</span>
+                    <span class="stat-value" id="longest-streak">0 days</span>
+                </div>
+                <div class="heatmap-stat-item">
+                    <span class="stat-label">Total Days</span>
+                    <span class="stat-value" id="total-days">0 days</span>
+                </div>
+                <div class="heatmap-stat-item">
+                    <span class="stat-label">This Month</span>
+                    <span class="stat-value" id="month-total">0.0h</span>
+                </div>
+            </div>
+            <div class="heatmap-container-wrapper">
+                <div id="heatmap-grid" class="heatmap-grid"></div>
+                <div class="heatmap-legend">
+                    <span class="legend-label">Less</span>
+                    <div class="legend-box" data-level="0" title="0 hours"></div>
+                    <div class="legend-box" data-level="1" title="< 30 minutes"></div>
+                    <div class="legend-box" data-level="2" title="30 min - 1.5 hours"></div>
+                    <div class="legend-box" data-level="3" title="1.5 - 3 hours"></div>
+                    <div class="legend-box" data-level="4" title="3+ hours"></div>
+                    <span class="legend-label">More</span>
+                </div>
+            </div>
+            <div class="badges-container">
+                <h3>🏆 Achievement Badges</h3>
+                <div class="badges-grid" id="badges-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compact About Modal -->
+    <div id="about-modal" class="compact-modal">
+        <div class="compact-modal-content">
+            <div class="compact-modal-header">
+                <h2>📚 Productivity Toolkit</h2>
+                <button class="compact-close-btn">&times;</button>
+            </div>
+            
+            <div class="compact-modal-body">
+                <div class="about-section">
+                    <h3>🚀 About</h3>
+                    <p>Developed by <strong>Sambhav Jain</strong> to help students and individuals achieve their productivity goals through timers, study tracking, and customizable features.</p>
+                </div>
+                
+                <div class="about-section">
+                    <h3>📧 Contact</h3>
+                    <p><a href="mailto:Eruditespartan@gmail.com">Eruditespartan@gmail.com</a></p>
+                </div>
+                
+                <div class="about-section">
+                    <h3>⚖️ License</h3>
+                    <p>Owned and maintained by <strong>Sambhav Jain</strong>. All rights reserved.</p>
+                </div>
+                
+                <div class="about-section">
+                    <h3>🙏 Credits</h3>
+                    <p>Thanks to <strong>Pexels</strong> and <strong>Pixabay</strong> for background images and audio files.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Weekly Mentor Button -->
+    <div class="ai-mentor-button-container">
+        <button class="ai-mentor-btn locked" id="aiMentorBtn" title="AI Weekly Mentor">
+            🧠
+            <span class="unlock-countdown" id="unlockCountdown" style="display: none;">0d</span>
+        </button>
+    </div>
+
+    <!-- AI Mentor Modal -->
+    <div class="ai-mentor-modal" id="aiMentorModal">
+        <div class="ai-mentor-content">
+            <div class="ai-mentor-header">
+                <h2 class="ai-mentor-title">
+                    <span>🧠</span>
+                    <span>Your AI Mentor</span>
+                </h2>
+                <button class="ai-mentor-close" id="aiMentorClose">&times;</button>
+            </div>
+            
+            <div class="ai-mentor-body" id="aiMentorBody">
+                <!-- Questionnaire (shown first) -->
+                <div class="mentor-questionnaire" id="mentorQuestionnaire">
+                    <h3 class="questionnaire-title">📋 Quick Setup - Help Me Understand Your Goals</h3>
+                    <p class="questionnaire-subtitle">This helps me provide personalized, actionable advice tailored to YOUR exam timeline and targets.</p>
+                    
+                    <div class="questionnaire-form">
+                        <div class="form-group">
+                            <label for="targetExam">🎯 Target Exam</label>
+                            <select id="targetExam" class="form-input">
+                                <option value="">Select your exam...</option>
+                                <option value="neet-ug">NEET UG</option>
+                                <option value="jee-mains">JEE Mains</option>
+                                <option value="jee-advanced">JEE Advanced</option>
+                                <option value="cbse-10th">CBSE Class 10 Boards</option>
+                                <option value="cbse-12th">CBSE Class 12 Boards</option>
+                                <option value="other">Other Competitive Exam</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="examDate">📅 Exam Date</label>
+                            <input type="date" id="examDate" class="form-input" />
+                            <span class="form-hint" id="daysLeftHint"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dailyTarget">⏰ Daily Study Target (hours)</label>
+                            <input type="number" id="dailyTarget" class="form-input" min="1" max="16" step="0.5" placeholder="e.g., 6" />
+                            <span class="form-hint">How many hours do you aim to study each day?</span>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn-submit" id="submitQuestionnaire">Generate My Analysis 🚀</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Loading state (shown after questionnaire) -->
+                <div class="ai-mentor-loading" id="mentorLoading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Analyzing your weekly progress...</p>
+                </div>
+                
+                <!-- Analysis content (shown after loading) -->
+                <div class="mentor-analysis" id="mentorAnalysis" style="display: none;">
+                    <div class="analysis-content" id="analysisContent"></div>
+                </div>
+                
+                <!-- Follow-up questions section -->
+                <div class="followup-section" id="followupSection" style="display: none;">
+                    <div class="followup-header">
+                        <h3 class="followup-title">💬 Ask a Follow-up Question</h3>
+                        <span class="questions-remaining" id="questionsRemaining">3 questions left</span>
+                    </div>
+                    
+                    <div class="followup-input-wrapper">
+                        <textarea 
+                            class="followup-input" 
+                            id="followupInput" 
+                            placeholder="Ask anything about your study progress..."
+                            maxlength="500"
+                        ></textarea>
+                        <button class="followup-send-btn" id="followupSendBtn">Send</button>
+                    </div>
+                    
+                    <!-- Conversation history -->
+                    <div class="conversation-history" id="conversationHistory"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        const hoursTodayElement = document.getElementById('hours-today');
+        const hoursGoalElement = document.getElementById('hours-goal');
+        const weeklyAvgElement = document.getElementById('weekly-avg');
+        const daysStudiedElement = document.getElementById('days-studied');
+        const goalProgressBar = document.getElementById('goal-progress-bar');
+        const batchElements = [
+            document.getElementById('batch1'),
+            document.getElementById('batch2'),
+            document.getElementById('batch3'),
+            document.getElementById('batch4'),
+            document.getElementById('batch5')
+        ];
+        
+        // Sound effects
+        const batchUnlockSound = new Audio('assets/audio/batch-unlock.mp3');
+        
+        // Constants
+        const STORAGE_KEYS = {
+            TIMER_DATA: 'studyTime',
+
+
+            DAILY_GOAL: 'dailyStudyGoal',
+            WEEKLY_DATA: 'weeklyStudyData',
+            ZOOM_LEVEL: 'progressZoomLevel'
+        };
+        
+        let DAILY_STUDY_GOAL = 6; // Default 6 hours study goal, will be loaded from localStorage
+        const BATCH_UNLOCK_THRESHOLDS = [6, 8, 10, 12, 14]; // hours to unlock each batch
+        
+        // localStorage settings management
+        let dailyGoalListener = null;
+        let weeklyResetListener = null;
+
+        // Chart reference
+        let progressChart;
+        let taskPieChart;
+        
+        /**
+         * Load daily study goal from Firebase with localStorage fallback
+         */
+        async function loadDailyGoal() {
+            const today = getFormattedDate();
+            
+            // Try to load from Firebase first if available
+            if (window.firebaseDataManager && firebaseDataManager.user) {
+                try {
+                    const savedGoal = await firebaseDataManager.loadUserPreference('dailyStudyGoal', 6);
+                    const lastGoalDate = await firebaseDataManager.loadUserPreference('dailyStudyGoalDate', '');
+                    
+                    // Reset to 6 hours if it's a new day
+                    if (lastGoalDate !== today) {
+                        DAILY_STUDY_GOAL = 6; // Reset to base goal
+                        await firebaseDataManager.saveUserPreference('dailyStudyGoal', 6);
+                        await firebaseDataManager.saveUserPreference('dailyStudyGoalDate', today);
+                        console.log('New day detected, resetting daily goal to 6 hours');
+                    } else {
+                        DAILY_STUDY_GOAL = parseInt(savedGoal, 10);
+                        console.log('Daily goal loaded from Firebase:', DAILY_STUDY_GOAL);
+                    }
+                    return;
+                } catch (error) {
+                    console.warn('Failed to load daily goal from Firebase, falling back to localStorage:', error);
+                }
+            }
+            
+            // Fallback to localStorage
+            const savedGoal = localStorage.getItem(STORAGE_KEYS.DAILY_GOAL);
+            const lastGoalDate = localStorage.getItem(STORAGE_KEYS.DAILY_GOAL + '_date');
+            
+            // Reset to 6 hours if it's a new day
+            if (lastGoalDate !== today) {
+                DAILY_STUDY_GOAL = 6; // Reset to base goal
+                localStorage.setItem(STORAGE_KEYS.DAILY_GOAL, '6');
+                localStorage.setItem(STORAGE_KEYS.DAILY_GOAL + '_date', today);
+                console.log('New day detected, resetting daily goal to 6 hours');
+            } else if (savedGoal !== null) {
+                DAILY_STUDY_GOAL = parseInt(savedGoal, 10);
+                console.log('Daily goal loaded from localStorage:', DAILY_STUDY_GOAL);
+            }
+        }
+
+        /**
+         * Save daily study goal to Firebase with localStorage fallback
+         */
+        async function saveDailyGoal(hours) {
+            if (hours >= 0 && hours <= 24) {
+                DAILY_STUDY_GOAL = hours;
+                const today = getFormattedDate();
+                
+                // Try Firebase first if available
+                if (window.firebaseDataManager && firebaseDataManager.user) {
+                    try {
+                        await firebaseDataManager.saveUserPreference('dailyStudyGoal', hours);
+                        await firebaseDataManager.saveUserPreference('dailyStudyGoalDate', today);
+                        console.log('Daily goal saved to Firebase:', hours);
+                        return true;
+                    } catch (error) {
+                        console.warn('Failed to save daily goal to Firebase, falling back to localStorage:', error);
+                    }
+                }
+                
+                // Fallback to localStorage
+                localStorage.setItem(STORAGE_KEYS.DAILY_GOAL, hours.toString());
+                localStorage.setItem(STORAGE_KEYS.DAILY_GOAL + '_date', today);
+                console.log('Daily goal saved to localStorage:', hours);
+                return true;
+            }
+            return false;
+        }
+
+
+        
+        /**
+         * Get current date in YYYY-MM-DD format
+         */
+        function getFormattedDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        /**
+         * Get dates of the current week (Monday to Sunday)
+         */
+        function getDaysOfWeek() {
+            const now = new Date();
+            const dayOfWeek = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+            const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust when Sunday to get Monday
+            const monday = new Date(now.setDate(diff));
+            const days = [];
+            const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(monday);
+                date.setDate(monday.getDate() + i);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                days.push({
+                    date: `${year}-${month}-${day}`,
+                    dayName: dayNames[i]
+                });
+            }
+            return days;
+        }
+
+        /**
+         * Get first day of the week (Monday) for a given date
+         */
+        function getFirstDayOfWeek(date) {
+            const day = date.getDay();
+            const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
+            return new Date(date.setDate(diff));
+        }
+
+        /**
+         * Format a date as YYYY-MM-DD
+         */
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+
+
+
+
+
+
+        /**
+         * Format time to hours and minutes
+         */
+        function formatTimeToHoursAndMinutes(hours) {
+            const totalMinutes = Math.round(hours * 60);
+            const hrs = Math.floor(totalMinutes / 60);
+            const mins = totalMinutes % 60;
+            return `${hrs}h ${mins}m`;
+        }
+
+        /**
+         * Load study data from Firebase with localStorage fallback and render the chart
+         */
+        async function loadStudyDataAndRenderChart() {
+            try {
+                const daysOfWeek = getDaysOfWeek();
+                const labels = daysOfWeek.map(day => day.dayName);
+
+                // Load study data from Firebase with localStorage fallback
+                let studyData = {};
+                
+                // Try Firebase first if available
+                if (window.firebaseDataManager && firebaseDataManager.user) {
+                    try {
+                        studyData = await firebaseDataManager.loadStudyData();
+                        console.log('Study data loaded from Firebase:', Object.keys(studyData).length, 'entries');
+                    } catch (error) {
+                        console.warn('Failed to load study data from Firebase, falling back to localStorage:', error);
+                        // Fallback to localStorage
+                        const existingData = localStorage.getItem('studyTime');
+                        studyData = existingData ? JSON.parse(existingData) : {};
+                    }
+                } else {
+                    // Load from localStorage if Firebase not available
+                    console.log('Firebase not available, loading from localStorage');
+                    const existingData = localStorage.getItem('studyTime');
+                    studyData = existingData ? JSON.parse(existingData) : {};
+                }
+
+                // Get data for each day of the week with backward compatibility
+                const data = daysOfWeek.map(day => {
+                    const dayData = studyData[day.date];
+                    if (dayData) {
+                        // Handle new format (object with totalHours)
+                        if (typeof dayData === 'object' && dayData.totalHours) {
+                            return dayData.totalHours;
+                        }
+                        // Handle old format (direct number)
+                        if (typeof dayData === 'number') {
+                            return dayData;
+                        }
+                        // Fallback
+                        return 0;
+                    }
+                    return 0;
+                });
+
+                let maxTimeDayIndex = -1;
+                let maxTime = -1;
+
+                data.forEach((hours, index) => {
+                    if (hours > maxTime) {
+                        maxTime = hours;
+                        maxTimeDayIndex = index;
+                    }
+                });
+
+                // Update today's stats
+                const todayIndex = (new Date().getDay() + 6) % 7; // Monday is 0, Sunday is 6
+                const todayHours = data[todayIndex] || 0;
+                
+                hoursTodayElement.textContent = formatTimeToHoursAndMinutes(todayHours);
+                
+                const remainingHours = Math.max(0, DAILY_STUDY_GOAL - todayHours);
+                hoursGoalElement.textContent = formatTimeToHoursAndMinutes(remainingHours);
+                
+                updateGoalProgressBar(todayHours);
+                
+                // Calculate and display weekly average from the fetched data
+                const daysWithData = data.filter(h => h > 0).length;
+                const totalHours = data.filter(h => h > 0).reduce((sum, h) => sum + h, 0);
+                const avgHours = daysWithData > 0 ? totalHours / daysWithData : 0;
+                weeklyAvgElement.textContent = formatTimeToHoursAndMinutes(avgHours);
+                daysStudiedElement.textContent = `(${daysWithData} day${daysWithData !== 1 ? 's' : ''})`;
+                
+                // Calculate today's performance vs average
+                updateAboveAverageIndicator(todayHours, avgHours);
+                
+                // Render chart with the loaded data
+                renderChart(labels, data, maxTimeDayIndex, avgHours);
+                
+                unlockBatches(todayHours);
+
+            } catch (error) {
+                console.error('Error loading study data:', error);
+            }
+        }
+        
+        /**
+         * Get task information for a specific date
+         * @param {string} dateStr - Date in YYYY-MM-DD format
+         * @returns {Array} Array of study sessions with task info for that date
+         */
+        function getTaskInfoForDate(dateStr) {
+            try {
+                let studyData = {};
+
+                // Try Firebase first if available
+                if (window.firebaseDataManager && firebaseDataManager.user) {
+                    try {
+                        studyData = firebaseDataManager.loadStudyData();
+                    } catch (error) {
+                        const existingData = localStorage.getItem('studyTime');
+                        studyData = existingData ? JSON.parse(existingData) : {};
+                    }
+                } else {
+                    const existingData = localStorage.getItem('studyTime');
+                    studyData = existingData ? JSON.parse(existingData) : {};
+                }
+
+                const dayData = studyData[dateStr];
+                if (dayData && typeof dayData === 'object' && dayData.sessions) {
+                    return dayData.sessions;
+                }
+
+                // If no sessions data, return empty array (no task info available)
+                return [];
+            } catch (error) {
+                console.warn('Error getting task info for date:', error);
+                return [];
+            }
+        }
+
+        /**
+         * Render the chart with study data
+         */
+        function renderChart(labels, data, maxTimeDayIndex, avgHours = 0) {
+            // Destroy previous chart instance if it exists
+            if (progressChart) {
+                progressChart.destroy();
+            }
+            
+            // Find today's index in the data
+            const today = new Date().getDay();
+            const todayIndex = today === 0 ? 6 : today - 1; // Adjust Sunday (0) to be index 6
+
+            // Create gradient for bars
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(0, 180, 255, 0.9)');
+            gradient.addColorStop(0.7, 'rgba(0, 120, 255, 0.8)');
+            gradient.addColorStop(1, 'rgba(0, 80, 220, 0.7)');
+            
+            // Create gradient for today's bar
+            const todayGradient = ctx.createLinearGradient(0, 0, 0, 300);
+            todayGradient.addColorStop(0, 'rgba(255, 99, 180, 0.9)');
+            todayGradient.addColorStop(1, 'rgba(200, 50, 150, 0.85)');
+            
+            // Create gradient for max day bar
+            const maxGradient = ctx.createLinearGradient(0, 0, 0, 300);
+            maxGradient.addColorStop(0, 'rgba(255, 215, 0, 0.95)');
+            maxGradient.addColorStop(1, 'rgba(255, 180, 0, 0.9)');
+
+            // Create new chart
+            progressChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Hours Studied',
+                        data: data,
+                        backgroundColor: labels.map((day, index) => {
+                            if (index === maxTimeDayIndex) return maxGradient;
+                            if (index === todayIndex) return todayGradient;
+                            return gradient;
+                        }),
+                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                        borderWidth: 0,
+                        borderRadius: {
+                            topLeft: 6,
+                            topRight: 6,
+                            bottomLeft: 2,
+                            bottomRight: 2
+                        },
+                        hoverBackgroundColor: labels.map((day, index) => {
+                            if (index === maxTimeDayIndex) return 'rgba(255, 215, 0, 1)';
+                            if (index === todayIndex) return 'rgba(255, 80, 180, 1)';
+                            return 'rgba(0, 180, 255, 1)';
+                        }),
+                        hoverBorderWidth: 2,
+                        hoverBorderColor: 'rgba(255, 255, 255, 0.8)',
+                        hoverBorderRadius: 8,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.8
+                    }, {
+                        // Average line dataset
+                        type: 'line',
+                        label: 'Daily Average',
+                        data: labels.map(() => avgHours),
+                        borderColor: 'rgba(76, 175, 80, 0.6)', // Subtle green
+                        borderWidth: 2,
+                        borderDash: [5, 5], // Dashed line
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
+                        fill: false,
+                        tension: 0,
+                        order: 1 // Render behind bars
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    aspectRatio: 1.5,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            border: {
+                                display: false
+                            },
+                            min: 0,
+                            max: function(context) {
+                                const maxValue = Math.max(...context.chart.data.datasets[0].data);
+                                return Math.ceil(Math.max(3, maxValue)); // At least 3h, or more if needed
+                            },
+                            ticks: {
+                                stepSize: 1, // Whole numbers only
+                                color: 'rgba(255, 250, 231, 0.9)', // Brighter text for better contrast
+                                font: {
+                                    family: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
+                                    size: 13, // Slightly larger font
+                                    weight: 600, // Bolder for better readability
+                                    lineHeight: 1.3
+                                },
+                                padding: 10,
+                                callback: function(value) {
+                                    return value + 'h';
+                                },
+                                z: 1 // Ensure ticks are above grid lines
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            border: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#fffae7',
+                                font: {
+                                    family: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
+                                    size: 13, // Slightly larger font
+                                    weight: 600, // Bolder for better readability
+                                    lineHeight: 1.3
+                                },
+                                padding: 10,
+                                autoSkip: false, // Prevent automatic skipping of labels
+                                maxRotation: 45, // Rotate labels if needed
+                                minRotation: 0, // Keep labels horizontal if possible
+                                maxTicksLimit: 7, // Ensure all 7 days are shown
+                                callback: function(value, index, values) {
+                                    // Ensure all labels are shown
+                                    return this.getLabelForValue(value);
+                                }
+                            },
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            afterFit: function(scale) {
+                                // Ensure enough space for rotated labels
+                                scale.paddingTop = 10;
+                            }
+                        }
+                    },
+                    devicePixelRatio: window.devicePixelRatio * 2, // Better rendering on high-DPI displays
+                    responsiveAnimationDuration: 200, // Smoother resize animation
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart',
+                        onProgress: function(animation) {
+                            // Force redraw for smoother animations
+                            if (animation.currentStep !== animation.numSteps) {
+                                this.chart.draw();
+                            }
+                        }
+                    },
+                    elements: {
+                        bar: {
+                            borderRadius: {
+                                topLeft: 6,
+                                topRight: 6,
+                                bottomLeft: 2,
+                                bottomRight: 2
+                            },
+                            borderSkipped: false,
+                            backgroundColor: 'rgba(0, 162, 255, 0.8)',
+                            hoverBackgroundColor: 'rgba(0, 200, 255, 1)',
+                            borderWidth: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.2)',
+                            shadowBlur: 6,
+                            shadowOffsetY: 3,
+                            hoverShadowBlur: 8,
+                            hoverShadowColor: 'rgba(0, 0, 0, 0.3)',
+                            hoverShadowOffsetY: 4
+                        }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart',
+                        onProgress: function(animation) {
+                            if (animation.currentStep !== animation.numSteps) {
+                                this.chart.draw();
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(10, 18, 30, 0.97)',
+                            titleFont: {
+                                family: "'Segoe UI', -apple-system, sans-serif",
+                                size: 14,
+                                weight: '600',
+                                lineHeight: 1.4
+                            },
+                            bodyFont: {
+                                family: "'Segoe UI', -apple-system, sans-serif",
+                                size: 14,
+                                weight: '500',
+                                lineHeight: 1.5
+                            },
+                            padding: 14,
+                            cornerRadius: 8,
+                            borderColor: 'rgba(255, 255, 255, 0.15)',
+                            borderWidth: 1,
+                            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.35)',
+                            displayColors: false,
+                            caretSize: 8,
+                            caretPadding: 8,
+                            filter: function(tooltipItem) {
+                                // Only show tooltips for the main bar chart (dataset index 0)
+                                // Hide tooltips for the average line (dataset index 1)
+                                return tooltipItem.datasetIndex === 0;
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const hours = Math.floor(value);
+                                    const minutes = Math.round((value - hours) * 60);
+                                    return ` ${hours}h ${minutes}m`;
+                                },
+                                labelTextColor: function() {
+                                    return '#ffffff';
+                                },
+                                title: function(tooltipItems) {
+                                    const index = tooltipItems[0].dataIndex;
+                                    const isToday = index === todayIndex;
+                                    const isMax = index === maxTimeDayIndex;
+                                    let title = tooltipItems[0].label;
+                                    
+                                    if (isToday && isMax) {
+                                        title += ' (Today, Best Day!)';
+                                    } else if (isToday) {
+                                        title += ' (Today)';
+                                    } else if (isMax && data[maxTimeDayIndex] > 0) {
+                                        title += ' (Best Day!)';
+                                    }
+                                    
+                                    return title;
+                                }
+                            },
+                            animation: {
+                                duration: 200
+                            },
+                            intersect: true,
+                            position: 'nearest',
+                            caretSize: 6,
+                            caretPadding: 6
+                        }
+                    },
+                    animation: {
+                        duration: 800,
+                        easing: 'easeOutQuart'
+                    },
+                    layout: {
+                        padding: {
+                            top: 20,
+                            right: 25,
+                            bottom: 20,
+                            left: 25
+                        }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Reset badges for each day
+         */
+        function resetDailyBatches() {
+            batchElements.forEach(batch => {
+                batch.classList.remove('unlocked');
+            });
+        }
+
+        /**
+         * Unlock batches based on total study hours today
+         */
+        function unlockBatches(totalHours) {
+            // Reset all batches first
+            resetDailyBatches();
+            
+            // Determine how many batches to unlock based on thresholds
+            let batchesToUnlock = 0;
+            let nextGoalIncrease = 0;
+            
+            for (let i = 0; i < BATCH_UNLOCK_THRESHOLDS.length; i++) {
+                if (totalHours >= BATCH_UNLOCK_THRESHOLDS[i]) {
+                    batchesToUnlock = i + 1;
+                    // Only increase goal if this batch was actually completed (not just unlocked)
+                    if (totalHours >= BATCH_UNLOCK_THRESHOLDS[i]) {
+                        nextGoalIncrease = BATCH_UNLOCK_THRESHOLDS[i] + 2; // Next goal is 2 hours more
+                    }
+                } else {
+                    break;
+                }
+            }
+            
+            // Update daily goal only if a batch was completed
+            if (batchesToUnlock > 0 && totalHours >= BATCH_UNLOCK_THRESHOLDS[batchesToUnlock - 1]) {
+                const newGoal = Math.max(DAILY_STUDY_GOAL, nextGoalIncrease);
+                if (newGoal > DAILY_STUDY_GOAL) {
+                    DAILY_STUDY_GOAL = newGoal;
+                    saveDailyGoal(newGoal);
+                    console.log(`Batch ${batchesToUnlock} completed! Daily goal increased to ${newGoal} hours`);
+                }
+            }
+            
+            // Unlock the appropriate number of batches with animation
+            for (let i = 0; i < batchesToUnlock; i++) {
+                // Use setTimeout to create a staggered effect
+                setTimeout(() => {
+                    const batchElement = batchElements[i];
+                    if (!batchElement.classList.contains('unlocked')) {
+                        // Add a temporary class for the unlock animation
+                        batchElement.classList.add('unlocking');
+                        
+                        // Play the unlock sound
+                        batchUnlockSound.play().catch(e => console.log('Audio play error:', e));
+                        
+                        // After a short delay, add the unlocked class and remove the temporary class
+                        setTimeout(() => {
+                            batchElement.classList.add('unlocked');
+                            batchElement.classList.remove('unlocking');
+                            
+                            // Add a temporary glow effect
+                            const glow = document.createElement('div');
+                            glow.className = 'glow-effect';
+                            batchElement.parentNode.appendChild(glow);
+                            
+                            // Remove the glow effect after animation completes
+                            setTimeout(() => {
+                                if (glow.parentNode) {
+                                    glow.parentNode.removeChild(glow);
+                                }
+                            }, 1500);
+                        }, 100);
+                    }
+                }, i * 300); // 300ms delay for each batch
+            }
+        }
+
+        /**
+         * Update goal progress bar based on hours studied
+         */
+        function updateGoalProgressBar(hoursStudied) {
+            const progressPercent = Math.min(100, (hoursStudied / DAILY_STUDY_GOAL) * 100);
+            goalProgressBar.style.width = `${progressPercent}%`;
+            
+            // Change color based on progress
+            if (progressPercent >= 100) {
+                goalProgressBar.classList.add('goal-completed');
+            } else {
+                goalProgressBar.classList.remove('goal-completed');
+            }
+        }
+
+        /**
+         * Get task breakdown data for today
+         */
+        async function getTodayTaskBreakdown() {
+            try {
+                const today = getFormattedDate();
+                let studyData = {};
+                
+                // Try Firebase first if available
+                if (window.firebaseDataManager && firebaseDataManager.user) {
+                    try {
+                        studyData = await firebaseDataManager.loadStudyData();
+                    } catch (error) {
+                        console.warn('Failed to load study data from Firebase for task breakdown, falling back to localStorage:', error);
+                        const existingData = localStorage.getItem('studyTime');
+                        studyData = existingData ? JSON.parse(existingData) : {};
+                    }
+                } else {
+                    const existingData = localStorage.getItem('studyTime');
+                    studyData = existingData ? JSON.parse(existingData) : {};
+                }
+
+                const dayData = studyData[today];
+                if (!dayData) {
+                    return { hasData: false, tasks: [] };
+                }
+
+                // Handle different data formats
+                let sessions = [];
+
+                if (typeof dayData === 'object' && dayData.sessions) {
+                    // New format with sessions
+                    sessions = dayData.sessions;
+                } else if (typeof dayData === 'number' && dayData > 0) {
+                    // Old format - just total hours, no task info
+                    // Create a single session for "No Specific Task"
+                    sessions = [{
+                        hours: dayData,
+                        task: null
+                    }];
+                } else {
+                    // No data or invalid format
+                    return { hasData: false, tasks: [] };
+                }
+
+                if (sessions.length === 0) {
+                    return { hasData: false, tasks: [] };
+                }
+
+                // Process sessions to group by task
+                const taskMap = new Map();
+
+                console.log('Processing sessions:', sessions);
+
+                sessions.forEach(session => {
+                    const taskName = session.task ? session.task.taskName : 'No Specific Task';
+                    const taskColor = session.task ? session.task.taskColor : 'gradient';
+
+                    console.log('Processing session:', { taskName, taskColor, hours: session.hours, task: session.task });
+
+                    if (taskMap.has(taskName)) {
+                        taskMap.get(taskName).hours += session.hours;
+                    } else {
+                        taskMap.set(taskName, {
+                            name: taskName,
+                            hours: session.hours,
+                            color: taskColor
+                        });
+                    }
+                });
+
+                const tasks = Array.from(taskMap.values())
+                    .filter(task => task.hours > 0) // Filter out zero-hour tasks
+                    .sort((a, b) => b.hours - a.hours);
+                
+                console.log('Final tasks array:', tasks);
+                return { hasData: tasks.length > 0, tasks };
+            } catch (error) {
+                console.error('Error getting today task breakdown:', error);
+                return { hasData: false, tasks: [] };
+            }
+        }
+
+        /**
+         * Show pie chart modal
+         */
+        async function showTaskPieChart() {
+            console.log('showTaskPieChart called - START');
+            try {
+                const modal = document.getElementById('pie-chart-modal');
+                const noDataMessage = document.getElementById('no-data-message');
+                const canvas = document.getElementById('taskPieChart');
+
+                console.log('DOM elements:', { modal: !!modal, noDataMessage: !!noDataMessage, canvas: !!canvas });
+
+                if (!modal || !noDataMessage || !canvas) {
+                    console.error('Required DOM elements not found for pie chart');
+                    return;
+                }
+
+                console.log('DOM elements found, showing modal');
+                modal.style.display = 'flex';
+
+            // Get task breakdown data
+            const { hasData, tasks } = await getTodayTaskBreakdown();
+            console.log('Task breakdown data:', { hasData, tasks: tasks.length });
+
+            if (!hasData || tasks.length === 0) {
+                // Show no data message
+                console.log('No data found, showing no data message');
+                canvas.style.display = 'none';
+                noDataMessage.style.display = 'flex';
+                return;
+            }
+
+            // Hide no data message and show chart
+            console.log('Data found, showing chart');
+            noDataMessage.style.display = 'none';
+            canvas.style.display = 'block';
+
+                // Create pie chart
+                renderTaskPieChart(tasks);
+            } catch (error) {
+                console.error('Error in showTaskPieChart:', error);
+                toast.error('Error showing pie chart: ' + error.message);
+            }
+            console.log('showTaskPieChart called - END');
+        }
+
+        /**
+         * Render task breakdown pie chart
+         */
+        function renderTaskPieChart(tasks) {
+            try {
+                const ctx = document.getElementById('taskPieChart').getContext('2d');
+                
+                // Destroy existing chart if it exists
+                if (taskPieChart) {
+                    taskPieChart.destroy();
+                }
+                
+                const labels = tasks.map(task => task.name);
+                const data = tasks.map(task => task.hours);
+                
+                console.log('Pie chart data:', { labels, data, tasks });
+                
+                // Create gradient for "No Specific Task" category
+                const createGradient = (ctx, color) => {
+                    if (color === 'gradient') {
+                        const gradient = ctx.createLinearGradient(0, 0, 200, 200);
+                        gradient.addColorStop(0, '#ff6b6b');
+                        gradient.addColorStop(0.25, '#4ecdc4');
+                        gradient.addColorStop(0.5, '#45b7d1');
+                        gradient.addColorStop(0.75, '#96ceb4');
+                        gradient.addColorStop(1, '#feca57');
+                        return gradient;
+                    }
+                    return color;
+                };
+                
+                const colors = tasks.map(task => createGradient(ctx, task.color));
+                
+                taskPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 2,
+                        hoverBorderWidth: 3,
+                        hoverBorderColor: 'rgba(255, 255, 255, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.9)',
+                                font: {
+                                    family: "'Segoe UI', -apple-system, sans-serif",
+                                    size: 14,
+                                    weight: 500
+                                },
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                generateLabels: function(chart) {
+                                    // Create custom labels based on our task data
+                                    const labels = [];
+                                    
+                                    chart.data.labels.forEach((labelText, index) => {
+                                        const dataset = chart.data.datasets[0];
+                                        const color = dataset.backgroundColor[index];
+                                        
+                                        const label = {
+                                            text: labelText,
+                                            fillStyle: color,
+                                            strokeStyle: dataset.borderColor || 'rgba(255, 255, 255, 0.2)',
+                                            lineWidth: dataset.borderWidth || 2,
+                                            pointStyle: 'circle',
+                                            hidden: false,
+                                            index: index
+                                        };
+                                        
+                                        // Special handling for "No Specific Task" with gradient
+                                        if (labelText === 'No Specific Task') {
+                                            const gradient = chart.ctx.createLinearGradient(0, 0, 20, 20);
+                                            gradient.addColorStop(0, '#ff6b6b');
+                                            gradient.addColorStop(0.25, '#4ecdc4');
+                                            gradient.addColorStop(0.5, '#45b7d1');
+                                            gradient.addColorStop(0.75, '#96ceb4');
+                                            gradient.addColorStop(1, '#feca57');
+                                            label.fillStyle = gradient;
+                                        }
+                                        
+                                        labels.push(label);
+                                    });
+                                    
+                                    return labels;
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 15, 25, 0.95)',
+                            titleFont: {
+                                family: "'Segoe UI', -apple-system, sans-serif",
+                                size: 14,
+                                weight: '600'
+                            },
+                            bodyFont: {
+                                family: "'Segoe UI', -apple-system, sans-serif",
+                                size: 13,
+                                weight: '500'
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const hours = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((hours / total) * 100).toFixed(1);
+                                    const labelText = context.label === 'No Specific Task' 
+                                        ? '🎨 No Specific Task' 
+                                        : context.label;
+                                    return `${labelText}: ${hours.toFixed(1)}h (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+            } catch (error) {
+                console.error('Error rendering pie chart:', error);
+                // Show no data message if chart fails
+                const noDataMessage = document.getElementById('no-data-message');
+                const canvas = document.getElementById('taskPieChart');
+                if (noDataMessage && canvas) {
+                    canvas.style.display = 'none';
+                    noDataMessage.style.display = 'flex';
+                }
+            }
+        }
+
+        /**
+         * Hide pie chart modal
+         */
+        function hideTaskPieChart() {
+            const modal = document.getElementById('pie-chart-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            
+            // Destroy chart to free memory
+            if (taskPieChart) {
+                taskPieChart.destroy();
+                taskPieChart = null;
+            }
+        }
+
+        /**
+         * Update the above-average indicator in stats container
+         */
+        function updateAboveAverageIndicator(todayHours, avgHours) {
+            const aboveAvgContainer = document.getElementById('above-avg-indicator');
+            if (!aboveAvgContainer) return;
+
+            const difference = todayHours - avgHours;
+            const minutesDifference = Math.round(Math.abs(difference) * 60);
+            
+            // Only show indicator if there's meaningful data (avgHours > 0)
+            if (avgHours <= 0) {
+                aboveAvgContainer.style.display = 'none';
+                return;
+            }
+            
+            if (difference > 0.05) { // More than ~3 minutes above
+                aboveAvgContainer.innerHTML = `
+                    <div class="above-avg-positive">
+                        <span class="above-avg-icon">📈</span>
+                        <span class="above-avg-text">${minutesDifference}m above average</span>
+                    </div>
+                `;
+                aboveAvgContainer.style.display = 'block';
+            } else if (difference < -0.05) { // More than ~3 minutes below
+                aboveAvgContainer.innerHTML = `
+                    <div class="above-avg-negative">
+                        <span class="above-avg-icon">📉</span>
+                        <span class="above-avg-text">${minutesDifference}m below average</span>
+                    </div>
+                `;
+                aboveAvgContainer.style.display = 'block';
+            } else { // Within 3 minutes of average
+                aboveAvgContainer.innerHTML = `
+                    <div class="above-avg-neutral">
+                        <span class="above-avg-icon">📊</span>
+                        <span class="above-avg-text">at average</span>
+                    </div>
+                `;
+                aboveAvgContainer.style.display = 'block';
+            }
+        }
+
+        /**
+         * Update achievement badges based on user progress - synced with heatmap data
+         */
+        async function updateAchievementBadges() {
+            // Get achievement elements
+            const achievementElements = {
+                'first': document.getElementById('achievement-first'),
+                'week-warrior': document.getElementById('achievement-week-warrior'),
+                'dedication': document.getElementById('achievement-dedication'),
+                'unstoppable': document.getElementById('achievement-unstoppable'),
+                'century': document.getElementById('achievement-century'),
+                'marathon': document.getElementById('achievement-marathon'),
+                'night-owl': document.getElementById('achievement-night-owl'),
+                'achiever': document.getElementById('achievement-achiever'),
+                'legend': document.getElementById('achievement-legend')
+            };
+
+            // Load study data to calculate real stats
+            let studyData = {};
+            try {
+                if (window.firebaseDataManager && firebaseDataManager.user) {
+                    studyData = await firebaseDataManager.loadStudyData();
+                } else {
+                    const existingData = localStorage.getItem('studyTime');
+                    studyData = existingData ? JSON.parse(existingData) : {};
+                }
+            } catch (error) {
+                console.warn('Failed to load study data for achievements:', error);
+                const existingData = localStorage.getItem('studyTime');
+                studyData = existingData ? JSON.parse(existingData) : {};
+            }
+
+            // Calculate streaks and stats from the data
+            const streaks = calculateStreaks(studyData);
+            
+            // Calculate total days and hours
+            let totalDays = 0;
+            let totalHours = 0;
+            let monthHours = 0;
+
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+
+            Object.keys(studyData).forEach(dateStr => {
+                const dayData = studyData[dateStr];
+                const hours = typeof dayData === 'object' ? dayData.totalHours : dayData;
+                
+                if (hours > 0) {
+                    totalDays++;
+                    totalHours += hours;
+
+                    const date = new Date(dateStr);
+                    if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
+                        monthHours += hours;
+                    }
+                }
+            });
+
+            const stats = {
+                currentStreak: streaks.currentStreak,
+                longestStreak: streaks.longestStreak,
+                totalDays: totalDays,
+                totalHours: totalHours
+            };
+
+            // Update badges based on unlock conditions
+            Object.keys(achievementElements).forEach(key => {
+                const element = achievementElements[key];
+                if (!element) return;
+
+                let isUnlocked = false;
+                
+                switch(key) {
+                    case 'first':
+                        isUnlocked = stats.totalDays >= 1;
+                        break;
+                    case 'week-warrior':
+                        isUnlocked = stats.longestStreak >= 7;
+                        break;
+                    case 'dedication':
+                        isUnlocked = stats.longestStreak >= 14;
+                        break;
+                    case 'unstoppable':
+                        isUnlocked = stats.longestStreak >= 30;
+                        break;
+                    case 'century':
+                        isUnlocked = stats.totalDays >= 100;
+                        break;
+                    case 'marathon':
+                        isUnlocked = stats.totalHours >= 100;
+                        break;
+                    case 'night-owl':
+                        isUnlocked = stats.totalDays >= 50;
+                        break;
+                    case 'achiever':
+                        isUnlocked = stats.totalHours >= 200;
+                        break;
+                    case 'legend':
+                        isUnlocked = stats.longestStreak >= 60;
+                        break;
+                }
+
+                if (isUnlocked) {
+                    element.classList.add('unlocked');
+                } else {
+                    element.classList.remove('unlocked');
+                }
+            });
+        }
+
+        // Event listeners for taskbar buttons - will be added after DOM is ready
+        function addTaskbarEventListeners() {
+            const homeBtn = document.getElementById('home-btn');
+            const flashcardsBtn = document.getElementById('flashcards-btn');
+            const timerBtn = document.getElementById('timer-btn');
+            const weeklyBtn = document.getElementById('weekly-btn');
+            
+            if (homeBtn) {
+                homeBtn.addEventListener('click', () => {
+                    window.location.href = 'checklist.html';
+                });
+            }
+            
+            if (flashcardsBtn) {
+                flashcardsBtn.addEventListener('click', () => {
+                    window.location.href = 'flashcards.html';
+                });
+            }
+            
+            if (timerBtn) {
+                timerBtn.addEventListener('click', () => {
+                    window.location.href = 'index.html';
+                });
+            }
+            
+            if (weeklyBtn) {
+                weeklyBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.body.classList.add('page-leave');
+                    setTimeout(() => {
+                        window.location.href = 'weekly-progress.html';
+                    }, 250); // Match this with the CSS animation duration
+                });
+            }
+        }
+
+        // About button and modal functionality
+        function addAboutModalListeners() {
+            const aboutBtn = document.getElementById('about-btn');
+            const aboutModal = document.getElementById('about-modal');
+            
+            if (aboutBtn && aboutModal) {
+                const closeBtn = aboutModal.querySelector('.compact-close-btn');
+                
+                if (closeBtn) {
+                    aboutBtn.addEventListener('click', () => {
+                        aboutModal.style.display = 'block';
+                    });
+
+                    closeBtn.addEventListener('click', () => {
+                        aboutModal.style.display = 'none';
+                    });
+                }
+
+                // Close modal when clicking outside of it
+                window.addEventListener('click', (event) => {
+                    if (event.target === aboutModal) {
+                        aboutModal.style.display = 'none';
+                    }
+                });
+
+                // Close modal with Escape key
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && aboutModal.style.display === 'block') {
+                        aboutModal.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        // Full screen functionality
+        function addFullscreenListeners() {
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const fullscreenIcon = fullscreenBtn?.querySelector('svg');
+            const tooltip = fullscreenBtn?.querySelector('.btn-tooltip');
+            
+            if (fullscreenBtn && fullscreenIcon && tooltip) {
+                fullscreenBtn.addEventListener('click', toggleFullscreen);
+                
+                // Update button state when fullscreen changes
+                document.addEventListener('fullscreenchange', updateFullscreenButton);
+                document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+                document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+                document.addEventListener('MSFullscreenChange', updateFullscreenButton);
+                
+                // Initial state
+                updateFullscreenButton();
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement && 
+                !document.webkitFullscreenElement && 
+                !document.mozFullScreenElement && 
+                !document.msFullscreenElement) {
+                // Enter fullscreen
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        function updateFullscreenButton() {
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const fullscreenIcon = fullscreenBtn?.querySelector('svg');
+            const tooltip = fullscreenBtn?.querySelector('.btn-tooltip');
+            
+            if (!fullscreenBtn || !fullscreenIcon || !tooltip) return;
+            
+            const isFullscreen = !!(document.fullscreenElement || 
+                                   document.webkitFullscreenElement || 
+                                   document.mozFullScreenElement || 
+                                   document.msFullscreenElement);
+            
+            if (isFullscreen) {
+                // Show exit fullscreen icon
+                fullscreenIcon.innerHTML = `
+                    <defs>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+
+                    <!-- Background circle -->
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="magenta" stroke-width="2" filter="url(#glow)" />
+
+                    <!-- Inward arrows (collapse fullscreen) -->
+                    <path d="M20 30 L35 30 L35 20" stroke="magenta" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M80 30 L65 30 L65 20" stroke="magenta" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M20 70 L35 70 L35 80" stroke="magenta" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M80 70 L65 70 L65 80" stroke="magenta" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                `;
+                tooltip.textContent = 'Exit Full Screen';
+            } else {
+                // Show enter fullscreen icon
+                fullscreenIcon.innerHTML = `
+                    <defs>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Background circle -->
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="cyan" stroke-width="2" filter="url(#glow)" />
+
+                    <!-- Fullscreen corners -->
+                    <path d="M20 35 V20 H35" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M80 35 V20 H65" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M20 65 V80 H35" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M80 65 V80 H65" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                `;
+                tooltip.textContent = 'Full Screen';
+            }
+        }
+
+
+        // Handle window resize and fullscreen changes
+        function handleResize() {
+            if (window.myChart) {
+                // Force chart to recalculate its size
+                const canvas = document.getElementById('progressChart');
+                if (canvas) {
+                    canvas.style.width = '100%';
+                    canvas.style.height = 'auto';
+                }
+                // Update chart with a small delay to ensure proper rendering
+                setTimeout(() => {
+                    window.myChart.update('resize');
+                }, 50);
+            }
+        }
+
+        // Add event listeners for window resize and fullscreen changes
+        window.addEventListener('resize', handleResize);
+        document.addEventListener('fullscreenchange', handleResize);
+        document.addEventListener('webkitfullscreenchange', handleResize);
+        document.addEventListener('mozfullscreenchange', handleResize);
+        document.addEventListener('MSFullscreenChange', handleResize);
+
+        // Auto-hide functionality removed - taskbar stays visible
+
+        // Add event listeners for pie chart functionality
+        function addPieChartEventListeners() {
+            console.log('Adding pie chart event listeners');
+            // Add click listener to progress bar
+            const goalProgressBar = document.getElementById('goal-progress-bar');
+            if (goalProgressBar) {
+                console.log('Progress bar found, adding click listener');
+                goalProgressBar.addEventListener('click', (event) => {
+                    console.log('Progress bar clicked!', event);
+                    event.stopPropagation(); // Prevent event bubbling
+                    showTaskPieChart();
+                });
+                goalProgressBar.style.cursor = 'pointer';
+                goalProgressBar.title = 'Click to see task breakdown';
+                console.log('Progress bar click listener added');
+            } else {
+                console.error('Progress bar not found!');
+            }
+
+            // Also try adding to the container
+            const goalProgressContainer = document.querySelector('.goal-progress-container');
+            if (goalProgressContainer) {
+                console.log('Progress container found, adding click listener');
+                goalProgressContainer.addEventListener('click', (event) => {
+                    console.log('Progress container clicked!', event);
+                    event.stopPropagation(); // Prevent event bubbling
+                    showTaskPieChart();
+                });
+                goalProgressContainer.style.cursor = 'pointer';
+                console.log('Progress container click listener added');
+            }
+            
+            // Add close button listener
+            const closePieChartBtn = document.getElementById('close-pie-chart');
+            if (closePieChartBtn) {
+                closePieChartBtn.addEventListener('click', hideTaskPieChart);
+            }
+
+            // Add task pie chart button listener
+            const taskPieChartBtn = document.getElementById('task-pie-chart-btn');
+            if (taskPieChartBtn) {
+                taskPieChartBtn.addEventListener('click', showTaskPieChart);
+            }
+
+            // Close modal when clicking outside
+            const pieChartModal = document.getElementById('pie-chart-modal');
+            if (pieChartModal) {
+                pieChartModal.addEventListener('click', (event) => {
+                    if (event.target === pieChartModal) {
+                        hideTaskPieChart();
+                    }
+                });
+            }
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && pieChartModal && pieChartModal.style.display === 'flex') {
+                    hideTaskPieChart();
+                }
+            });
+        }
+
+        // ===== HEATMAP FUNCTIONALITY =====
+        
+        /**
+         * Badge definitions with unlock criteria
+         */
+        const BADGES = [
+            {
+                id: 'first-day',
+                name: 'First Step',
+                icon: '🌱',
+                description: 'Complete your first study session',
+                unlockCondition: (stats) => stats.totalDays >= 1
+            },
+            {
+                id: 'week-warrior',
+                name: 'Week Warrior',
+                icon: '🔥',
+                description: 'Study for 7 consecutive days',
+                unlockCondition: (stats) => stats.longestStreak >= 7
+            },
+            {
+                id: 'dedication',
+                name: 'Dedication',
+                icon: '💪',
+                description: 'Maintain a 14-day streak',
+                unlockCondition: (stats) => stats.longestStreak >= 14
+            },
+            {
+                id: 'unstoppable',
+                name: 'Unstoppable',
+                icon: '⚡',
+                description: 'Achieve a 30-day streak',
+                unlockCondition: (stats) => stats.longestStreak >= 30
+            },
+            {
+                id: 'century',
+                name: 'Century Club',
+                icon: '💯',
+                description: 'Study for 100 total days',
+                unlockCondition: (stats) => stats.totalDays >= 100
+            },
+            {
+                id: 'marathon',
+                name: 'Marathon',
+                icon: '🏃',
+                description: 'Accumulate 100 hours of study',
+                unlockCondition: (stats) => stats.totalHours >= 100
+            },
+            {
+                id: 'night-owl',
+                name: 'Night Owl',
+                icon: '🦉',
+                description: 'Study for 50 total days',
+                unlockCondition: (stats) => stats.totalDays >= 50
+            },
+            {
+                id: 'achiever',
+                name: 'Overachiever',
+                icon: '🌟',
+                description: 'Reach 200 hours of study',
+                unlockCondition: (stats) => stats.totalHours >= 200
+            },
+            {
+                id: 'legend',
+                name: 'Legend',
+                icon: '👑',
+                description: 'Achieve a 60-day streak',
+                unlockCondition: (stats) => stats.longestStreak >= 60
+            }
+        ];
+
+        /**
+         * Calculate activity level based on hours studied
+         * More granular levels for better visual differentiation
+         */
+        function getActivityLevel(hours) {
+            if (hours === 0) return 0;
+            if (hours < 0.5) return 1;  // Less than 30 minutes - very light green
+            if (hours < 1.5) return 2;  // 30 min to 1.5 hours - light green
+            if (hours < 3) return 3;    // 1.5 to 3 hours - medium green
+            return 4;                   // 3+ hours - bright green
+        }
+
+        /**
+         * Calculate streaks from study data
+         */
+        function calculateStreaks(studyData) {
+            const sortedDates = Object.keys(studyData)
+                .filter(date => {
+                    // Only process date keys (YYYY-MM-DD format), skip weekly aggregates
+                    if (!date.match(/^\d{4}-\d{2}-\d{2}$/)) return false;
+                    
+                    const dayData = studyData[date];
+                    const hours = typeof dayData === 'object' ? dayData.totalHours : dayData;
+                    return hours > 0;
+                })
+                .sort();
+
+            if (sortedDates.length === 0) {
+                return { currentStreak: 0, longestStreak: 0, streakDates: [] };
+            }
+
+            let currentStreak = 0;
+            let longestStreak = 0;
+            let tempStreak = 1;
+            const streakDates = [];
+
+            const today = new Date();
+            const todayStr = formatDate(today);
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = formatDate(yesterday);
+
+            // Check if today or yesterday has data for current streak
+            const hasToday = sortedDates.includes(todayStr);
+            const hasYesterday = sortedDates.includes(yesterdayStr);
+
+            if (hasToday || hasYesterday) {
+                currentStreak = 1;
+                let checkDate = new Date(hasToday ? todayStr : yesterdayStr);
+                streakDates.push(formatDate(checkDate));
+
+                // Walk backwards to find the current streak
+                while (true) {
+                    checkDate.setDate(checkDate.getDate() - 1);
+                    const checkDateStr = formatDate(checkDate);
+                    if (sortedDates.includes(checkDateStr)) {
+                        currentStreak++;
+                        streakDates.push(checkDateStr);
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            // Calculate longest streak
+            for (let i = 0; i < sortedDates.length - 1; i++) {
+                const currentDate = new Date(sortedDates[i]);
+                const nextDate = new Date(sortedDates[i + 1]);
+                const diffDays = Math.round((nextDate - currentDate) / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 1) {
+                    tempStreak++;
+                } else {
+                    longestStreak = Math.max(longestStreak, tempStreak);
+                    tempStreak = 1;
+                }
+            }
+            longestStreak = Math.max(longestStreak, tempStreak);
+
+            return { 
+                currentStreak, 
+                longestStreak: Math.max(longestStreak, currentStreak),
+                streakDates 
+            };
+        }
+
+        /**
+         * Generate heatmap for the current year (GitHub-style horizontal)
+         */
+        async function generateHeatmap() {
+            const heatmapGrid = document.getElementById('heatmap-grid');
+            if (!heatmapGrid) return;
+
+            heatmapGrid.innerHTML = '';
+
+            // Load heatmap data from dedicated permanent collection
+            let studyData = {};
+            if (window.firebaseDataManager && firebaseDataManager.user) {
+                try {
+                    // Load from permanent heatmap collection (never gets cleaned up)
+                    studyData = await firebaseDataManager.loadHeatmapData();
+                    console.log('Heatmap data loaded from permanent collection');
+                } catch (error) {
+                    console.warn('Failed to load heatmap data, falling back to studyTime:', error);
+                    // Fallback to studyTime data if heatmap data fails
+                    try {
+                        const fullStudyData = await firebaseDataManager.loadStudyData();
+                        // Extract just the hours from the full data
+                        Object.keys(fullStudyData).forEach(dateStr => {
+                            if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) { // Only date keys, not weekly aggregates
+                                const dayData = fullStudyData[dateStr];
+                                studyData[dateStr] = typeof dayData === 'object' ? dayData.totalHours : dayData;
+                            }
+                        });
+                    } catch (fallbackError) {
+                        const existingData = localStorage.getItem('studyTime');
+                        studyData = existingData ? JSON.parse(existingData) : {};
+                    }
+                }
+            } else {
+                // Fallback to localStorage if not authenticated
+                const existingData = localStorage.getItem('studyTime');
+                if (existingData) {
+                    const fullData = JSON.parse(existingData);
+                    // Extract just the hours
+                    Object.keys(fullData).forEach(dateStr => {
+                        if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            const dayData = fullData[dateStr];
+                            studyData[dateStr] = typeof dayData === 'object' ? dayData.totalHours : dayData;
+                        }
+                    });
+                }
+            }
+
+            // Calculate date range (full current year structure: Jan 1 to Dec 31)
+            // But only show data up to today - future dates remain empty squares
+            // This creates a calendar-like structure that fills progressively throughout the year
+            const endDate = new Date();
+            endDate.setMonth(11, 31); // December 31st of current year
+
+            const startDate = new Date();
+            startDate.setMonth(0, 1); // January 1st of current year
+
+            // Build weeks array (GitHub style: weeks as columns)
+            const weeks = [];
+            const monthLabels = [];
+            let currentDate = new Date(startDate);
+            let currentMonth = currentDate.getMonth();
+            let weekIndex = 0;
+
+            while (currentDate <= endDate) {
+                const week = [];
+                
+                // Check if we're starting a new month
+                if (currentDate.getMonth() !== currentMonth) {
+                    monthLabels.push({
+                        label: currentDate.toLocaleDateString('en-US', { month: 'short' }),
+                        weekIndex: weekIndex
+                    });
+                    currentMonth = currentDate.getMonth();
+                } else if (weekIndex === 0) {
+                    // First week
+                    monthLabels.push({
+                        label: currentDate.toLocaleDateString('en-US', { month: 'short' }),
+                        weekIndex: 0
+                    });
+                }
+
+                // Add 7 days to this week
+                for (let i = 0; i < 7; i++) {
+                    const dateStr = formatDate(currentDate);
+                    // Heatmap data is stored as direct hours (numbers), not objects
+                    const hours = studyData[dateStr] || 0;
+                    
+                    week.push({
+                        date: dateStr,
+                        hours: hours,
+                        level: getActivityLevel(hours),
+                        isInRange: currentDate <= new Date() // Only show data up to today
+                    });
+
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+
+                weeks.push(week);
+                weekIndex++;
+            }
+
+            // Render the heatmap (horizontal layout)
+            const today = formatDate(new Date());
+            const streaks = calculateStreaks(studyData);
+
+            // Create month labels row
+            const monthsRow = document.createElement('div');
+            monthsRow.className = 'heatmap-months-row';
+            
+            let lastWeekIndex = -1;
+            monthLabels.forEach(monthLabel => {
+                const span = document.createElement('div');
+                span.className = 'heatmap-month-label';
+                span.textContent = monthLabel.label;
+                
+                // Calculate width based on weeks until next month
+                const nextMonth = monthLabels[monthLabels.indexOf(monthLabel) + 1];
+                const weeksSpan = nextMonth ? nextMonth.weekIndex - monthLabel.weekIndex : weeks.length - monthLabel.weekIndex;
+                span.style.minWidth = `${weeksSpan * 20}px`; // 16px day + 4px gap
+                
+                monthsRow.appendChild(span);
+            });
+            
+            heatmapGrid.parentElement.insertBefore(monthsRow, heatmapGrid);
+
+            // Create day labels (dynamically based on January 1st)
+            const daysLabels = document.createElement('div');
+            daysLabels.className = 'heatmap-days-labels';
+
+            // Calculate what day January 1st is and generate labels accordingly
+            const jan1 = new Date(startDate.getFullYear(), 0, 1);
+            const startingDayOfWeek = jan1.getDay(); // 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, etc.
+
+            // Generate 7 labels starting from the correct day
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            for (let i = 0; i < 7; i++) {
+                const dayIndex = (startingDayOfWeek + i) % 7;
+                const label = dayNames[dayIndex]; // Show all day names in sequence
+                const dayLabel = document.createElement('div');
+                dayLabel.className = 'heatmap-day-label';
+                dayLabel.textContent = label;
+                daysLabels.appendChild(dayLabel);
+            }
+            heatmapGrid.appendChild(daysLabels);
+
+            // Create weeks container
+            const weeksContainer = document.createElement('div');
+            weeksContainer.className = 'heatmap-weeks-container';
+
+            weeks.forEach(week => {
+                const weekDiv = document.createElement('div');
+                weekDiv.className = 'heatmap-week';
+
+                week.forEach(day => {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'heatmap-day';
+
+                    if (day.isInRange) {
+                        dayDiv.setAttribute('data-level', day.level);
+                        dayDiv.setAttribute('data-date', day.date);
+                        dayDiv.setAttribute('data-hours', day.hours.toFixed(1));
+
+                        if (day.date === today) {
+                            dayDiv.classList.add('today');
+                        }
+
+                        if (streaks.streakDates.includes(day.date)) {
+                            dayDiv.classList.add('streak');
+                        }
+
+                        // Add tooltip on hover
+                        dayDiv.addEventListener('mouseenter', showHeatmapTooltip);
+                        dayDiv.addEventListener('mouseleave', hideHeatmapTooltip);
+                    } else {
+                        dayDiv.style.opacity = '0';
+                        dayDiv.style.cursor = 'default';
+                        dayDiv.style.pointerEvents = 'none';
+                    }
+
+                    weekDiv.appendChild(dayDiv);
+                });
+
+                weeksContainer.appendChild(weekDiv);
+            });
+
+            heatmapGrid.appendChild(weeksContainer);
+
+            // Update stats
+            updateHeatmapStats(studyData, streaks);
+        }
+
+        /**
+         * Show tooltip for heatmap day
+         */
+        function showHeatmapTooltip(event) {
+            const dayDiv = event.currentTarget;
+            const date = dayDiv.getAttribute('data-date');
+            const hours = parseFloat(dayDiv.getAttribute('data-hours'));
+
+            if (!date) return;
+
+            let tooltip = document.querySelector('.heatmap-tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.className = 'heatmap-tooltip';
+                document.body.appendChild(tooltip);
+            }
+
+            const dateObj = new Date(date);
+            const formattedDate = dateObj.toLocaleDateString('en-US', { 
+                weekday: 'short', 
+                month: 'short', 
+                day: 'numeric',
+                year: 'numeric'
+            });
+
+            tooltip.innerHTML = `
+                <div class="heatmap-tooltip-date">${formattedDate}</div>
+                <div class="heatmap-tooltip-hours">${hours.toFixed(1)} hours</div>
+            `;
+
+            tooltip.style.left = event.pageX + 15 + 'px';
+            tooltip.style.top = event.pageY + 15 + 'px';
+            tooltip.classList.add('visible');
+        }
+
+        /**
+         * Hide tooltip
+         */
+        function hideHeatmapTooltip() {
+            const tooltip = document.querySelector('.heatmap-tooltip');
+            if (tooltip) {
+                tooltip.classList.remove('visible');
+            }
+        }
+
+        /**
+         * Update heatmap statistics
+         */
+        function updateHeatmapStats(studyData, streaks) {
+            // Calculate total days and hours
+            let totalDays = 0;
+            let totalHours = 0;
+            let monthHours = 0;
+
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+
+            Object.keys(studyData).forEach(dateStr => {
+                const dayData = studyData[dateStr];
+                const hours = typeof dayData === 'object' ? dayData.totalHours : dayData;
+                
+                if (hours > 0) {
+                    totalDays++;
+                    totalHours += hours;
+
+                    const date = new Date(dateStr);
+                    if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
+                        monthHours += hours;
+                    }
+                }
+            });
+
+            // Update UI
+            document.getElementById('current-streak').textContent = 
+                `${streaks.currentStreak} day${streaks.currentStreak !== 1 ? 's' : ''}`;
+            document.getElementById('longest-streak').textContent = 
+                `${streaks.longestStreak} day${streaks.longestStreak !== 1 ? 's' : ''}`;
+            document.getElementById('total-days').textContent = 
+                `${totalDays} day${totalDays !== 1 ? 's' : ''}`;
+            document.getElementById('month-total').textContent = 
+                `${monthHours.toFixed(1)}h`;
+
+            // Generate badges
+            const stats = {
+                currentStreak: streaks.currentStreak,
+                longestStreak: streaks.longestStreak,
+                totalDays: totalDays,
+                totalHours: totalHours
+            };
+
+            generateBadges(stats);
+        }
+
+        /**
+         * Generate and display badges
+         */
+        function generateBadges(stats) {
+            const badgesGrid = document.getElementById('badges-grid');
+            if (!badgesGrid) return;
+
+            badgesGrid.innerHTML = '';
+
+            BADGES.forEach(badge => {
+                const isUnlocked = badge.unlockCondition(stats);
+                
+                const badgeDiv = document.createElement('div');
+                badgeDiv.className = `badge-item ${isUnlocked ? 'unlocked' : 'locked'}`;
+
+                badgeDiv.innerHTML = `
+                    ${!isUnlocked ? '<div class="badge-lock">🔒</div>' : ''}
+                    <div class="badge-icon">${badge.icon}</div>
+                    <div class="badge-name">${badge.name}</div>
+                    <div class="badge-description">${badge.description}</div>
+                `;
+
+                badgesGrid.appendChild(badgeDiv);
+            });
+        }
+
+        /**
+         * Show heatmap modal
+         */
+        async function showHeatmapModal() {
+            const modal = document.getElementById('heatmap-modal');
+            if (!modal) return;
+
+            modal.style.display = 'flex';
+            await generateHeatmap();
+        }
+
+        /**
+         * Hide heatmap modal
+         */
+        function hideHeatmapModal() {
+            const modal = document.getElementById('heatmap-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+
+            // Clean up tooltip
+            const tooltip = document.querySelector('.heatmap-tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+        }
+
+        /**
+         * Add heatmap event listeners
+         */
+        function addHeatmapEventListeners() {
+            const heatmapBtn = document.getElementById('heatmap-btn');
+            const closeBtn = document.getElementById('close-heatmap');
+            const modal = document.getElementById('heatmap-modal');
+
+            if (heatmapBtn) {
+                heatmapBtn.addEventListener('click', showHeatmapModal);
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', hideHeatmapModal);
+            }
+
+            if (modal) {
+                modal.addEventListener('click', (event) => {
+                    if (event.target === modal) {
+                        hideHeatmapModal();
+                    }
+                });
+            }
+
+            // Close with Escape key
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && modal && modal.style.display === 'flex') {
+                    hideHeatmapModal();
+                }
+            });
+        }
+
+        // Load chart when page loads and auth is ready
+        window.addEventListener('load', async function() {
+            // Initialize Firebase Data Manager
+            if (typeof FirebaseDataManager !== 'undefined') {
+                window.firebaseDataManager = new FirebaseDataManager();
+                console.log('Firebase Data Manager initialized for progress page');
+                
+                // Listen for auth state changes to refresh data
+                if (typeof auth !== 'undefined' && auth) {
+                    auth.onAuthStateChanged(async (user) => {
+                        console.log('Auth state changed in progress page, refreshing data...');
+                        await loadDailyGoal();
+                        await loadStudyDataAndRenderChart();
+                    });
+                }
+            }
+            
+            // Add taskbar event listeners
+            addTaskbarEventListeners();
+            addAboutModalListeners();
+            addFullscreenListeners();
+            addPieChartEventListeners();
+            addHeatmapEventListeners();
+            
+            // Load data from Firebase with localStorage fallback
+            await loadDailyGoal();
+            await loadStudyDataAndRenderChart();
+            
+            // Update achievement badges
+            updateAchievementBadges();
+        });
+    </script>
+    <!-- Custom Cursor Elements -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
+    <!-- Modern Taskbar Control Box -->
+    <div class="control-box-taskbar">
+        <button id="home-btn" class="btn-icon">
+            <div class="btn-tooltip">Home</div>
+            <svg class="control-icon" width="50" height="50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 36px; height: 36px;">
+                <defs>
+                    <!-- Cyan glow -->
+                    <filter id="cyanGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+
+                    <!-- Orange glow -->
+                    <filter id="orangeGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Roof -->
+                <path d="M30 100 L100 45 L170 100 Z"
+                        fill="#00e5ff" stroke="#00e5ff" stroke-width="4" stroke-linejoin="round"
+                        filter="url(#cyanGlow)"/>
+
+                <!-- Chimney -->
+                <rect x="120" y="55" width="20" height="30" rx="5" ry="5"
+                        fill="#00e5ff" filter="url(#cyanGlow)"/>
+
+                <!-- House body -->
+                <rect x="50" y="100" width="100" height="70" rx="12" ry="12"
+                        fill="#00e5ff" filter="url(#cyanGlow)"/>
+
+                <!-- Central window -->
+                <rect x="85" y="120" width="30" height="30" rx="7" ry="7"
+                        fill="black" stroke="#00e5ff" stroke-width="2" filter="url(#cyanGlow)"/>
+                <line x1="100" y1="120" x2="100" y2="150" stroke="#00e5ff" stroke-width="2"/>
+                <line x1="85" y1="135" x2="115" y2="135" stroke="#00e5ff" stroke-width="2"/>
+
+                <!-- Smooth orange checkmark (shifted lower) -->
+                <path d="M70 85 L90 105 L135 65"
+                        fill="none" stroke="#ff7b00" stroke-width="9"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        filter="url(#orangeGlow)"/>
+            </svg>
+        </button>
+        
+        <button id="flashcards-btn" class="btn-icon">
+            <div class="btn-tooltip">Flashcards</div>
+            <svg class="control-icon" width="36" height="36" viewBox="10 -10 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 36px; height: 36px;">
+                <defs>
+                    <!-- Blue glow -->
+                    <filter id="blueGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Back card -->
+                <rect x="40" y="50" width="120" height="80" rx="12" ry="12"
+                        fill="#00c6ff" filter="url(#blueGlow)" opacity="0.6" transform="rotate(-5 100 90)"/>
+
+                <!-- Middle card -->
+                <rect x="45" y="55" width="120" height="80" rx="12" ry="12"
+                        fill="#00d9ff" filter="url(#blueGlow)" opacity="0.8" transform="rotate(3 105 95)"/>
+
+                <!-- Front card -->
+                <rect x="50" y="60" width="120" height="80" rx="12" ry="12"
+                        fill="#00e5ff" filter="url(#blueGlow)"/>
+
+                <!-- Question mark on front card -->
+                <text x="110" y="110" font-size="45" text-anchor="middle" fill="white"
+                        filter="url(#blueGlow)" font-family="Arial Rounded MT Bold">?</text>
+            </svg>
+        </button>
+        
+        <div class="taskbar-divider"></div>
+        
+        <button id="timer-btn" class="btn-icon">
+            <div class="btn-tooltip">Back to Timer</div>
+            <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" width="240" height="240" style="width: 36px; height: 36px;">
+                <defs>
+                    <!-- Neon green glow -->
+                    <filter id="greenGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Outer body -->
+                <circle cx="100" cy="120" r="70" stroke="#22c55e" stroke-width="10" fill="none" filter="url(#greenGlow)"/>
+
+                <!-- Inner subtle ring -->
+                <circle cx="100" cy="120" r="55" stroke="#16a34a" stroke-width="3" fill="none" filter="url(#greenGlow)"/>
+
+                <!-- Top knob base -->
+                <rect x="85" y="30" width="30" height="15" rx="7" fill="#22c55e" filter="url(#greenGlow)"/>
+
+                <!-- Side buttons (stopwatch feel) -->
+                <rect x="35" y="90" width="15" height="20" rx="4" fill="#22c55e" filter="url(#greenGlow)"/>
+                <rect x="150" y="90" width="15" height="20" rx="4" fill="#22c55e" filter="url(#greenGlow)"/>
+
+                <!-- Tick marks -->
+                <g stroke="#22c55e" stroke-width="3" filter="url(#greenGlow)">
+                    <line x1="100" y1="50" x2="100" y2="60"/>
+                    <line x1="100" y1="180" x2="100" y2="170"/>
+                    <line x1="30" y1="120" x2="40" y2="120"/>
+                    <line x1="170" y1="120" x2="160" y2="120"/>
+                </g>
+
+                <!-- Hands -->
+                <!-- Hour hand (short, thick) -->
+                <line x1="100" y1="120" x2="100" y2="80" stroke="white" stroke-width="7" stroke-linecap="round" filter="url(#greenGlow)"/>
+                <!-- Minute hand (longer, thinner) -->
+                <line x1="100" y1="120" x2="140" y2="120" stroke="white" stroke-width="5" stroke-linecap="round" filter="url(#greenGlow)"/>
+                <!-- Second hand (longest, very thin) -->
+                <line x1="100" y1="120" x2="120" y2="60" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" filter="url(#greenGlow)"/>
+
+                <!-- Center dot -->
+                <circle cx="100" cy="120" r="8" fill="white" filter="url(#greenGlow)"/>
+            </svg>
+        </button>
+        
+        <button id="weekly-btn" class="btn-icon">
+            <div class="btn-tooltip">Weekly Progress</div>
+            <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="240" height="240" style="width: 36px; height: 36px;">
+                <defs>
+                    <!-- Neon blue glow -->
+                    <filter id="blueGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Circular progress arc -->
+                <circle cx="100" cy="100" r="75" stroke="#38bdf8" stroke-width="10" fill="none"
+                        stroke-dasharray="470" stroke-dashoffset="150" filter="url(#blueGlow)"/>
+
+                <!-- Calendar base -->
+                <rect x="40" y="60" width="120" height="85" rx="12" ry="12"
+                        fill="#0ea5e9" filter="url(#blueGlow)"/>
+
+                <!-- Calendar header -->
+                <rect x="40" y="60" width="120" height="20" rx="6" ry="6"
+                        fill="#38bdf8" filter="url(#blueGlow)"/>
+
+                <!-- Week dots (shifted more left) -->
+                <circle cx="49" cy="105" r="6" fill="white" filter="url(#blueGlow)"/>
+                <circle cx="66" cy="105" r="6" fill="white" filter="url(#blueGlow)"/>
+                <circle cx="83" cy="105" r="6" fill="white" filter="url(#blueGlow)"/>
+                <circle cx="100" cy="105" r="6" fill="white" filter="url(#blueGlow)"/>
+                <circle cx="117" cy="105" r="6" fill="white" filter="url(#blueGlow)"/>
+                <circle cx="134" cy="105" r="6" fill="white" filter="url(#blueGlow)"/>
+                <circle cx="151" cy="105" r="6" fill="white" filter="url(#blueGlow)"/>
+            </svg>
+        </button>
+
+        <div class="taskbar-divider"></div>
+
+        <button id="task-pie-chart-btn" class="btn-icon">
+            <div class="btn-tooltip">Task Breakdown</div>
+            <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="240" height="240" style="width: 36px; height: 36px;">
+                <defs>
+                    <!-- Pie chart gradient -->
+                    <linearGradient id="pieGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#ff6b6b"/>
+                        <stop offset="25%" stop-color="#4ecdc4"/>
+                        <stop offset="50%" stop-color="#45b7d1"/>
+                        <stop offset="75%" stop-color="#96ceb4"/>
+                        <stop offset="100%" stop-color="#feca57"/>
+                    </linearGradient>
+                    <!-- Glow filter -->
+                    <filter id="pieGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Pie chart circle -->
+                <circle cx="100" cy="100" r="70" stroke="url(#pieGrad)" stroke-width="8" fill="none" filter="url(#pieGlow)"/>
+
+                <!-- Pie slices -->
+                <path d="M100 30 A70 70 0 0 1 170 100 L100 100 Z" fill="url(#pieGrad)" opacity="0.8"/>
+                <path d="M170 100 A70 70 0 0 1 100 170 L100 100 Z" fill="url(#pieGrad)" opacity="0.6"/>
+                <path d="M100 170 A70 70 0 0 1 30 100 L100 100 Z" fill="url(#pieGrad)" opacity="0.4"/>
+                <path d="M30 100 A70 70 0 0 1 100 30 L100 100 Z" fill="url(#pieGrad)" opacity="0.2"/>
+
+                <!-- Center dot -->
+                <circle cx="100" cy="100" r="8" fill="white" filter="url(#pieGlow)"/>
+            </svg>
+        </button>
+
+        <button id="heatmap-btn" class="btn-icon">
+            <div class="btn-tooltip">Activity Heatmap</div>
+            <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="240" height="240" style="width: 36px; height: 36px;">
+                <defs>
+                    <!-- Green gradient for heatmap -->
+                    <linearGradient id="heatGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#0e4429"/>
+                        <stop offset="33%" stop-color="#006d32"/>
+                        <stop offset="66%" stop-color="#26a641"/>
+                        <stop offset="100%" stop-color="#39d353"/>
+                    </linearGradient>
+                    <!-- Glow filter -->
+                    <filter id="heatGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Grid squares (7x7) -->
+                <!-- Row 1 -->
+                <rect x="20" y="30" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="40" y="30" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="60" y="30" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="80" y="30" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="100" y="30" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="120" y="30" width="15" height="15" rx="3" fill="#39d353" filter="url(#heatGlow)"/>
+                <rect x="140" y="30" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="160" y="30" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                
+                <!-- Row 2 -->
+                <rect x="20" y="50" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="40" y="50" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="60" y="50" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="80" y="50" width="15" height="15" rx="3" fill="#39d353" filter="url(#heatGlow)"/>
+                <rect x="100" y="50" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="120" y="50" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="140" y="50" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="160" y="50" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                
+                <!-- Row 3 -->
+                <rect x="20" y="70" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="40" y="70" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="60" y="70" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="80" y="70" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="100" y="70" width="15" height="15" rx="3" fill="#39d353" filter="url(#heatGlow)"/>
+                <rect x="120" y="70" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="140" y="70" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="160" y="70" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                
+                <!-- Row 4 -->
+                <rect x="20" y="90" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="40" y="90" width="15" height="15" rx="3" fill="#39d353" filter="url(#heatGlow)"/>
+                <rect x="60" y="90" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="80" y="90" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="100" y="90" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="120" y="90" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="140" y="90" width="15" height="15" rx="3" fill="#39d353" filter="url(#heatGlow)"/>
+                <rect x="160" y="90" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                
+                <!-- Row 5 -->
+                <rect x="20" y="110" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="40" y="110" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="60" y="110" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="80" y="110" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="100" y="110" width="15" height="15" rx="3" fill="#39d353" filter="url(#heatGlow)"/>
+                <rect x="120" y="110" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="140" y="110" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="160" y="110" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                
+                <!-- Row 6 -->
+                <rect x="20" y="130" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="40" y="130" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="60" y="130" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="80" y="130" width="15" height="15" rx="3" fill="#39d353" filter="url(#heatGlow)"/>
+                <rect x="100" y="130" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="120" y="130" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="140" y="130" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="160" y="130" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                
+                <!-- Row 7 -->
+                <rect x="20" y="150" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="40" y="150" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="60" y="150" width="15" height="15" rx="3" fill="#39d353" filter="url(#heatGlow)"/>
+                <rect x="80" y="150" width="15" height="15" rx="3" fill="#0e4429" filter="url(#heatGlow)"/>
+                <rect x="100" y="150" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+                <rect x="120" y="150" width="15" height="15" rx="3" fill="#006d32" filter="url(#heatGlow)"/>
+                <rect x="140" y="150" width="15" height="15" rx="3" fill="#39d353" filter="url(#heatGlow)"/>
+                <rect x="160" y="150" width="15" height="15" rx="3" fill="#26a641" filter="url(#heatGlow)"/>
+
+                <!-- Flame icon overlay for streak -->
+                <path d="M95 175 Q95 165 100 160 Q105 165 105 175 Q105 180 100 185 Q95 180 95 175 Z" 
+                      fill="#ff6b00" filter="url(#heatGlow)" opacity="0.9"/>
+                <circle cx="100" cy="175" r="3" fill="#ffd700" filter="url(#heatGlow)"/>
+            </svg>
+        </button>
+        
+        <div class="taskbar-divider"></div>
+        
+        <button id="about-btn" class="btn-icon">
+            <div class="btn-tooltip">About</div>
+            <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="240" height="240" style="width: 36px; height: 36px;">
+                <defs>
+                    <!-- Neon blue glow -->
+                    <filter id="blueGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Outer glowing circle -->
+                <circle cx="100" cy="100" r="75" stroke="#38bdf8" stroke-width="10" fill="none" filter="url(#blueGlow)"/>
+
+                <!-- Inner info circle -->
+                <circle cx="100" cy="100" r="55" fill="#0ea5e9" filter="url(#blueGlow)"/>
+
+                <!-- "i" stem -->
+                <rect x="95" y="90" width="10" height="40" rx="5" fill="white" filter="url(#blueGlow)"/>
+                
+                <!-- "i" dot -->
+                <circle cx="100" cy="75" r="6" fill="white" filter="url(#blueGlow)"/>
+            </svg>
+        </button>
+        
+        <button id="fullscreen-btn" class="btn-icon">
+            <div class="btn-tooltip">Full Screen</div>
+            <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200" style="width: 36px; height: 36px;">
+                <defs>
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <!-- Background circle -->
+                <circle cx="50" cy="50" r="45" fill="none" stroke="cyan" stroke-width="2" filter="url(#glow)" />
+
+                <!-- Fullscreen corners -->
+                <path d="M20 35 V20 H35" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                <path d="M80 35 V20 H65" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                <path d="M20 65 V80 H35" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                <path d="M80 65 V80 H65" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+            </svg>
+        </button>
+    </div>
+
+    <script src="js/cursor.js"></script>
+    <script src="js/progress-mobile.js"></script>
+    <script src="js/mobile-taskbar.js"></script>
+    <script src="js/ai-mentor.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+/* Page Transition Styles */
+html.page-transition-html,
+html.page-transition-html body {
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+}
+
+body.page-transition {
+    animation: fadeOut 0.25s ease-in-out forwards;
+    overflow: hidden;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}

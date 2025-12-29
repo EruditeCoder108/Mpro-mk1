@@ -1,0 +1,2776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <title>Bubble Tasks</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/toast-notifications.css">
+
+    <!-- reCAPTCHA v3 API -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdPJscrAAAAANzUWzwN62XbCsWP68ymVwB99-Li"
+        defer></script>
+
+    <!-- FIREBASE INTEGRATION: Firebase SDK scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-init.js"></script>
+    <script src="js/toast-notifications.js"></script>
+
+    <script src="js/auth.js"></script>
+    <link rel="stylesheet" href="css/bubble-mobile.css">
+
+    <style>
+        :root {
+            --bg-gradient-light: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --bg-gradient-dark: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%);
+            --bubble-shadow-light: 0 10px 30px rgba(0, 0, 0, 0.2);
+            --bubble-shadow-dark: 0 10px 30px rgba(255, 255, 255, 0.08);
+            --text-light: #333;
+            --text-dark: #fff;
+            --modal-text-light: #333;
+            --modal-text-dark: #fff;
+            --card-light: rgba(255, 255, 255, 0.95);
+            --card-dark: rgba(30, 30, 30, 0.9);
+            --border-light: rgba(255, 255, 255, 0.3);
+            --border-dark: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--bg-gradient-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-light);
+            transition: background 0.5s ease;
+        }
+
+        body.dark-mode {
+            background: var(--bg-gradient-dark);
+            color: var(--text-dark);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            color: #fff;
+        }
+
+        .logo span {
+            margin-right: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .controls a {
+            text-decoration: none;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .controls a:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-light);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .btn {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-dark);
+            color: #fff;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-theme {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        }
+
+        #task-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            perspective: 1000px;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+            overflow: visible;
+            padding: 10px;
+            z-index: 1;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            transform-style: preserve-3d;
+            animation: float 4s ease-in-out infinite;
+            /* GPU acceleration optimizations */
+            will-change: transform, opacity;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            /* Reduced backdrop filter for better performance */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        body.dark-mode .bubble {
+            background: radial-gradient(circle at 30% 30%, rgba(60, 60, 60, 0.8), rgba(40, 40, 40, 0.6));
+            color: var(--text-dark);
+            box-shadow: var(--bubble-shadow-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bubble::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 15%;
+            width: 30%;
+            height: 20%;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: rotate(-20deg);
+            pointer-events: none;
+        }
+
+        /* Removed duplicate hover effect - using enhanced version below */
+
+        .bubble.popping {
+            animation: pop 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+
+        .task-text {
+            font-weight: 500;
+            max-width: 80%;
+            word-break: break-word;
+            line-height: 1.2;
+            padding: 0 5%;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+            width: 100%;
+            display: block;
+            white-space: nowrap;
+        }
+
+        .task-date {
+            font-size: 0.7em;
+            opacity: 0.8;
+            position: absolute;
+            bottom: 15%;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.2rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s ease;
+            opacity: 0;
+            backdrop-filter: blur(10px);
+        }
+
+        body.dark-mode .modal-content {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 255, 255, 0.05);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .modal-header {
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--modal-text-light);
+        }
+
+        body.dark-mode .modal-header {
+            color: var(--modal-text-dark);
+        }
+
+        /* Completed Tasks Modal Styles */
+        .completed-modal-content {
+            max-height: 70vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .completed-modal-content .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .completed-modal-content .modal-header span {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+        }
+
+        .completed-tasks-list {
+            flex: 1;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        body.dark-mode .completed-tasks-list {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .completed-task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s ease;
+        }
+
+        body.dark-mode .completed-task-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .completed-task-item:last-child {
+            border-bottom: none;
+        }
+
+        .completed-task-item:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .completed-task-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .completed-task-item.completed-recently {
+            background: rgba(76, 237, 196, 0.1);
+            border-left: 3px solid #4ECDC4;
+            animation: completed-glow 2s ease-out;
+        }
+
+        @keyframes completed-glow {
+            0% {
+                background: rgba(76, 237, 196, 0.3);
+            }
+
+            100% {
+                background: rgba(76, 237, 196, 0.1);
+            }
+        }
+
+        .completed-task-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+        }
+
+        .completed-task-content {
+            flex: 1;
+        }
+
+        .completed-task-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+        }
+
+        .completed-task-meta {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .completed-task-time {
+            font-size: 0.75rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            flex-direction: column;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-subtext {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Auto-save indicator */
+        .auto-save-indicator {
+            position: absolute;
+            top: -40px;
+            right: 10px;
+            background: rgba(76, 237, 196, 0.9);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: auto-save-fade-in 0.3s ease-out, auto-save-fade-out 0.3s ease-in 2s forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        body.dark-mode .auto-save-indicator {
+            background: rgba(76, 237, 196, 0.9);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes auto-save-fade-in {
+            0% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.9);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes auto-save-fade-out {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.9);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 0.8rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--modal-text-light);
+        }
+
+        body.dark-mode label {
+            color: var(--modal-text-dark);
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        body.dark-mode input,
+        body.dark-mode textarea,
+        body.dark-mode select {
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-dark);
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .size-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.3rem;
+        }
+
+        .size-option {
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            color: var(--modal-text-light);
+        }
+
+        body.dark-mode .size-option {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--modal-text-dark);
+        }
+
+        .size-option.active {
+            background: rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+        }
+
+        body.dark-mode .size-option.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 0.3rem;
+        }
+
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .color-option.active {
+            transform: scale(1.2);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .no-tasks {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            opacity: 0.7;
+            font-size: 1.2rem;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-light);
+            color: #fff;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .filter-btn {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-dark);
+            color: #fff;
+        }
+
+        .filter-btn.active {
+            background: rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            color: #fff;
+        }
+
+        body.dark-mode .filter-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .bubble-actions {
+            position: absolute;
+            top: 8%;
+            right: 8%;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .bubble:hover .bubble-actions {
+            opacity: 1;
+        }
+
+        .bubble-action {
+            width: 1.5em;
+            height: 1.5em;
+            min-width: 20px;
+            min-height: 20px;
+            max-width: 30px;
+            max-height: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 0.7em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            pointer-events: auto;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .bubble-action:hover {
+            transform: scale(1.1);
+            background: #fff;
+        }
+
+        /* Double-click/tap visual feedback */
+        .bubble.double-click-feedback {
+            animation: doubleClickPulse 0.3s ease-out;
+        }
+
+        @keyframes doubleClickPulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        body.dark-mode .bubble-action {
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate3d(0, 0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: translate3d(0, -10px, 0) rotate(2deg);
+            }
+
+            100% {
+                transform: translate3d(0, 0, 0) rotate(0deg);
+            }
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale3d(1, 1, 1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale3d(1.2, 1.2, 1);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale3d(0, 0, 1);
+                opacity: 0;
+            }
+        }
+
+        /* Enhanced Visual Effects */
+        .bubble.completed {
+            animation: celebration 0.8s ease-out;
+        }
+
+        @keyframes celebration {
+            0% {
+                transform: scale3d(1, 1, 1) rotate(0deg);
+            }
+
+            25% {
+                transform: scale3d(1.1, 1.1, 1) rotate(5deg);
+            }
+
+            50% {
+                transform: scale3d(1.2, 1.2, 1) rotate(-5deg);
+            }
+
+            75% {
+                transform: scale3d(1.1, 1.1, 1) rotate(3deg);
+            }
+
+            100% {
+                transform: scale3d(1, 1, 1) rotate(0deg);
+            }
+        }
+
+        /* Particle System */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #fff, transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes particle-burst {
+            0% {
+                transform: scale3d(0, 0, 1) translate3d(0, 0, 0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale3d(1, 1, 1) translate3d(var(--dx), var(--dy), 0);
+                opacity: 0;
+            }
+        }
+
+        /* Awesome Multi-Layer Background */
+        .dynamic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* Animated Gradient Mesh Background */
+        .bg-gradient-mesh {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 220, 226, 0.3) 0%, transparent 50%),
+                linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            animation: mesh-shift 20s ease-in-out infinite;
+        }
+
+        /* Floating Color Orbs */
+        .floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            animation: float-orb 15s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            top: 10%;
+            left: -5%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            top: 60%;
+            right: -5%;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            animation-delay: -10s;
+        }
+
+        .orb-4 {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(45deg, #43e97b 0%, #38f9d7 100%);
+            top: 30%;
+            left: 20%;
+            animation-delay: -15s;
+        }
+
+        /* Geometric Pattern Overlay */
+        .geometric-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 2px, transparent 2px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+            animation: pattern-rotate 30s linear infinite;
+        }
+
+        /* Floating Particles */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: particle-float 8s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            top: 40%;
+            left: 80%;
+            animation-delay: -2s;
+        }
+
+        .particle:nth-child(3) {
+            top: 70%;
+            left: 30%;
+            animation-delay: -4s;
+        }
+
+        .particle:nth-child(4) {
+            top: 10%;
+            left: 70%;
+            animation-delay: -6s;
+        }
+
+        .particle:nth-child(5) {
+            top: 80%;
+            left: 90%;
+            animation-delay: -8s;
+        }
+
+        .particle:nth-child(6) {
+            top: 50%;
+            left: 50%;
+            animation-delay: -10s;
+        }
+
+        /* Animations */
+        @keyframes mesh-shift {
+
+            0%,
+            100% {
+                background-position: 0% 0%, 100% 0%, 0% 100%;
+            }
+
+            33% {
+                background-position: 100% 100%, 0% 100%, 100% 0%;
+            }
+
+            66% {
+                background-position: 100% 0%, 100% 100%, 0% 0%;
+            }
+        }
+
+        @keyframes float-orb {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pattern-rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes particle-float {
+
+            0%,
+            100% {
+                transform: translateY(0px) translateX(0px);
+                opacity: 0.6;
+            }
+
+            25% {
+                transform: translateY(-10px) translateX(5px);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(-20px) translateX(-5px);
+                opacity: 0.8;
+            }
+
+            75% {
+                transform: translateY(-10px) translateX(3px);
+                opacity: 0.9;
+            }
+        }
+
+        /* Enhanced Bubble Hover Effects - GPU Optimized */
+        .bubble:hover {
+            transform: scale(1.08) translateZ(15px);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(255, 255, 255, 0.2),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            /* Use transform instead of filter for better performance */
+            opacity: 0.95;
+        }
+
+        /* Priority Indicators */
+        .bubble.priority-high {
+            border: 3px solid #ff4757 !important;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 71, 87, 0.5);
+        }
+
+        .bubble.priority-medium {
+            border: 2px solid #ffa502 !important;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 165, 2, 0.4);
+        }
+
+        .bubble.priority-low {
+            border: 1px solid #2ed573 !important;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.2), 0 0 10px rgba(46, 213, 115, 0.3);
+        }
+
+        /* Dark mode priority borders */
+        body.dark-mode .bubble.priority-high {
+            border: 3px solid #ff4757 !important;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05), 0 0 20px rgba(255, 71, 87, 0.6);
+        }
+
+        body.dark-mode .bubble.priority-medium {
+            border: 2px solid #ffa502 !important;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05), 0 0 15px rgba(255, 165, 2, 0.5);
+        }
+
+        body.dark-mode .bubble.priority-low {
+            border: 1px solid #2ed573 !important;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05), 0 0 10px rgba(46, 213, 115, 0.4);
+        }
+
+        /* Completion Animation */
+        .bubble.completing {
+            animation: complete-burst 1s ease-out forwards;
+        }
+
+        @keyframes complete-burst {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Progress Ring */
+        .progress-ring {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: conic-gradient(#4CAF50 0deg, transparent 0deg);
+            display: none;
+        }
+
+        .bubble.has-progress .progress-ring {
+            display: block;
+        }
+
+        /* Priority Picker Styles */
+        .priority-picker {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 0.3rem;
+        }
+
+        .priority-option {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            color: var(--modal-text-light);
+        }
+
+        body.dark-mode .priority-option {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--modal-text-dark);
+        }
+
+        .priority-option.active {
+            background: rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+        }
+
+        body.dark-mode .priority-option.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .priority-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .priority-indicator.low {
+            background: #2ed573;
+        }
+
+        .priority-indicator.medium {
+            background: #ffa502;
+        }
+
+        .priority-indicator.high {
+            background: #ff4757;
+        }
+
+        /* Tooltip Styles */
+        .bubble-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .bubble-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .bubble-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+        }
+
+        /* Improved Text Handling - Removed duplicate, using main definition above */
+
+        /* Small bubble text optimization */
+        .bubble[data-size="xs"] .task-text,
+        .bubble[data-size="sm"] .task-text {
+            font-size: 0.7em;
+            max-width: 90%;
+            padding: 0 2%;
+        }
+
+        .bubble[data-size="xs"] .task-text {
+            font-size: 0.6em;
+        }
+
+        /* Medium and large bubbles keep normal text */
+        .bubble[data-size="md"] .task-text,
+        .bubble[data-size="lg"] .task-text,
+        .bubble[data-size="xl"] .task-text {
+            font-size: 1em;
+        }
+
+        /* Dragging visual feedback */
+        .bubble.dragging {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(255, 255, 255, 0.3),
+                inset 0 0 30px rgba(255, 255, 255, 0.2);
+            filter: brightness(1.2);
+            transition: none;
+        }
+
+        .bubble {
+            cursor: grab;
+            transition: all 0.2s ease;
+            will-change: transform, left, top;
+        }
+
+        .bubble:active {
+            cursor: grabbing;
+        }
+
+        .bubble.dragging {
+            transition: none;
+        }
+
+        /* Tablet-specific optimizations */
+        @media (min-width: 769px) and (max-width: 1200px) {
+
+            /* Larger touch targets for tablets */
+            .bubble {
+                min-width: 80px;
+                min-height: 80px;
+            }
+
+            /* Adjust bubble sizes for tablet screens */
+            .bubble.size-xs {
+                width: 90px;
+                height: 90px;
+                font-size: 14px;
+            }
+
+            .bubble.size-sm {
+                width: 120px;
+                height: 120px;
+                font-size: 16px;
+            }
+
+            .bubble.size-md {
+                width: 160px;
+                height: 160px;
+                font-size: 18px;
+            }
+
+            .bubble.size-lg {
+                width: 200px;
+                height: 200px;
+                font-size: 20px;
+            }
+
+            .bubble.size-xl {
+                width: 250px;
+                height: 250px;
+                font-size: 22px;
+            }
+
+            /* Improve header layout for tablets */
+            header {
+                padding: 1.5rem 2rem;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+
+            .logo {
+                font-size: 1.8rem;
+                flex: 0 0 auto;
+            }
+
+            .controls {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            .controls .btn {
+                padding: 12px 20px;
+                font-size: 16px;
+                min-width: 120px;
+            }
+
+            /* Better filter layout for tablets */
+            .filters {
+                padding: 1rem 2rem;
+                gap: 1.5rem;
+            }
+
+            .filter-btn {
+                padding: 12px 24px;
+                font-size: 16px;
+                min-width: 100px;
+            }
+
+            /* Enhanced modal for tablets */
+            .modal {
+                margin: 2rem;
+                max-width: 600px;
+                border-radius: 20px;
+            }
+
+            .modal-content {
+                padding: 2.5rem;
+            }
+
+            .modal-header {
+                font-size: 1.8rem;
+                margin-bottom: 2rem;
+            }
+
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
+
+            .form-group label {
+                font-size: 1.1rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                padding: 14px 16px;
+                font-size: 16px;
+                border-radius: 12px;
+            }
+
+            .form-group textarea {
+                min-height: 120px;
+                resize: vertical;
+            }
+
+            /* Better button layout for tablets */
+            .btn {
+                padding: 14px 24px;
+                font-size: 16px;
+                border-radius: 12px;
+                min-height: 48px;
+                min-width: 120px;
+            }
+
+            /* Picker improvements for tablets */
+            .size-picker,
+            .color-picker,
+            .priority-picker {
+                gap: 12px;
+                margin-top: 0.5rem;
+            }
+
+            .size-option,
+            .color-option,
+            .priority-option {
+                min-width: 60px;
+                min-height: 60px;
+                border-radius: 12px;
+            }
+
+            .color-option {
+                width: 60px;
+                height: 60px;
+            }
+
+            /* Improve bubble actions for tablets */
+            .bubble-actions {
+                gap: 8px;
+                top: 12px;
+                right: 12px;
+            }
+
+            .bubble-action {
+                width: 2rem;
+                height: 2rem;
+                font-size: 16px;
+            }
+
+            /* Task container optimizations for tablets */
+            #task-container {
+                padding: 2rem;
+                min-height: calc(100vh - 200px);
+            }
+
+            /* Reduce animation intensity for better tablet performance */
+            .bubble {
+                animation-duration: 6s;
+                /* Slightly slower for smoother feel */
+            }
+
+            /* Adjust background elements for tablets */
+            .dynamic-bg {
+                opacity: 0.8;
+            }
+
+            .floating-orb {
+                width: 200px;
+                height: 200px;
+            }
+
+            .geometric-pattern {
+                width: 300px;
+                height: 300px;
+            }
+
+            /* Better text sizing for tablets */
+            .task-text {
+                font-weight: 500;
+                letter-spacing: 0.5px;
+            }
+
+            /* Improve tooltip positioning for tablets */
+            .bubble-tooltip {
+                font-size: 14px;
+                padding: 8px 12px;
+                border-radius: 8px;
+                max-width: 200px;
+                word-wrap: break-word;
+            }
+
+            /* Tablet-specific hover and touch feedback */
+            .bubble:hover {
+                transform: scale(1.03) translateZ(10px);
+                box-shadow:
+                    0 15px 35px rgba(0, 0, 0, 0.2),
+                    0 5px 15px rgba(0, 0, 0, 0.1),
+                    inset 0 0 15px rgba(255, 255, 255, 0.05);
+            }
+
+            /* Active state for tablet touches */
+            .bubble:active {
+                transform: scale(0.98) translateZ(5px);
+                transition: transform 0.1s ease;
+            }
+
+            /* Better focus states for tablets */
+            .btn:focus,
+            .filter-btn:focus,
+            .size-option:focus,
+            .color-option:focus,
+            .priority-option:focus {
+                outline: 2px solid #007bff;
+                outline-offset: 2px;
+                box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
+            }
+
+            /* Tablet gesture feedback */
+            .bubble.tablet-touch-active {
+                transform: scale(1.02) translateZ(8px);
+                box-shadow:
+                    0 20px 40px rgba(0, 0, 0, 0.25),
+                    0 10px 20px rgba(0, 0, 0, 0.15),
+                    inset 0 0 20px rgba(255, 255, 255, 0.08);
+            }
+
+            /* Additional tablet-specific enhancements */
+            body.tablet-device .bubble {
+                /* Slightly more pronounced hover effects for tablets */
+                transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            body.tablet-device .bubble:hover {
+                /* More subtle hover for tablets since they have touch feedback */
+                transform: scale(1.01) translateZ(5px);
+            }
+
+            /* Better text rendering on tablets */
+            body.tablet-device .task-text {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                text-rendering: optimizeLegibility;
+            }
+
+            /* Improved scrolling on tablets */
+            body.tablet-device {
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+            }
+        }
+
+        /* Landscape tablet optimizations */
+        @media (min-width: 769px) and (max-width: 1200px) and (orientation: landscape) {
+            header {
+                padding: 1rem 2rem;
+            }
+
+            .logo {
+                font-size: 1.6rem;
+            }
+
+            .controls {
+                gap: 0.8rem;
+            }
+
+            .filters {
+                padding: 0.8rem 2rem;
+                gap: 1rem;
+            }
+
+            .filter-btn {
+                padding: 10px 20px;
+                font-size: 15px;
+                min-width: 90px;
+            }
+
+            #task-container {
+                padding: 1.5rem;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 2rem;
+                align-items: start;
+                justify-items: center;
+            }
+
+            .bubble {
+                margin: 0 auto;
+            }
+        }
+
+        /* Portrait tablet optimizations */
+        @media (min-width: 769px) and (max-width: 1200px) and (orientation: portrait) {
+            #task-container {
+                padding: 1rem;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 1.5rem;
+                align-items: start;
+                justify-items: center;
+            }
+
+            .bubble {
+                margin: 0 auto;
+            }
+
+            .modal {
+                margin: 1rem;
+                max-width: 90vw;
+            }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .bubble::after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <span>🫧</span> Bubble Tasks
+        </div>
+        <div class="controls">
+            <a href="index.html" class="btn" id="timer-btn" title="Go to Timer">
+                <span>⏱️</span> Timer
+            </a>
+            <a href="checklist.html" class="btn" id="checklist-btn" title="Go to Checklist">
+                <span>✅</span> Checklist
+            </a>
+            <button id="new-task-btn" class="btn">
+                <span>+</span> New Bubble
+            </button>
+            <button id="theme-toggle" class="btn btn-theme">🌙</button>
+            <div id="auto-save-indicator" class="auto-save-indicator" style="display: none;">
+                <span>💾</span> Saved
+            </div>
+        </div>
+    </header>
+
+    <div class="filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="small">Small</button>
+        <button class="filter-btn" data-filter="medium">Medium</button>
+        <button class="filter-btn" data-filter="large">Large</button>
+        <button id="completed-tasks-btn" class="filter-btn" title="View completed tasks">
+            <span>✅</span> Completed
+        </button>
+    </div>
+
+    <div class="dynamic-bg">
+        <div class="bg-gradient-mesh"></div>
+        <div class="floating-orb orb-1"></div>
+        <div class="floating-orb orb-2"></div>
+        <div class="floating-orb orb-3"></div>
+        <div class="floating-orb orb-4"></div>
+        <div class="geometric-pattern"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    <div id="task-container"></div>
+
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                Create New Task
+            </div>
+            <form id="task-form">
+                <div class="form-group">
+                    <label for="task-title">Task</label>
+                    <input type="text" id="task-title" placeholder="Enter your task" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-description">Description (optional)</label>
+                    <textarea id="task-description" placeholder="Add details about your task" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Size</label>
+                    <div class="size-picker">
+                        <div class="size-option" data-size="xs">XS</div>
+                        <div class="size-option" data-size="sm">S</div>
+                        <div class="size-option active" data-size="md">M</div>
+                        <div class="size-option" data-size="lg">L</div>
+                        <div class="size-option" data-size="xl">XL</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker">
+                        <div class="color-option active" data-color="#FF7676" style="background-color: #FF7676;"></div>
+                        <div class="color-option" data-color="#4ECDC4" style="background-color: #4ECDC4;"></div>
+                        <div class="color-option" data-color="#FFD166" style="background-color: #FFD166;"></div>
+                        <div class="color-option" data-color="#7A77FF" style="background-color: #7A77FF;"></div>
+                        <div class="color-option" data-color="#F6AE2D" style="background-color: #F6AE2D;"></div>
+                        <div class="color-option" data-color="#86BBD8" style="background-color: #86BBD8;"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <div class="priority-picker">
+                        <div class="priority-option" data-priority="low">
+                            <span class="priority-indicator low"></span>
+                            Low
+                        </div>
+                        <div class="priority-option active" data-priority="medium">
+                            <span class="priority-indicator medium"></span>
+                            Medium
+                        </div>
+                        <div class="priority-option" data-priority="high">
+                            <span class="priority-indicator high"></span>
+                            High
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="task-deadline">Deadline (optional)</label>
+                    <input type="datetime-local" id="task-deadline">
+                </div>
+                <div class="form-footer">
+                    <button type="button" id="cancel-task" class="btn">Cancel</button>
+                    <button type="submit" class="btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Completed Tasks Modal -->
+    <div id="completed-modal" class="modal">
+        <div class="modal-content completed-modal-content">
+            <div class="modal-header">
+                <span>✅ Completed Tasks</span>
+                <button id="clear-completed-btn" class="btn btn-small" title="Clear all completed tasks">
+                    <span>🗑️</span> Clear All
+                </button>
+            </div>
+            <div id="completed-tasks-list" class="completed-tasks-list">
+                <div class="completed-task-item empty-state">
+                    <div class="empty-icon">🎯</div>
+                    <div class="empty-text">No completed tasks yet</div>
+                    <div class="empty-subtext">Pop some bubbles to see them here!</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="close-completed-btn" class="btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fix: Replace the corrupted audio tag with a simpler version -->
+    <audio id="pop-sound" preload="auto" src="sounds/pop.mp3"></audio>
+
+    <script>
+        // Keyboard shortcuts for power users
+        document.addEventListener('keydown', (e) => {
+            // Prevent shortcuts when typing in inputs
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            // Ctrl/Cmd + N: New bubble
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                document.getElementById('new-task-btn').click();
+                return;
+            }
+
+            // Escape: Close modal
+            if (e.key === 'Escape') {
+                const modal = document.querySelector('.modal.show');
+                if (modal) {
+                    document.getElementById('cancel-task-btn').click();
+                }
+                return;
+            }
+
+            // Delete/Backspace: Delete selected bubble (if any bubble is focused)
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                const focusedBubble = document.querySelector('.bubble:focus');
+                if (focusedBubble) {
+                    e.preventDefault();
+                    const bubbleId = focusedBubble.dataset.id;
+                    popBubble(bubbleId);
+                }
+                return;
+            }
+
+            // Ctrl/Cmd + K: Focus search/filter (if we add search later)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                // Focus first filter button for now
+                const firstFilter = document.querySelector('.filter-btn');
+                if (firstFilter) firstFilter.focus();
+                return;
+            }
+
+            // Number keys 1-5: Quick size selection when modal is open
+            if (modal.classList.contains('show') && e.key >= '1' && e.key <= '5') {
+                e.preventDefault();
+                const sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
+                const sizeIndex = parseInt(e.key) - 1;
+                const sizeOption = document.querySelector(`.size-option[data-size="${sizes[sizeIndex]}"]`);
+                if (sizeOption) sizeOption.click();
+                return;
+            }
+        });
+
+        // Add focus management for bubbles
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.bubble')) {
+                // Remove focus from other bubbles
+                document.querySelectorAll('.bubble').forEach(b => b.classList.remove('focused'));
+                // Add focus to clicked bubble
+                e.target.closest('.bubble').classList.add('focused');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize variables
+            const taskContainer = document.getElementById('task-container');
+            const modal = document.getElementById('task-modal');
+            const newTaskBtn = document.getElementById('new-task-btn');
+            const cancelTaskBtn = document.getElementById('cancel-task');
+            const themeToggle = document.getElementById('theme-toggle');
+            const taskForm = document.getElementById('task-form');
+            const sizeOptions = document.querySelectorAll('.size-option');
+            const colorOptions = document.querySelectorAll('.color-option');
+            const priorityOptions = document.querySelectorAll('.priority-option');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const popSound = document.getElementById('pop-sound');
+
+            // Completed tasks elements
+            const completedTasksBtn = document.getElementById('completed-tasks-btn');
+            const completedModal = document.getElementById('completed-modal');
+            const closeCompletedBtn = document.getElementById('close-completed-btn');
+            const clearCompletedBtn = document.getElementById('clear-completed-btn');
+
+            // Task data storage
+            let tasks = JSON.parse(localStorage.getItem('bubbleTasks')) || [];
+            let selectedSize = 'base';
+            let selectedColor = '#FF7676';
+            let selectedPriority = 'medium';
+            let currentFilter = 'all';
+            let isEditMode = false;
+            let editingBubbleId = null;
+
+            // Completed tasks variables
+            let completedTasks = [];
+            let lastCleanupDate = localStorage.getItem('lastCleanupDate') || null;
+
+            // Reset modal to create mode
+            function resetModal() {
+                isEditMode = false;
+                editingBubbleId = null;
+
+                // Reset modal header and button
+                document.querySelector('.modal-header').textContent = 'Create New Task';
+                document.querySelector('.form-footer .btn[type="submit"]').textContent = 'Save';
+
+                // Clear form
+                document.getElementById('task-title').value = '';
+                document.getElementById('task-description').value = '';
+                document.getElementById('task-deadline').value = '';
+
+                // Reset size, color, and priority selections
+                sizeOptions.forEach(opt => {
+                    opt.classList.toggle('active', opt.dataset.size === 'md');
+                });
+                selectedSize = 'md';
+
+                colorOptions.forEach(opt => {
+                    opt.classList.toggle('active', opt.dataset.color === '#FF7676');
+                });
+                selectedColor = '#FF7676';
+
+                priorityOptions.forEach(opt => {
+                    opt.classList.toggle('active', opt.dataset.priority === 'medium');
+                });
+                selectedPriority = 'medium';
+            }
+
+            // Open modal in edit mode with bubble data
+            function openEditModal(task) {
+                isEditMode = true;
+                editingBubbleId = task.id;
+
+                // Populate form with existing data
+                document.getElementById('task-title').value = task.title;
+                document.getElementById('task-description').value = task.description || '';
+                document.getElementById('task-deadline').value = task.deadline ? task.deadline.slice(0, 16) : '';
+
+                // Set size selection
+                sizeOptions.forEach(option => {
+                    option.classList.toggle('active', option.dataset.size === task.size);
+                });
+                selectedSize = task.size;
+
+                // Set color selection
+                colorOptions.forEach(option => {
+                    option.classList.toggle('active', option.dataset.color === task.color);
+                });
+                selectedColor = task.color;
+
+                // Set priority selection
+                priorityOptions.forEach(option => {
+                    option.classList.toggle('active', option.dataset.priority === task.priority);
+                });
+                selectedPriority = task.priority || 'medium';
+
+                // Update modal header and button
+                document.querySelector('.modal-header').textContent = 'Edit Task';
+                document.querySelector('.form-footer .btn[type="submit"]').textContent = 'Update Task';
+
+                // Show modal
+                document.getElementById('task-modal').classList.add('active');
+            }
+
+            // Size mappings (bubble size in pixels)
+            const sizeMappings = {
+                xs: 50,    // Extra Small
+                sm: 80,    // Small
+                md: 120,   // Medium
+                lg: 180,   // Large
+                xl: 250    // Extra Large
+            };
+
+            // Size categories for filtering
+            const sizeCategories = {
+                small: ['xs', 'sm'],
+                medium: ['md'],
+                large: ['lg', 'xl']
+            };
+
+            // Memory management for particles
+            const particlePool = [];
+            const activeParticles = new Set();
+
+            // Particle effect function with object pooling
+            function createParticleEffect(x, y) {
+                const particleCount = 12;
+                for (let i = 0; i < particleCount; i++) {
+                    let particle = particlePool.pop();
+
+                    if (!particle) {
+                        particle = document.createElement('div');
+                        particle.className = 'particle';
+                    }
+
+                    const angle = (360 / particleCount) * i;
+                    const distance = 50 + Math.random() * 30;
+                    const dx = Math.cos(angle * Math.PI / 180) * distance;
+                    const dy = Math.sin(angle * Math.PI / 180) * distance;
+
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.setProperty('--dx', dx + 'px');
+                    particle.style.setProperty('--dy', dy + 'px');
+                    particle.style.animation = 'particle-burst 0.6s ease-out forwards';
+
+                    document.body.appendChild(particle);
+                    activeParticles.add(particle);
+
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                        activeParticles.delete(particle);
+                        // Return to pool for reuse
+                        particlePool.push(particle);
+                    }, 600);
+                }
+            }
+
+            // Event listener cleanup tracking
+            const bubbleEventListeners = new Map();
+
+            // Create a single bubble with improved dragging and text handling
+            function createBubble(task) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.dataset.id = task.id;
+                bubble.dataset.size = task.size;
+
+                const bubbleSize = sizeMappings[task.size];
+
+                bubble.style.width = `${bubbleSize}px`;
+                bubble.style.height = `${bubbleSize}px`;
+                bubble.style.left = `${task.posX}px`;
+                bubble.style.top = `${task.posY}px`;
+                bubble.style.background = task.color;
+
+                // Add priority class
+                if (task.priority) {
+                    bubble.classList.add(`priority-${task.priority}`);
+                }
+
+                // Add content to bubble with smart text handling
+                const content = document.createElement('div');
+                content.className = 'task-text';
+
+                // Smart text truncation for small bubbles
+                if (task.size === 'xs' || task.size === 'sm') {
+                    content.textContent = task.title.substring(0, 3);
+                    content.title = task.title; // Tooltip for full text
+                } else {
+                    content.textContent = task.title;
+                }
+
+                bubble.appendChild(content);
+
+                // Add deadline if it exists
+                if (task.deadline) {
+                    const deadlineDate = new Date(task.deadline);
+                    const dateEl = document.createElement('div');
+                    dateEl.className = 'task-date';
+                    dateEl.textContent = deadlineDate.toLocaleDateString();
+                    bubble.appendChild(dateEl);
+                }
+
+                // Add bubble actions (only edit button, delete is handled by double-click)
+                const actions = document.createElement('div');
+                actions.className = 'bubble-actions';
+
+                const editBtn = document.createElement('div');
+                editBtn.className = 'bubble-action';
+                editBtn.innerHTML = '✏️';
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openEditModal(task);
+                });
+
+                actions.appendChild(editBtn);
+                bubble.appendChild(actions);
+
+                // Add event listeners for double-click and double-tap
+                bubble.addEventListener('dblclick', () => {
+                    // Add visual feedback
+                    bubble.classList.add('double-click-feedback');
+                    setTimeout(() => {
+                        bubble.classList.remove('double-click-feedback');
+                    }, 300);
+
+                    popBubble(task.id);
+                });
+
+                // Enhanced touch handling for tablets and mobile
+                if (isTabletDevice) {
+                    // Tablet-optimized double-tap detection and gesture feedback
+                    bubble.addEventListener('touchstart', (e) => {
+                        bubble.classList.add('tablet-touch-active');
+                        handleTabletDoubleTap(bubble, e);
+                    });
+
+                    bubble.addEventListener('touchend', (e) => {
+                        bubble.classList.remove('tablet-touch-active');
+                    });
+
+                    // Prevent default touch behavior for better control
+                    bubble.addEventListener('touchmove', (e) => {
+                        // Allow normal scrolling but prevent zoom on tablets
+                        if (e.touches.length > 1) {
+                            e.preventDefault();
+                        }
+                    }, { passive: false });
+                } else {
+                    // Mobile double-tap detection
+                    let lastTap = 0;
+                    bubble.addEventListener('touchend', (e) => {
+                        const currentTime = new Date().getTime();
+                        const tapLength = currentTime - lastTap;
+                        if (tapLength < 500 && tapLength > 0) {
+                            e.preventDefault();
+
+                            // Add visual feedback
+                            bubble.classList.add('double-click-feedback');
+                            setTimeout(() => {
+                                bubble.classList.remove('double-click-feedback');
+                            }, 300);
+
+                            popBubble(task.id);
+                        }
+                        lastTap = currentTime;
+                    });
+                }
+
+                // Create tooltip for small bubbles
+                if (task.size === 'xs' || task.size === 'sm') {
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'bubble-tooltip';
+                    tooltip.textContent = task.title;
+                    document.body.appendChild(tooltip);
+
+                    let tooltipTimeout;
+
+                    bubble.addEventListener('mouseenter', (e) => {
+                        clearTimeout(tooltipTimeout);
+                        const rect = bubble.getBoundingClientRect();
+                        tooltip.style.left = rect.left + rect.width / 2 + 'px';
+                        tooltip.style.top = rect.top - 10 + 'px';
+                        tooltip.style.transform = 'translateX(-50%) translateY(-100%)';
+                        tooltip.classList.add('show');
+                    });
+
+                    bubble.addEventListener('mouseleave', () => {
+                        tooltipTimeout = setTimeout(() => {
+                            tooltip.classList.remove('show');
+                        }, 100);
+                    });
+                }
+
+                // Simple and smooth dragging system
+                let isDragging = false;
+                let startX, startY, startLeft, startTop;
+
+                bubble.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    isDragging = true;
+
+                    // Store initial positions
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startLeft = parseInt(bubble.style.left);
+                    startTop = parseInt(bubble.style.top);
+
+                    bubble.style.zIndex = 100;
+                    bubble.style.cursor = 'grabbing';
+                    bubble.style.userSelect = 'none';
+
+                    // Add dragging class for visual feedback
+                    bubble.classList.add('dragging');
+
+                    // Reset container bounds cache for new drag
+                    containerBounds = null;
+                });
+
+                // Ultra-smooth position update using requestAnimationFrame
+                let animationId = null;
+                let lastMouseX = 0;
+                let lastMouseY = 0;
+                let containerBounds = null;
+
+                const updatePosition = (e) => {
+                    if (!isDragging) return;
+
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+
+                    if (!animationId) {
+                        animationId = requestAnimationFrame(() => {
+                            // Calculate movement delta
+                            const deltaX = lastMouseX - startX;
+                            const deltaY = lastMouseY - startY;
+
+                            // Calculate new position
+                            const newX = startLeft + deltaX;
+                            const newY = startTop + deltaY;
+
+                            // Cache container bounds for better performance
+                            if (!containerBounds) {
+                                const containerRect = taskContainer.getBoundingClientRect();
+                                const bubbleSize = sizeMappings[task.size];
+                                containerBounds = {
+                                    maxX: containerRect.width - bubbleSize,
+                                    maxY: containerRect.height - bubbleSize
+                                };
+                            }
+
+                            const constrainedX = Math.max(0, Math.min(newX, containerBounds.maxX));
+                            const constrainedY = Math.max(0, Math.min(newY, containerBounds.maxY));
+
+                            // Update position directly
+                            bubble.style.left = `${constrainedX}px`;
+                            bubble.style.top = `${constrainedY}px`;
+
+                            animationId = null;
+                        });
+                    }
+                };
+
+                document.addEventListener('mousemove', updatePosition);
+
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        bubble.style.zIndex = 1;
+                        bubble.style.cursor = 'grab';
+                        bubble.style.userSelect = '';
+                        bubble.classList.remove('dragging');
+
+                        if (animationId) {
+                            cancelAnimationFrame(animationId);
+                            animationId = null;
+                        }
+
+                        // Update task position in storage
+                        const taskIndex = tasks.findIndex(t => t.id === task.id);
+                        if (taskIndex !== -1) {
+                            tasks[taskIndex].posX = parseInt(bubble.style.left);
+                            tasks[taskIndex].posY = parseInt(bubble.style.top);
+                            saveTasks();
+                        }
+                    }
+                });
+
+                // Touch support for mobile with same simple system
+                bubble.addEventListener('touchstart', (e) => {
+                    // Disable drag on mobile to allow scrolling
+                    if (window.innerWidth <= 768) return;
+
+                    e.preventDefault();
+                    isDragging = true;
+
+                    const touch = e.touches[0];
+                    startX = touch.clientX;
+                    startY = touch.clientY;
+                    startLeft = parseInt(bubble.style.left);
+                    startTop = parseInt(bubble.style.top);
+
+                    bubble.style.zIndex = 100;
+                    bubble.classList.add('dragging');
+                });
+
+                document.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+
+                    const touch = e.touches[0];
+                    updatePosition(touch);
+                });
+
+                document.addEventListener('touchend', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        bubble.style.zIndex = 1;
+                        bubble.classList.remove('dragging');
+
+                        if (animationFrame) {
+                            cancelAnimationFrame(animationFrame);
+                        }
+
+                        // Update task position in storage
+                        const taskIndex = tasks.findIndex(t => t.id === task.id);
+                        if (taskIndex !== -1) {
+                            tasks[taskIndex].posX = parseInt(bubble.style.left);
+                            tasks[taskIndex].posY = parseInt(bubble.style.top);
+                            saveTasks();
+                        }
+                    }
+                });
+
+                return bubble;
+            }
+
+            // Optimized render with DocumentFragment batching
+            function renderTasks() {
+                // Use DocumentFragment for batch DOM operations
+                const fragment = document.createDocumentFragment();
+
+                if (tasks.length === 0) {
+                    const noTasks = document.createElement('div');
+                    noTasks.className = 'no-tasks';
+                    noTasks.textContent = 'No tasks yet. Create a bubble to get started!';
+                    fragment.appendChild(noTasks);
+                    taskContainer.innerHTML = '';
+                    taskContainer.appendChild(fragment);
+                    return;
+                }
+
+                // Filter tasks if needed
+                let filteredTasks = tasks;
+                if (currentFilter !== 'all') {
+                    filteredTasks = tasks.filter(task =>
+                        sizeCategories[currentFilter].includes(task.size)
+                    );
+                }
+
+                // Batch create all bubbles in DocumentFragment
+                filteredTasks.forEach(task => {
+                    fragment.appendChild(createBubble(task));
+                });
+
+                // Single DOM operation - replace all content at once
+                taskContainer.innerHTML = '';
+                taskContainer.appendChild(fragment);
+            }
+
+            // Incremental update functions for better performance
+            function addSingleBubble(task) {
+                // Only add if it matches current filter
+                if (currentFilter === 'all' || sizeCategories[currentFilter].includes(task.size)) {
+                    const bubble = createBubble(task);
+                    taskContainer.appendChild(bubble);
+                }
+            }
+
+            function updateSingleBubble(task) {
+                const existingBubble = document.querySelector(`.bubble[data-id="${task.id}"]`);
+                if (existingBubble) {
+                    // Check if bubble should be visible with current filter
+                    const shouldBeVisible = currentFilter === 'all' || sizeCategories[currentFilter].includes(task.size);
+
+                    if (shouldBeVisible) {
+                        // Update existing bubble in place
+                        existingBubble.style.background = task.color;
+                        existingBubble.dataset.size = task.size;
+
+                        // Update priority class
+                        existingBubble.classList.remove('priority-high', 'priority-medium', 'priority-low');
+                        if (task.priority) {
+                            existingBubble.classList.add(`priority-${task.priority}`);
+                        }
+
+                        // Update text content
+                        const textElement = existingBubble.querySelector('.task-text');
+                        if (textElement) {
+                            if (task.size === 'xs' || task.size === 'sm') {
+                                textElement.textContent = task.title.substring(0, 3);
+                                textElement.title = task.title;
+                            } else {
+                                textElement.textContent = task.title;
+                            }
+                        }
+                    } else {
+                        // Remove bubble if it doesn't match filter
+                        existingBubble.remove();
+                    }
+                } else if (shouldBeVisible) {
+                    // Add bubble if it should be visible but doesn't exist
+                    addSingleBubble(task);
+                }
+            }
+
+            function removeSingleBubble(taskId) {
+                const bubble = document.querySelector(`.bubble[data-id="${taskId}"]`);
+                if (bubble) {
+                    // Clean up event listeners
+                    const listeners = bubbleEventListeners.get(taskId);
+                    if (listeners) {
+                        listeners.forEach(({ element, event, handler }) => {
+                            element.removeEventListener(event, handler);
+                        });
+                        bubbleEventListeners.delete(taskId);
+                    }
+
+                    bubble.remove();
+                }
+            }
+
+            // Memory cleanup function
+            function cleanupMemory() {
+                // Clear particle pool if it gets too large
+                if (particlePool.length > 50) {
+                    particlePool.splice(0, particlePool.length - 20);
+                }
+
+                // Clean up any orphaned particles
+                activeParticles.forEach(particle => {
+                    if (!particle.parentNode) {
+                        activeParticles.delete(particle);
+                        particlePool.push(particle);
+                    }
+                });
+            }
+
+            // Run cleanup periodically
+            setInterval(cleanupMemory, 30000); // Every 30 seconds
+
+            // Tablet detection and optimizations
+            function isTablet() {
+                const userAgent = navigator.userAgent.toLowerCase();
+                const isTabletDevice = /tablet|ipad|playbook|silk/i.test(userAgent) ||
+                    (navigator.maxTouchPoints && navigator.maxTouchPoints > 1 && screen.width >= 768);
+
+                // Also check screen size and orientation
+                const screenWidth = Math.min(screen.width, screen.height);
+                const screenHeight = Math.max(screen.width, screen.height);
+
+                return isTabletDevice || (screenWidth >= 768 && screenWidth <= 1200);
+            }
+
+            // Tablet-specific touch optimizations
+            const isTabletDevice = isTablet();
+
+            // Add tablet class to body for CSS targeting
+            if (isTabletDevice) {
+                document.body.classList.add('tablet-device');
+            }
+
+            // Completed Tasks Functions
+            async function saveCompletedTask(task) {
+                try {
+                    const db = firebase.firestore();
+                    const completedTask = {
+                        ...task,
+                        completedAt: new Date().toISOString(),
+                        id: Date.now().toString() // Simple ID for completed tasks
+                    };
+
+                    await db.collection('completedTasks').add(completedTask);
+                    console.log('Task saved to completed tasks');
+                    return completedTask;
+                } catch (error) {
+                    console.error('Error saving completed task:', error);
+                    // Fallback to localStorage if Firestore fails
+                    const localCompleted = JSON.parse(localStorage.getItem('localCompletedTasks')) || [];
+                    const completedTask = {
+                        ...task,
+                        completedAt: new Date().toISOString(),
+                        id: Date.now().toString()
+                    };
+                    localCompleted.push(completedTask);
+                    localStorage.setItem('localCompletedTasks', JSON.stringify(localCompleted));
+                    return completedTask;
+                }
+            }
+
+            async function loadCompletedTasks() {
+                try {
+                    const db = firebase.firestore();
+                    const snapshot = await db.collection('completedTasks')
+                        .orderBy('completedAt', 'desc')
+                        .limit(50)
+                        .get();
+
+                    completedTasks = [];
+                    snapshot.forEach(doc => {
+                        completedTasks.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    // Also load any local completed tasks and merge
+                    const localCompleted = JSON.parse(localStorage.getItem('localCompletedTasks')) || [];
+                    completedTasks = [...localCompleted, ...completedTasks];
+
+                    return completedTasks;
+                } catch (error) {
+                    console.error('Error loading completed tasks:', error);
+                    // Fallback to localStorage
+                    completedTasks = JSON.parse(localStorage.getItem('localCompletedTasks')) || [];
+                    return completedTasks;
+                }
+            }
+
+            async function clearCompletedTasks() {
+                try {
+                    const db = firebase.firestore();
+                    const batch = db.batch();
+
+                    // Get all completed tasks
+                    const snapshot = await db.collection('completedTasks').get();
+                    snapshot.docs.forEach(doc => {
+                        batch.delete(doc.ref);
+                    });
+
+                    await batch.commit();
+                    completedTasks = [];
+                    localStorage.removeItem('localCompletedTasks');
+                    renderCompletedTasks();
+                } catch (error) {
+                    console.error('Error clearing completed tasks:', error);
+                    // Fallback: clear local storage
+                    localStorage.removeItem('localCompletedTasks');
+                    completedTasks = [];
+                    renderCompletedTasks();
+                }
+            }
+
+            async function dailyCleanup() {
+                const today = new Date().toDateString();
+                if (lastCleanupDate === today) return; // Already cleaned up today
+
+                try {
+                    const db = firebase.firestore();
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+
+                    // Delete tasks older than yesterday
+                    const snapshot = await db.collection('completedTasks')
+                        .where('completedAt', '<', yesterday.toISOString())
+                        .get();
+
+                    const batch = db.batch();
+                    snapshot.docs.forEach(doc => {
+                        batch.delete(doc.ref);
+                    });
+
+                    await batch.commit();
+                    console.log(`Cleaned up ${snapshot.docs.length} old completed tasks`);
+                } catch (error) {
+                    console.error('Error during daily cleanup:', error);
+                }
+
+                // Update last cleanup date
+                lastCleanupDate = today;
+                localStorage.setItem('lastCleanupDate', today);
+            }
+
+            function renderCompletedTasks() {
+                const container = document.getElementById('completed-tasks-list');
+                container.innerHTML = '';
+
+                if (completedTasks.length === 0) {
+                    container.innerHTML = `
+                        <div class="completed-task-item empty-state">
+                            <div class="empty-icon">🎯</div>
+                            <div class="empty-text">No completed tasks yet</div>
+                            <div class="empty-subtext">Pop some bubbles to see them here!</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                completedTasks.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.className = 'completed-task-item';
+
+                    // Check if completed recently (within last 5 seconds)
+                    const completedTime = new Date(task.completedAt);
+                    const now = new Date();
+                    const timeDiff = now - completedTime;
+                    if (timeDiff < 5000) {
+                        taskElement.classList.add('completed-recently');
+                    }
+
+                    const timeAgo = getTimeAgo(completedTime);
+
+                    taskElement.innerHTML = `
+                        <div class="completed-task-icon" style="background-color: ${task.color || '#4ECDC4'}">
+                            ✅
+                        </div>
+                        <div class="completed-task-content">
+                            <div class="completed-task-title">${task.title || 'Untitled Task'}</div>
+                            <div class="completed-task-meta">
+                                <span class="completed-task-size">${task.size || 'md'}</span>
+                                <span class="completed-task-priority">${task.priority || 'medium'}</span>
+                                <span class="completed-task-time">${timeAgo}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    container.appendChild(taskElement);
+                });
+            }
+
+            function getTimeAgo(date) {
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / (1000 * 60));
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+                if (diffMins < 1) return 'Just now';
+                if (diffMins < 60) return `${diffMins}m ago`;
+                if (diffHours < 24) return `${diffHours}h ago`;
+                return `${diffDays}d ago`;
+            }
+            let tabletTouchStartTime = 0;
+            let tabletLastTouchPosition = { x: 0, y: 0 };
+
+            // Enhanced double-tap detection for tablets
+            function handleTabletDoubleTap(bubble, e) {
+                const currentTime = Date.now();
+                const timeDiff = currentTime - tabletTouchStartTime;
+                const touch = e.touches[0];
+                const distance = Math.sqrt(
+                    Math.pow(touch.clientX - tabletLastTouchPosition.x, 2) +
+                    Math.pow(touch.clientY - tabletLastTouchPosition.y, 2)
+                );
+
+                // More lenient double-tap for tablets (slightly larger time window and distance tolerance)
+                if (timeDiff < 600 && distance < 30) {
+                    e.preventDefault();
+                    bubble.classList.add('double-click-feedback');
+                    popBubble(bubble.dataset.id);
+                    setTimeout(() => {
+                        bubble.classList.remove('double-click-feedback');
+                    }, 300);
+                    return true;
+                }
+
+                tabletTouchStartTime = currentTime;
+                tabletLastTouchPosition = { x: touch.clientX, y: touch.clientY };
+                return false;
+            }
+
+            // Debouncing and throttling utilities
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            function throttle(func, limit) {
+                let inThrottle;
+                return function () {
+                    const args = arguments;
+                    const context = this;
+                    if (!inThrottle) {
+                        func.apply(context, args);
+                        inThrottle = true;
+                        setTimeout(() => inThrottle = false, limit);
+                    }
+                };
+            }
+
+            // Pop (delete) a bubble
+            function popBubble(id) {
+                const bubble = document.querySelector(`.bubble[data-id="${id}"]`);
+                if (bubble) {
+                    // Get bubble position for particle effect
+                    const rect = bubble.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+
+                    // Play pop sound with error handling
+                    try {
+                        popSound.currentTime = 0; // Reset to beginning
+                        popSound.play().catch(error => {
+                            console.warn('Could not play pop sound:', error);
+                        });
+                    } catch (error) {
+                        console.warn('Pop sound error:', error);
+                    }
+
+                    // Create particle effect
+                    createParticleEffect(centerX, centerY);
+
+                    // Add completion animation
+                    bubble.classList.add('completing');
+
+                    // Save completed task before removing
+                    const completedTask = tasks.find(task => task.id === id);
+                    if (completedTask) {
+                        saveCompletedTask(completedTask).then(() => {
+                            console.log('Task saved to completed list');
+                        }).catch(error => {
+                            console.error('Failed to save completed task:', error);
+                        });
+                    }
+
+                    // Remove bubble and update storage after animation
+                    setTimeout(() => {
+                        tasks = tasks.filter(task => task.id !== id);
+                        saveTasks();
+                        // Use incremental update for better performance
+                        removeSingleBubble(id);
+                    }, 1000);
+                }
+            }
+
+            // Save tasks to local storage
+            function saveTasks() {
+                localStorage.setItem('bubbleTasks', JSON.stringify(tasks));
+                showAutoSaveIndicator();
+            }
+
+            // Show auto-save indicator
+            function showAutoSaveIndicator() {
+                const indicator = document.getElementById('auto-save-indicator');
+                indicator.style.display = 'flex';
+
+                // Reset animation by removing and re-adding the element
+                indicator.style.animation = 'none';
+                setTimeout(() => {
+                    indicator.style.animation = 'auto-save-fade-in 0.3s ease-out, auto-save-fade-out 0.3s ease-in 2s forwards';
+                }, 10);
+
+                // Hide after animation completes
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2500);
+            }
+
+            // Open modal
+            newTaskBtn.addEventListener('click', () => {
+                resetModal();
+                modal.classList.add('active');
+                setTimeout(() => {
+                    document.getElementById('task-title').focus();
+                }, 300);
+            });
+
+            // Close modal
+            cancelTaskBtn.addEventListener('click', () => {
+                resetModal();
+                modal.classList.remove('active');
+            });
+
+            // Handle size selection
+            sizeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Remove active class from all options
+                    sizeOptions.forEach(opt => opt.classList.remove('active'));
+
+                    // Add active class to selected option
+                    option.classList.add('active');
+                    selectedSize = option.dataset.size;
+                });
+            });
+
+            // Handle color selection
+            colorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Remove active class from all options
+                    colorOptions.forEach(opt => opt.classList.remove('active'));
+
+                    // Add active class to selected option
+                    option.classList.add('active');
+                    selectedColor = option.dataset.color;
+                });
+            });
+
+            // Handle priority selection
+            priorityOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Remove active class from all options
+                    priorityOptions.forEach(opt => opt.classList.remove('active'));
+
+                    // Add active class to selected option
+                    option.classList.add('active');
+                    selectedPriority = option.dataset.priority;
+                });
+            });
+
+            // Handle form submission
+            taskForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                // Get form values
+                const title = document.getElementById('task-title').value;
+                const description = document.getElementById('task-description').value;
+                const deadline = document.getElementById('task-deadline').value;
+
+                if (isEditMode) {
+                    // Update existing task
+                    const taskIndex = tasks.findIndex(task => task.id === editingBubbleId);
+                    if (taskIndex !== -1) {
+                        tasks[taskIndex] = {
+                            ...tasks[taskIndex],
+                            title,
+                            description,
+                            deadline,
+                            size: selectedSize,
+                            color: selectedColor,
+                            priority: selectedPriority
+                        };
+
+                        // Use incremental update for better performance
+                        updateSingleBubble(tasks[taskIndex]);
+                    }
+                } else {
+                    // Generate random position within the container
+                    const containerWidth = taskContainer.clientWidth;
+                    const containerHeight = taskContainer.clientHeight;
+                    const bubbleSize = sizeMappings[selectedSize];
+
+                    const posX = Math.floor(Math.random() * (containerWidth - bubbleSize));
+                    const posY = Math.floor(Math.random() * (containerHeight - bubbleSize));
+
+                    // Create new task
+                    const newTask = {
+                        id: Date.now().toString(),
+                        title,
+                        description,
+                        deadline,
+                        size: selectedSize,
+                        color: selectedColor,
+                        priority: selectedPriority,
+                        posX,
+                        posY,
+                        created: new Date().toISOString()
+                    };
+
+                    // Add to tasks array
+                    tasks.push(newTask);
+
+                    // Use incremental update for better performance
+                    addSingleBubble(newTask);
+                }
+
+                saveTasks();
+
+                // Reset modal and close it
+                resetModal();
+                modal.classList.remove('active');
+            });
+
+            // Debounced filter function
+            const debouncedRenderTasks = debounce(renderTasks, 100);
+
+            // Handle filter buttons
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => b.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+
+                    // Use debounced render for better performance
+                    debouncedRenderTasks();
+                });
+            });
+
+            // Toggle theme
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                themeToggle.innerHTML = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+
+                // Save theme preference
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            });
+
+            // Initialize theme from saved preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '☀️';
+            }
+
+            // Throttled resize handler
+            const throttledResize = throttle(() => {
+                // Re-render tasks on resize to maintain proper positioning
+                renderTasks();
+            }, 250);
+
+            window.addEventListener('resize', throttledResize);
+
+            // Completed Tasks Event Listeners
+            completedTasksBtn.addEventListener('click', async () => {
+                await loadCompletedTasks();
+                renderCompletedTasks();
+                completedModal.classList.add('active');
+            });
+
+            closeCompletedBtn.addEventListener('click', () => {
+                completedModal.classList.remove('active');
+            });
+
+            clearCompletedBtn.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to clear all completed tasks?')) {
+                    await clearCompletedTasks();
+                }
+            });
+
+            // Close completed modal when clicking outside
+            completedModal.addEventListener('click', (e) => {
+                if (e.target === completedModal) {
+                    completedModal.classList.remove('active');
+                }
+            });
+
+            // Daily cleanup on app load
+            dailyCleanup();
+
+            // Initial render
+            renderTasks();
+        });
+    </script>
+
+
+</body>
+
+</html>

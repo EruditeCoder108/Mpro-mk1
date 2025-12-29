@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Weekly Study Progress</title>
+
+<!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/icons/icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/progress.css">
+    <link rel="stylesheet" href="css/cursor.css">
+    <link rel="stylesheet" href="css/toast-notifications.css">
+
+    
+    <!-- reCAPTCHA v3 API -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdPJscrAAAAANzUWzwN62XbCsWP68ymVwB99-Li" defer></script>
+
+    <!-- FIREBASE INTEGRATION: Firebase SDK scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-init.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/firebase-utils.js"></script>
+    <script src="js/toast-notifications.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="weekly-progress-page">
+    
+    <div class="timer-container">
+        <div class="header-controls">
+            <h1>Weekly Study Progress</h1>
+        </div>
+
+        <div class="content-area weekly-content">
+            <div class="chart-container" style="max-width: 900px; margin: 0 auto;">
+                <canvas id="weeklyChart"></canvas>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stats-box weekly-stats-box">
+                    <div class="stats-container">
+                <div class="weekly-stats-grid">
+                    <div class="stat-item">
+                        <p>This Week:</p>
+                        <span id="current-week-total">0.0h</span>
+                    </div>
+                    <div class="stat-item">
+                        <p>Last Week:</p>
+                        <span id="last-week-total">0.0h</span>
+                    </div>
+                    <div class="stat-item">
+                        <p>2 Weeks Ago:</p>
+                        <span id="two-weeks-total">0.0h</span>
+                    </div>
+                    <div class="stat-item">
+                        <p>3 Weeks Ago:</p>
+                        <span id="three-weeks-total">0.0h</span>
+                    </div>
+                    <div class="stat-item" id="weekly-comparison-container">
+                        <p>Week Change:</p>
+                        <div id="weekly-comparison" class="weekly-comparison-box">
+                            <span id="comparison-text">--%</span>
+                        </div>
+                    </div>
+                    <div class="stat-item target-item">
+                        <p>Target: <span id="weekly-target-display" class="clickable">42h</span></p>
+                        <div class="weekly-progress-container">
+                            <div class="weekly-progress-bar" id="weekly-progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Target Setting Modal -->
+    <div id="target-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Set Weekly Target</h3>
+            <div class="target-input-container">
+                <input type="number" id="target-hours-input" min="1" max="168" step="1" placeholder="Enter hours (1-168)">
+                <button id="save-target-btn" class="progress-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compact About Modal -->
+    <div id="about-modal" class="compact-modal">
+        <div class="compact-modal-content">
+            <div class="compact-modal-header">
+                <h2>📚 Productivity Toolkit</h2>
+                <button class="compact-close-btn">&times;</button>
+            </div>
+            
+            <div class="compact-modal-body">
+                <div class="about-section">
+                    <h3>🚀 About</h3>
+                    <p>Developed by <strong>Sambhav Jain</strong> to help students and individuals achieve their productivity goals through timers, study tracking, and customizable features.</p>
+                </div>
+                
+                <div class="about-section">
+                    <h3>📧 Contact</h3>
+                    <p><a href="mailto:Eruditespartan@gmail.com">Eruditespartan@gmail.com</a></p>
+                </div>
+                
+                <div class="about-section">
+                    <h3>⚖️ License</h3>
+                    <p>Owned and maintained by <strong>Sambhav Jain</strong>. All rights reserved.</p>
+                </div>
+                
+                <div class="about-section">
+                    <h3>🙏 Credits</h3>
+                    <p>Thanks to <strong>Pexels</strong> and <strong>Pixabay</strong> for background images and audio files.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const ctx = document.getElementById('weeklyChart').getContext('2d');
+        const weeklyComparisonDiv = document.getElementById('weekly-comparison');
+        const currentWeekTotalElement = document.getElementById('current-week-total');
+        const lastWeekTotalElement = document.getElementById('last-week-total');
+        const twoWeeksTotalElement = document.getElementById('two-weeks-total');
+        const threeWeeksTotalElement = document.getElementById('three-weeks-total');
+        const weeklyProgressBar = document.getElementById('weekly-progress-bar');
+        const weeklyTargetDisplay = document.getElementById('weekly-target-display');
+        const targetModal = document.getElementById('target-modal');
+        const closeModal = document.querySelector('.close-modal');
+        const targetHoursInput = document.getElementById('target-hours-input');
+        const saveTargetBtn = document.getElementById('save-target-btn');
+        
+        // Constants
+        const STORAGE_KEYS = {
+            TIMER_DATA: 'studyTime',
+            WEEKLY_DATA: 'weeklyStudyData',
+            WEEKLY_TARGET: 'weeklyTarget',
+            ZOOM_LEVEL: 'weeklyProgressZoomLevel'
+        };
+
+        // Default weekly target (6 hours per day * 7 days)
+        const DEFAULT_WEEKLY_TARGET = 42;
+        let WEEKLY_TARGET = DEFAULT_WEEKLY_TARGET;
+
+        // Load saved weekly target from Firebase with localStorage fallback
+        async function loadWeeklyTarget() {
+            // Try Firebase first if available
+            if (window.firebaseDataManager && firebaseDataManager.user) {
+                try {
+                    const savedTarget = await firebaseDataManager.loadUserPreference('weeklyTarget', DEFAULT_WEEKLY_TARGET);
+                    WEEKLY_TARGET = parseInt(savedTarget, 10);
+                    weeklyTargetDisplay.textContent = WEEKLY_TARGET + 'h';
+                    console.log('Weekly target loaded from Firebase:', WEEKLY_TARGET);
+                    return;
+                } catch (error) {
+                    console.warn('Failed to load weekly target from Firebase, falling back to localStorage:', error);
+                }
+            }
+            
+            // Fallback to localStorage
+            const savedTarget = localStorage.getItem(STORAGE_KEYS.WEEKLY_TARGET);
+            if (savedTarget !== null) {
+                WEEKLY_TARGET = parseInt(savedTarget, 10);
+                weeklyTargetDisplay.textContent = WEEKLY_TARGET + 'h';
+                console.log('Weekly target loaded from localStorage:', WEEKLY_TARGET);
+            }
+        }
+
+        // Save weekly target to Firebase with localStorage fallback
+        async function saveWeeklyTarget(hours) {
+            if (hours >= 1 && hours <= 168) { // Max hours in a week
+                WEEKLY_TARGET = hours;
+                weeklyTargetDisplay.textContent = hours + 'h';
+                
+                // Try Firebase first if available
+                if (window.firebaseDataManager && firebaseDataManager.user) {
+                    try {
+                        await firebaseDataManager.saveUserPreference('weeklyTarget', hours);
+                        console.log('Weekly target saved to Firebase:', hours);
+                        return true;
+                    } catch (error) {
+                        console.warn('Failed to save weekly target to Firebase, falling back to localStorage:', error);
+                    }
+                }
+                
+                // Fallback to localStorage
+                localStorage.setItem(STORAGE_KEYS.WEEKLY_TARGET, hours.toString());
+                console.log('Weekly target saved to localStorage:', hours);
+                
+                return true;
+            }
+            return false;
+        }
+
+        // Chart reference
+        let weeklyChart;
+        let weeklyTargetListener = null;
+        
+        // DOM elements
+        const weeklyComparison = document.getElementById('weekly-comparison');
+        const comparisonText = document.getElementById('comparison-text');
+        
+
+        
+        /**
+         * Get current date in YYYY-MM-DD format
+         */
+        function getFormattedDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        /**
+         * Get ISO week number of year
+         * @param {Date} date - Date to get week number for
+         * @returns {number} Week number (1-53)
+         */
+        function getWeekNumber(date) {
+            const target = new Date(date.valueOf());
+            const dayNumber = (date.getDay() + 6) % 7;
+            target.setDate(target.getDate() - dayNumber + 3);
+            const firstThursday = target.valueOf();
+            target.setMonth(0, 1);
+            if (target.getDay() !== 4) {
+                target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+            }
+            return 1 + Math.ceil((firstThursday - target) / 604800000);
+        }
+
+        /**
+         * Get first day of the week based on ISO standard (Monday)
+         */
+        function getFirstDayOfWeek(date) {
+            const newDate = new Date(date); // Create a copy to avoid modifying original
+            const day = newDate.getDay(); // 0 is Sunday in JS
+            const diff = newDate.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
+            newDate.setDate(diff);
+            return newDate;
+        }
+
+        /**
+         * Format a date as YYYY-MM-DD
+         */
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        /**
+         * Format week label with date range
+         */
+        function formatWeekLabel(startDate) {
+            // Convert string to date if needed
+            let start = typeof startDate === 'string' ? new Date(startDate) : new Date(startDate);
+            
+            // Calculate end date (Saturday)
+            let end = new Date(start);
+            end.setDate(start.getDate() + 6);
+            
+            // Format dates as MMM D
+            const options = { month: 'short', day: 'numeric' };
+            return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
+        }
+
+        /**
+         * Generate weekly data from daily study records
+         */
+        /**
+         * Loads the last 4 weeks of study data from Firebase with localStorage fallback and renders the chart.
+         */
+        async function loadWeeklyDataAndRenderChart() {
+            try {
+                // Load study data from Firebase with localStorage fallback
+                let studyData = {};
+                
+                // Try Firebase first if available
+                if (window.firebaseDataManager && firebaseDataManager.user) {
+                    try {
+                        studyData = await firebaseDataManager.loadStudyData();
+                        console.log('Study data loaded from Firebase:', Object.keys(studyData).length, 'entries');
+                    } catch (error) {
+                        console.warn('Failed to load study data from Firebase, falling back to localStorage:', error);
+                        // Fallback to localStorage
+                        const existingData = localStorage.getItem('studyTime');
+                        studyData = existingData ? JSON.parse(existingData) : {};
+                    }
+                } else {
+                    // Load from localStorage if Firebase not available
+                    console.log('Firebase not available, loading from localStorage');
+                    const existingData = localStorage.getItem('studyTime');
+                    studyData = existingData ? JSON.parse(existingData) : {};
+                }
+
+                // 1. Get the start dates for the last 4 weeks (including this week)
+                const weekStartDates = [];
+                const today = new Date();
+                for (let i = 3; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - (i * 7));
+                    const firstDay = getFirstDayOfWeek(date);
+                    weekStartDates.push(firstDay);
+                }
+                console.log('Week start dates:', weekStartDates.map(d => formatDate(d)));
+
+                // 2. Process the study data into weekly totals
+                const weeklyTotals = [0, 0, 0, 0];
+                
+                for (let weekIndex = 0; weekIndex < weekStartDates.length; weekIndex++) {
+                    const startDate = weekStartDates[weekIndex];
+                    const weekStartStr = formatDate(startDate);
+                    
+                    // Check if we have a weekly aggregate for this week
+                    const weeklyKey = `week_${weekStartStr}`;
+                    if (studyData[weeklyKey]) {
+                        let weeklyHours = 0;
+                        // Handle new format (object with totalHours)
+                        if (typeof studyData[weeklyKey] === 'object' && studyData[weeklyKey].totalHours) {
+                            weeklyHours = studyData[weeklyKey].totalHours;
+                        }
+                        // Handle old format (direct number)
+                        else if (typeof studyData[weeklyKey] === 'number') {
+                            weeklyHours = studyData[weeklyKey];
+                        }
+                        // Handle legacy object format
+                        else if (typeof studyData[weeklyKey] === 'object' && studyData[weeklyKey].hours) {
+                            weeklyHours = studyData[weeklyKey].hours;
+                        }
+
+                        weeklyTotals[weekIndex] = parseFloat(weeklyHours) || 0;
+                        console.log(`Found weekly aggregate for week ${weekIndex + 1}: ${weeklyTotals[weekIndex]} hours`);
+                    } else {
+                        // Fallback: calculate from daily data (for current week or if weekly aggregate doesn't exist)
+                        for (let i = 0; i < 7; i++) {
+                            const day = new Date(startDate);
+                            day.setDate(day.getDate() + i);
+                            const dateStr = formatDate(day);
+                            
+                            // Get data for this specific date
+                            const dayData = studyData[dateStr];
+                            if (dayData) {
+                                let hours = 0;
+                                // Handle new format (object with totalHours)
+                                if (typeof dayData === 'object' && dayData.totalHours) {
+                                    hours = dayData.totalHours;
+                                }
+                                // Handle old format (direct number)
+                                else if (typeof dayData === 'number') {
+                                    hours = dayData;
+                                }
+                                // Handle legacy object format (with hours property)
+                                else if (typeof dayData === 'object' && dayData.hours) {
+                                    hours = dayData.hours;
+                                }
+
+                                weeklyTotals[weekIndex] += parseFloat(hours) || 0;
+                                console.log(`Found daily data for ${dateStr}: ${hours} hours, week ${weekIndex + 1}`);
+                            }
+                        }
+                    }
+                }
+
+                const totals = weeklyTotals.map(total => parseFloat(total.toFixed(1)));
+                console.log('Weekly totals:', totals);
+
+                // Format week labels for the chart
+                const weekLabels = weekStartDates.map((date, i) => {
+                    return `Week ${i + 1}\n${formatWeekLabel(date)}`;
+                });
+
+                // Update the stats display on the page
+                currentWeekTotalElement.textContent = totals[3].toFixed(1) + 'h';
+                lastWeekTotalElement.textContent = totals[2].toFixed(1) + 'h';
+                twoWeeksTotalElement.textContent = totals[1].toFixed(1) + 'h';
+                threeWeeksTotalElement.textContent = totals[0].toFixed(1) + 'h';
+                
+                // Update the weekly progress bar based on the current week's total
+                updateWeeklyProgressBar(totals[3]);
+                
+                // Render the weekly chart with the loaded data
+                renderWeeklyChart(weekLabels, totals);
+                
+                // Update the comparison box (e.g., "+15% from last week")
+                await updateWeeklyComparison();
+
+            } catch (error) {
+                console.error('Error loading weekly data:', error);
+            }
+        }
+
+        /**
+         * Get task information for a specific date
+         * @param {string} dateStr - Date in YYYY-MM-DD format
+         * @returns {Array} Array of study sessions with task info for that date
+         */
+        function getTaskInfoForDate(dateStr) {
+            try {
+                let studyData = {};
+
+                // Try Firebase first if available
+                if (window.firebaseDataManager && firebaseDataManager.user) {
+                    try {
+                        studyData = firebaseDataManager.loadStudyData();
+                    } catch (error) {
+                        const existingData = localStorage.getItem('studyTime');
+                        studyData = existingData ? JSON.parse(existingData) : {};
+                    }
+                } else {
+                    const existingData = localStorage.getItem('studyTime');
+                    studyData = existingData ? JSON.parse(existingData) : {};
+                }
+
+                const dayData = studyData[dateStr];
+                if (dayData && typeof dayData === 'object' && dayData.sessions) {
+                    return dayData.sessions;
+                }
+
+                // If no sessions data, return empty array (no task info available)
+                return [];
+            } catch (error) {
+                console.warn('Error getting task info for date:', error);
+                return [];
+            }
+        }
+
+        /**
+         * Get task information for a specific week
+         * @param {string} weekStartStr - Week start date in YYYY-MM-DD format
+         * @returns {Array} Array of all study sessions with task info for that week
+         */
+        function getTaskInfoForWeek(weekStartStr) {
+            try {
+                let studyData = {};
+
+                // Try Firebase first if available
+                if (window.firebaseDataManager && firebaseDataManager.user) {
+                    try {
+                        studyData = firebaseDataManager.loadStudyData();
+                    } catch (error) {
+                        const existingData = localStorage.getItem('studyTime');
+                        studyData = existingData ? JSON.parse(existingData) : {};
+                    }
+                } else {
+                    const existingData = localStorage.getItem('studyTime');
+                    studyData = existingData ? JSON.parse(existingData) : {};
+                }
+
+                const allSessions = [];
+
+                // Collect sessions from all days in the week
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(weekStartStr);
+                    date.setDate(date.getDate() + i);
+                    const dateStr = formatDate(date);
+
+                    const dayData = studyData[dateStr];
+                    if (dayData && typeof dayData === 'object' && dayData.sessions) {
+                        allSessions.push(...dayData.sessions);
+                    }
+                }
+
+                return allSessions;
+            } catch (error) {
+                console.warn('Error getting task info for week:', error);
+                return [];
+            }
+        }
+
+        /**
+         * Update weekly progress bar
+         */
+        function updateWeeklyProgressBar(totalHours) {
+            const progressPercent = Math.min(100, (totalHours / WEEKLY_TARGET) * 100);
+            weeklyProgressBar.style.width = `${progressPercent}%`;
+            
+            // Change color based on progress
+            if (progressPercent >= 80) {
+                weeklyProgressBar.className = 'weekly-progress-bar high';
+            } else if (progressPercent >= 50) {
+                weeklyProgressBar.className = 'weekly-progress-bar medium';
+            } else {
+                weeklyProgressBar.className = 'weekly-progress-bar low';
+            }
+        }
+
+        /**
+         * Render weekly chart
+         */
+        function renderWeeklyChart(labels, weeklyTotals) {
+            // Destroy existing chart if it exists
+            if (weeklyChart) {
+                weeklyChart.destroy();
+            }
+            
+            const ctx = document.getElementById('weeklyChart').getContext('2d');
+            
+            // Create gradient for non-zero bars
+            const createBarGradient = (ctx) => {
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(0, 184, 255, 0.9)');
+                gradient.addColorStop(0.7, 'rgba(0, 120, 212, 0.8)');
+                gradient.addColorStop(1, 'rgba(0, 80, 180, 0.7)');
+                return gradient;
+            };
+            
+            // Create a single gradient for the chart context
+            const barGradient = createBarGradient(ctx);
+            
+            // Calculate appropriate y-axis max based on data
+            const maxHours = Math.max(...weeklyTotals);
+            const suggestedMax = maxHours > 35 ? (Math.ceil(maxHours / 5) * 5) : 35;
+            
+            // Font family for better typography
+            const fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif";
+            
+            // Create new chart with enhanced options
+            weeklyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Hours',
+                        data: weeklyTotals,
+                        backgroundColor: (context) => {
+                            const value = context.raw;
+                            if (value === 0) {
+                                return 'rgba(120, 120, 120, 0.3)'; // Grey for 0 hours
+                            }
+                            return barGradient;
+                        },
+                        borderColor: (context) => {
+                            const value = context.raw;
+                            return value === 0 ? 'rgba(200, 200, 200, 0.1)' : 'rgba(255, 255, 255, 0.2)';
+                        },
+                        borderWidth: 0,
+                        borderRadius: 6,
+                        barThickness: 'flex',
+                        maxBarThickness: 60,
+                        minBarLength: 0,
+                        hoverBackgroundColor: (context) => {
+                            const value = context.raw;
+                            return value === 0 ? 'rgba(150, 150, 150, 0.5)' : 'rgba(0, 200, 255, 0.9)';
+                        },
+                        hoverBorderWidth: 0,
+                        hoverBorderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: window.devicePixelRatio * 2,
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    },
+                    layout: {
+                        padding: {
+                            top: 20,
+                            right: 20,
+                            bottom: 20,
+                            left: 20
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: suggestedMax,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: true,
+                                borderColor: 'rgba(255, 255, 255, 0.2)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.9)',
+                                font: {
+                                    family: fontFamily,
+                                    size: 12,
+                                    weight: 500
+                                },
+                                padding: 8,
+                                callback: function(value) {
+                                    return value + 'h';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: true
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.9)',
+                                font: {
+                                    family: fontFamily,
+                                    size: 12,
+                                    weight: 500
+                                },
+                                padding: 8
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(10, 15, 25, 0.95)',
+                            titleFont: {
+                                family: fontFamily,
+                                size: 13,
+                                weight: '600',
+                                lineHeight: 1.3
+                            },
+                            bodyFont: {
+                                family: fontFamily,
+                                size: 14,
+                                weight: '400',
+                                lineHeight: 1.4
+                            },
+                            padding: '10px 14px',
+                            cornerRadius: 8,
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
+                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
+                            displayColors: false,
+                            animation: {
+                                duration: 200
+                            },
+                            intersect: false,
+                            position: 'nearest',
+                            caretSize: 6,
+                            caretPadding: 6,
+                            external: function(context) {
+                                let timeout;
+                                
+                                const tooltipEl = document.getElementById('chartjs-tooltip');
+                                
+                                if (tooltipEl) {
+                                    tooltipEl.classList.add('custom-tooltip');
+                                }
+                                
+                                if (context.tooltip.opacity === 0) {
+                                    clearTimeout(timeout);
+                                    return;
+                                }
+                                
+                                clearTimeout(timeout);
+                                timeout = setTimeout(() => {
+                                    const opacity = 1;
+                                    const tooltipEl = document.getElementById('chartjs-tooltip');
+                                    if (tooltipEl) {
+                                        tooltipEl.style.opacity = opacity;
+                                    }
+                                }, 200);
+                            },
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    return ` ${context.parsed.y.toFixed(1)} hours`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Calculate and update the weekly comparison display
+         * Compares total weekly hours (this week vs last week total)
+         */
+        async function updateWeeklyComparison() {
+            try {
+                // Load study data from Firebase with localStorage fallback
+                let studyData = {};
+                
+                // Try Firebase first if available
+                if (window.firebaseDataManager && firebaseDataManager.user) {
+                    try {
+                        studyData = await firebaseDataManager.loadStudyData();
+                    } catch (error) {
+                        console.warn('Failed to load study data from Firebase for comparison, falling back to localStorage:', error);
+                        // Fallback to localStorage
+                        const existingData = localStorage.getItem('studyTime');
+                        studyData = existingData ? JSON.parse(existingData) : {};
+                    }
+                } else {
+                    // Load from localStorage if Firebase not available
+                    const existingData = localStorage.getItem('studyTime');
+                    studyData = existingData ? JSON.parse(existingData) : {};
+                }
+                
+                // Get current week's total (all 7 days)
+                const currentWeekStart = getFirstDayOfWeek(new Date());
+                const currentWeekStartStr = formatDate(currentWeekStart);
+                let currentWeekTotal = 0;
+                
+                // Check if we have a weekly aggregate for current week
+                const currentWeeklyKey = `week_${currentWeekStartStr}`;
+                if (studyData[currentWeeklyKey]) {
+                    let weeklyHours = 0;
+                    // Handle new format (object with totalHours)
+                    if (typeof studyData[currentWeeklyKey] === 'object' && studyData[currentWeeklyKey].totalHours) {
+                        weeklyHours = studyData[currentWeeklyKey].totalHours;
+                    }
+                    // Handle old format (direct number)
+                    else if (typeof studyData[currentWeeklyKey] === 'number') {
+                        weeklyHours = studyData[currentWeeklyKey];
+                    }
+                    // Handle legacy object format
+                    else if (typeof studyData[currentWeeklyKey] === 'object' && studyData[currentWeeklyKey].hours) {
+                        weeklyHours = studyData[currentWeeklyKey].hours;
+                    }
+                    currentWeekTotal = parseFloat(weeklyHours) || 0;
+                } else {
+                    // Fallback: calculate from daily data
+                    for (let i = 0; i < 7; i++) {
+                        const date = new Date(currentWeekStart);
+                        date.setDate(currentWeekStart.getDate() + i);
+                        const dateStr = formatDate(date);
+                        const dayData = studyData[dateStr];
+                        if (dayData) {
+                            let hours = 0;
+                            // Handle new format (object with totalHours)
+                            if (typeof dayData === 'object' && dayData.totalHours) {
+                                hours = dayData.totalHours;
+                            }
+                            // Handle old format (direct number)
+                            else if (typeof dayData === 'number') {
+                                hours = dayData;
+                            }
+                            // Handle legacy object format (with hours property)
+                            else if (typeof dayData === 'object' && dayData.hours) {
+                                hours = dayData.hours;
+                            }
+                            currentWeekTotal += parseFloat(hours) || 0;
+                        }
+                    }
+                }
+                
+                // Get last week's total (all 7 days)
+                const lastWeekStart = new Date(currentWeekStart);
+                lastWeekStart.setDate(currentWeekStart.getDate() - 7);
+                const lastWeekStartStr = formatDate(lastWeekStart);
+                let lastWeekTotal = 0;
+                
+                // Check if we have a weekly aggregate for last week
+                const lastWeeklyKey = `week_${lastWeekStartStr}`;
+                if (studyData[lastWeeklyKey]) {
+                    let weeklyHours = 0;
+                    // Handle new format (object with totalHours)
+                    if (typeof studyData[lastWeeklyKey] === 'object' && studyData[lastWeeklyKey].totalHours) {
+                        weeklyHours = studyData[lastWeeklyKey].totalHours;
+                    }
+                    // Handle old format (direct number)
+                    else if (typeof studyData[lastWeeklyKey] === 'number') {
+                        weeklyHours = studyData[lastWeeklyKey];
+                    }
+                    // Handle legacy object format
+                    else if (typeof studyData[lastWeeklyKey] === 'object' && studyData[lastWeeklyKey].hours) {
+                        weeklyHours = studyData[lastWeeklyKey].hours;
+                    }
+                    lastWeekTotal = parseFloat(weeklyHours) || 0;
+                } else {
+                    // Fallback: calculate from daily data
+                    for (let i = 0; i < 7; i++) {
+                        const date = new Date(lastWeekStart);
+                        date.setDate(lastWeekStart.getDate() + i);
+                        const dateStr = formatDate(date);
+                        const dayData = studyData[dateStr];
+                        if (dayData) {
+                            let hours = 0;
+                            // Handle new format (object with totalHours)
+                            if (typeof dayData === 'object' && dayData.totalHours) {
+                                hours = dayData.totalHours;
+                            }
+                            // Handle old format (direct number)
+                            else if (typeof dayData === 'number') {
+                                hours = dayData;
+                            }
+                            // Handle legacy object format (with hours property)
+                            else if (typeof dayData === 'object' && dayData.hours) {
+                                hours = dayData.hours;
+                            }
+                            lastWeekTotal += parseFloat(hours) || 0;
+                        }
+                    }
+                }
+                
+                console.log(`Comparing total weeks: This week ${currentWeekTotal.toFixed(1)}h vs Last week ${lastWeekTotal.toFixed(1)}h`);
+                
+                let percentageChange = 0;
+                
+                if (lastWeekTotal > 0) {
+                    percentageChange = ((currentWeekTotal - lastWeekTotal) / lastWeekTotal) * 100;
+                } else if (currentWeekTotal > 0) {
+                    percentageChange = 100; // If no previous week data but have current week
+                }
+                
+                // Update the comparison box
+                const roundedChange = Math.round(percentageChange * 10) / 10; // Round to 1 decimal place
+                
+                // Add + sign for positive changes, - is already included for negative
+                const displayChange = percentageChange >= 0 
+                    ? `+${roundedChange}%` 
+                    : `${roundedChange}%`;
+                    
+                comparisonText.textContent = displayChange;
+                
+                // Update styling based on change
+                weeklyComparison.className = 'weekly-comparison-box';
+                if (percentageChange > 0) {
+                    weeklyComparison.classList.add('positive');
+                    weeklyComparison.title = `${roundedChange}% more than last week total`;
+                } else if (percentageChange < 0) {
+                    weeklyComparison.classList.add('negative');
+                    weeklyComparison.title = `${Math.abs(roundedChange)}% less than last week total`;
+                } else {
+                    weeklyComparison.title = 'No change from last week total';
+                }
+                
+            } catch (error) {
+                console.error('Error updating weekly comparison:', error);
+                comparisonText.textContent = '--%';
+                weeklyComparison.title = 'Error calculating weekly comparison';
+            }
+        }
+
+        // Event listeners for taskbar buttons - will be added after DOM is ready
+        function addTaskbarEventListeners() {
+            const homeBtn = document.getElementById('home-btn');
+            const flashcardsBtn = document.getElementById('flashcards-btn');
+            const timerBtn = document.getElementById('timer-btn');
+            const progressBtn = document.getElementById('progress-btn');
+            const aboutBtn = document.getElementById('about-btn');
+            
+            if (homeBtn) {
+                homeBtn.addEventListener('click', () => {
+                    window.location.href = 'checklist.html';
+                });
+            }
+            
+            if (flashcardsBtn) {
+                flashcardsBtn.addEventListener('click', () => {
+                    window.location.href = 'flashcards.html';
+                });
+            }
+            
+            if (timerBtn) {
+                timerBtn.addEventListener('click', () => {
+                    window.location.href = 'index.html';
+                });
+            }
+            
+            if (progressBtn) {
+                progressBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.body.classList.add('page-leave');
+                    setTimeout(() => {
+                        window.location.href = 'progress.html';
+                    }, 250); // Match this with the CSS animation duration
+                });
+            }
+            
+            if (aboutBtn) {
+                aboutBtn.addEventListener('click', () => {
+                    const aboutModal = document.getElementById('about-modal');
+                    if (aboutModal) {
+                        aboutModal.style.display = 'block';
+                    }
+                });
+            }
+        }
+
+        // Target setting modal functionality
+        weeklyTargetDisplay.addEventListener('click', () => {
+            targetHoursInput.value = WEEKLY_TARGET;
+            targetModal.style.display = 'flex';
+            targetHoursInput.focus();
+        });
+
+        saveTargetBtn.addEventListener('click', async () => {
+            const newTarget = parseInt(targetHoursInput.value, 10);
+            if (await saveWeeklyTarget(newTarget)) {
+                targetModal.style.display = 'none';
+                // Update progress bar with current week's data
+                const currentWeekTotal = parseFloat(currentWeekTotalElement.textContent.replace('h', ''));
+                updateWeeklyProgressBar(currentWeekTotal);
+            } else {
+                toast.warning('Please enter a valid number between 1 and 168.');
+            }
+        });
+
+        // Also allow pressing Enter to save
+        targetHoursInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                saveTargetBtn.click();
+            }
+        });
+
+        // Close modal if clicked outside or on the close button
+        closeModal.addEventListener('click', () => {
+            targetModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === targetModal) {
+                targetModal.style.display = 'none';
+            }
+        });
+
+        // Auto-hide functionality removed - taskbar stays visible
+
+        // About modal functionality
+        function initializeAboutModal() {
+            const aboutModal = document.getElementById('about-modal');
+            const closeBtn = aboutModal?.querySelector('.compact-close-btn');
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    aboutModal.style.display = 'none';
+                });
+            }
+
+            // Close modal when clicking outside of it
+            window.addEventListener('click', (event) => {
+                if (event.target === aboutModal) {
+                    aboutModal.style.display = 'none';
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && aboutModal?.style.display === 'block') {
+                    aboutModal.style.display = 'none';
+                }
+            });
+        }
+
+        // Full screen functionality
+        function addFullscreenListeners() {
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const fullscreenIcon = fullscreenBtn?.querySelector('svg');
+            const tooltip = fullscreenBtn?.querySelector('.btn-tooltip');
+            
+            if (fullscreenBtn && fullscreenIcon && tooltip) {
+                fullscreenBtn.addEventListener('click', toggleFullscreen);
+                
+                // Update button state when fullscreen changes
+                document.addEventListener('fullscreenchange', updateFullscreenButton);
+                document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+                document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+                document.addEventListener('MSFullscreenChange', updateFullscreenButton);
+                
+                // Initial state
+                updateFullscreenButton();
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement && 
+                !document.webkitFullscreenElement && 
+                !document.mozFullScreenElement && 
+                !document.msFullscreenElement) {
+                // Enter fullscreen
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        function updateFullscreenButton() {
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const fullscreenIcon = fullscreenBtn?.querySelector('svg');
+            const tooltip = fullscreenBtn?.querySelector('.btn-tooltip');
+            
+            if (!fullscreenBtn || !fullscreenIcon || !tooltip) return;
+            
+            const isFullscreen = !!(document.fullscreenElement || 
+                                   document.webkitFullscreenElement || 
+                                   document.mozFullScreenElement || 
+                                   document.msFullscreenElement);
+            
+            if (isFullscreen) {
+                // Show exit fullscreen icon
+                fullscreenIcon.innerHTML = `
+                    <defs>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+
+                    <!-- Background circle -->
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="magenta" stroke-width="2" filter="url(#glow)" />
+
+                    <!-- Inward arrows (collapse fullscreen) -->
+                    <path d="M20 30 L35 30 L35 20" stroke="magenta" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M80 30 L65 30 L65 20" stroke="magenta" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M20 70 L35 70 L35 80" stroke="magenta" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M80 70 L65 70 L65 80" stroke="magenta" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                `;
+                tooltip.textContent = 'Exit Full Screen';
+            } else {
+                // Show enter fullscreen icon
+                fullscreenIcon.innerHTML = `
+                    <defs>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Background circle -->
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="cyan" stroke-width="2" filter="url(#glow)" />
+
+                    <!-- Fullscreen corners -->
+                    <path d="M20 35 V20 H35" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M80 35 V20 H65" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M20 65 V80 H35" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                    <path d="M80 65 V80 H65" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                `;
+                tooltip.textContent = 'Full Screen';
+            }
+        }
+
+        // Load data when page loads and auth is ready
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize Firebase Data Manager
+            if (typeof FirebaseDataManager !== 'undefined') {
+                window.firebaseDataManager = new FirebaseDataManager();
+                console.log('Firebase Data Manager initialized for weekly progress page');
+                
+                // Listen for auth state changes to refresh data
+                if (typeof auth !== 'undefined') {
+                    auth.onAuthStateChanged(async (user) => {
+                        console.log('Auth state changed in weekly progress page, refreshing data...');
+                        await loadWeeklyTarget();
+                        await loadWeeklyDataAndRenderChart();
+                    });
+                }
+            }
+            
+            // Add taskbar event listeners
+            addTaskbarEventListeners();
+            initializeAboutModal();
+            addFullscreenListeners();
+            
+            // Load data from Firebase with localStorage fallback
+            await loadWeeklyTarget();
+            await loadWeeklyDataAndRenderChart();
+        });
+    </script>
+    <!-- Custom Cursor Elements -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
+    <!-- Modern Taskbar Control Box -->
+    <div class="control-box-taskbar">
+        <button id="home-btn" class="btn-icon">
+            <div class="btn-tooltip">Home</div>
+            <svg class="control-icon" width="50" height="50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 36px; height: 36px;">
+                <defs>
+                    <!-- Cyan glow -->
+                    <filter id="cyanGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+
+                    <!-- Orange glow -->
+                    <filter id="orangeGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Roof -->
+                <path d="M30 100 L100 45 L170 100 Z"
+                        fill="#00e5ff" stroke="#00e5ff" stroke-width="4" stroke-linejoin="round"
+                        filter="url(#cyanGlow)"/>
+
+                <!-- Chimney -->
+                <rect x="120" y="55" width="20" height="30" rx="5" ry="5"
+                        fill="#00e5ff" filter="url(#cyanGlow)"/>
+
+                <!-- House body -->
+                <rect x="50" y="100" width="100" height="70" rx="12" ry="12"
+                        fill="#00e5ff" filter="url(#cyanGlow)"/>
+
+                <!-- Central window -->
+                <rect x="85" y="120" width="30" height="30" rx="7" ry="7"
+                        fill="black" stroke="#00e5ff" stroke-width="2" filter="url(#cyanGlow)"/>
+                <line x1="100" y1="120" x2="100" y2="150" stroke="#00e5ff" stroke-width="2"/>
+                <line x1="85" y1="135" x2="115" y2="135" stroke="#00e5ff" stroke-width="2"/>
+
+                <!-- Smooth orange checkmark (shifted lower) -->
+                <path d="M70 85 L90 105 L135 65"
+                        fill="none" stroke="#ff7b00" stroke-width="9"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        filter="url(#orangeGlow)"/>
+            </svg>
+        </button>
+        
+        <button id="flashcards-btn" class="btn-icon">
+            <div class="btn-tooltip">Flashcards</div>
+            <svg class="control-icon" width="36" height="36" viewBox="10 -10 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 36px; height: 36px;">
+                <defs>
+                    <!-- Blue glow -->
+                    <filter id="blueGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Back card -->
+                <rect x="40" y="50" width="120" height="80" rx="12" ry="12"
+                        fill="#00c6ff" filter="url(#blueGlow)" opacity="0.6" transform="rotate(-5 100 90)"/>
+
+                <!-- Middle card -->
+                <rect x="45" y="55" width="120" height="80" rx="12" ry="12"
+                        fill="#00d9ff" filter="url(#blueGlow)" opacity="0.8" transform="rotate(3 105 95)"/>
+
+                <!-- Front card -->
+                <rect x="50" y="60" width="120" height="80" rx="12" ry="12"
+                        fill="#00e5ff" filter="url(#blueGlow)"/>
+
+                <!-- Question mark on front card -->
+                <text x="110" y="110" font-size="45" text-anchor="middle" fill="white"
+                        filter="url(#blueGlow)" font-family="Arial Rounded MT Bold">?</text>
+            </svg>
+        </button>
+        
+        <div class="taskbar-divider"></div>
+        
+        <button id="timer-btn" class="btn-icon">
+            <div class="btn-tooltip">Back to Timer</div>
+            <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" width="240" height="240" style="width: 36px; height: 36px;">
+                <defs>
+                    <!-- Neon green glow -->
+                    <filter id="greenGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Outer body -->
+                <circle cx="100" cy="120" r="70" stroke="#22c55e" stroke-width="10" fill="none" filter="url(#greenGlow)"/>
+
+                <!-- Inner subtle ring -->
+                <circle cx="100" cy="120" r="55" stroke="#16a34a" stroke-width="3" fill="none" filter="url(#greenGlow)"/>
+
+                <!-- Top knob base -->
+                <rect x="85" y="30" width="30" height="15" rx="7" fill="#22c55e" filter="url(#greenGlow)"/>
+
+                <!-- Side buttons (stopwatch feel) -->
+                <rect x="35" y="90" width="15" height="20" rx="4" fill="#22c55e" filter="url(#greenGlow)"/>
+                <rect x="150" y="90" width="15" height="20" rx="4" fill="#22c55e" filter="url(#greenGlow)"/>
+
+                <!-- Tick marks -->
+                <g stroke="#22c55e" stroke-width="3" filter="url(#greenGlow)">
+                    <line x1="100" y1="50" x2="100" y2="60"/>
+                    <line x1="100" y1="180" x2="100" y2="170"/>
+                    <line x1="30" y1="120" x2="40" y2="120"/>
+                    <line x1="170" y1="120" x2="160" y2="120"/>
+                </g>
+
+                <!-- Hands -->
+                <!-- Hour hand (short, thick) -->
+                <line x1="100" y1="120" x2="100" y2="80" stroke="white" stroke-width="7" stroke-linecap="round" filter="url(#greenGlow)"/>
+                <!-- Minute hand (longer, thinner) -->
+                <line x1="100" y1="120" x2="140" y2="120" stroke="white" stroke-width="5" stroke-linecap="round" filter="url(#greenGlow)"/>
+                <!-- Second hand (longest, very thin) -->
+                <line x1="100" y1="120" x2="120" y2="60" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" filter="url(#greenGlow)"/>
+
+                <!-- Center dot -->
+                <circle cx="100" cy="120" r="8" fill="white" filter="url(#greenGlow)"/>
+            </svg>
+        </button>
+        
+        <button id="progress-btn" class="btn-icon">
+            <div class="btn-tooltip">Daily Progress</div>
+            <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="240" height="240">
+                <defs>
+                    <!-- Neon purple glow -->
+                    <filter id="purpleGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Circular progress ring -->
+                <circle cx="100" cy="100" r="70" stroke="#9d4edd" stroke-width="10" fill="none"
+                        stroke-dasharray="440" stroke-dashoffset="120" filter="url(#purpleGlow)"/>
+
+                <!-- Report sheet -->
+                <rect x="65" y="55" width="70" height="90" rx="10" ry="10"
+                        fill="#a855f7" filter="url(#purpleGlow)"/>
+
+                <!-- Bars inside sheet -->
+                <rect x="80" y="120" width="10" height="20" rx="3" fill="white" filter="url(#purpleGlow)"/>
+                <rect x="95" y="105" width="10" height="35" rx="3" fill="white" filter="url(#purpleGlow)"/>
+                <rect x="110" y="90" width="10" height="50" rx="3" fill="white" filter="url(#purpleGlow)"/>
+            </svg>
+        </button>
+        
+        <div class="taskbar-divider"></div>
+        
+        <button id="about-btn" class="btn-icon">
+            <div class="btn-tooltip">About</div>
+            <svg class="control-icon" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+        </button>
+        
+        <button id="fullscreen-btn" class="btn-icon">
+            <div class="btn-tooltip">Full Screen</div>
+            <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200" style="width: 36px; height: 36px;">
+                <defs>
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <!-- Background circle -->
+                <circle cx="50" cy="50" r="45" fill="none" stroke="cyan" stroke-width="2" filter="url(#glow)" />
+
+                <!-- Fullscreen corners -->
+                <path d="M20 35 V20 H35" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                <path d="M80 35 V20 H65" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                <path d="M20 65 V80 H35" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                <path d="M80 65 V80 H65" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+            </svg>
+        </button>
+    </div>
+
+    <script src="js/cursor.js"></script>
+
+</body>
+</html>

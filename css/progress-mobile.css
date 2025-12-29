@@ -1,0 +1,623 @@
+/* ========================================
+   PROGRESS PAGE - MOBILE & TABLET OPTIMIZATION
+   Complete redesign for mobile devices
+   ======================================== */
+
+/* ========================================
+   PREVENT HORIZONTAL SCROLL
+   ======================================== */
+@media (max-width: 1024px) {
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+}
+
+/* ========================================
+   MOBILE LAYOUT - VERTICAL DAY-BY-DAY
+   ======================================== */
+@media (max-width: 768px) {
+    /* Hide desktop chart completely */
+    .chart-container {
+        display: none !important;
+    }
+    
+    /* Main container */
+    .timer-container {
+        padding: 15px 10px 80px 10px !important;
+        min-height: 100vh !important;
+        background: transparent !important;
+    }
+    
+    /* Header */
+    .header-controls {
+        margin-bottom: 20px !important;
+        padding: 0 5px !important;
+    }
+    
+    .header-controls h1 {
+        font-size: 1.8rem !important;
+        text-align: center !important;
+        margin: 0 !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+    }
+    
+    /* Stats Container - Compact Cards */
+    .stats-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 0 20px 0 !important;
+        padding: 0 !important;
+    }
+    
+    .stats-box {
+        background: rgba(255, 255, 255, 0.08) !important;
+        backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 16px !important;
+        padding: 15px !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    .stat-item {
+        margin: 8px 0 !important;
+        padding: 8px 12px !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-radius: 10px !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    .stat-item p {
+        font-size: 14px !important;
+        margin: 0 !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+    }
+    
+    .stat-item span {
+        font-weight: 600 !important;
+        color: #fff !important;
+    }
+    
+    .small-note {
+        font-size: 12px !important;
+        opacity: 0.7 !important;
+    }
+    
+    /* Goal Progress Bar */
+    .goal-progress-container {
+        height: 6px !important;
+        margin-top: 8px !important;
+        border-radius: 3px !important;
+    }
+    
+    .goal-progress-bar {
+        height: 6px !important;
+        border-radius: 3px !important;
+    }
+    
+    /* Mobile Chart - Vertical Day Cards */
+    .content-area {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    
+    /* Create mobile chart container */
+    .content-area::after {
+        content: '';
+        display: block;
+        width: 100%;
+    }
+    
+    /* Mobile day cards will be injected via JS */
+    #mobile-week-view {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        margin-top: 20px !important;
+        padding: 0 5px !important;
+    }
+    
+    .mobile-day-card {
+        background: rgba(255, 255, 255, 0.08) !important;
+        backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 16px !important;
+        padding: 16px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+        transition: all 0.3s ease !important;
+        animation: slideInUp 0.4s ease-out backwards !important;
+    }
+    
+    .mobile-day-card:nth-child(1) { animation-delay: 0.05s !important; }
+    .mobile-day-card:nth-child(2) { animation-delay: 0.1s !important; }
+    .mobile-day-card:nth-child(3) { animation-delay: 0.15s !important; }
+    .mobile-day-card:nth-child(4) { animation-delay: 0.2s !important; }
+    .mobile-day-card:nth-child(5) { animation-delay: 0.25s !important; }
+    .mobile-day-card:nth-child(6) { animation-delay: 0.3s !important; }
+    .mobile-day-card:nth-child(7) { animation-delay: 0.35s !important; }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .mobile-day-card.today {
+        border: 2px solid rgba(99, 102, 241, 0.6) !important;
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3) !important;
+    }
+    
+    .mobile-day-card:active {
+        transform: scale(0.98) !important;
+    }
+    
+    .day-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .day-name {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+    
+    .day-name.today {
+        color: #6366f1 !important;
+    }
+    
+    .day-date {
+        font-size: 13px !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+    
+    .day-hours {
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        color: #fff !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+    }
+    
+    .day-progress-bar {
+        width: 100% !important;
+        height: 8px !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-radius: 4px !important;
+        overflow: hidden !important;
+        position: relative !important;
+    }
+    
+    .day-progress-fill {
+        height: 100% !important;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+        border-radius: 4px !important;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 0 10px rgba(102, 126, 234, 0.5) !important;
+    }
+    
+    .day-progress-fill.high {
+        background: linear-gradient(90deg, #10b981 0%, #059669 100%) !important;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
+    }
+    
+    .day-progress-fill.medium {
+        background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%) !important;
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.5) !important;
+    }
+    
+    .day-progress-fill.low {
+        background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%) !important;
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.5) !important;
+    }
+    
+    .day-details {
+        display: flex !important;
+        justify-content: space-between !important;
+        margin-top: 10px !important;
+        font-size: 12px !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    .day-percentage {
+        font-weight: 500 !important;
+    }
+    
+    .day-status {
+        font-style: italic !important;
+    }
+}
+
+/* ========================================
+   BADGES - COMPACT MOBILE VERSION
+   ======================================== */
+@media (max-width: 768px) {
+    .batch-container {
+        position: fixed !important;
+        top: 10px !important;
+        right: 10px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        z-index: 100 !important;
+        max-width: 60px !important;
+    }
+    
+    .batch-tooltip {
+        position: relative !important;
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    .batch-wrapper {
+        width: 40px !important;
+        height: 40px !important;
+        position: relative !important;
+    }
+    
+    .batch {
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 50% !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .batch.unlocked {
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
+        animation: badgePulse 2s ease-in-out infinite !important;
+    }
+    
+    @keyframes badgePulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+        }
+    }
+    
+    .lock-overlay {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    .lock-icon {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    
+    .tooltip-text {
+        display: none !important;
+        position: absolute !important;
+        right: 50px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        background: rgba(0, 0, 0, 0.9) !important;
+        color: #fff !important;
+        padding: 6px 10px !important;
+        border-radius: 8px !important;
+        font-size: 11px !important;
+        white-space: nowrap !important;
+        z-index: 1000 !important;
+        pointer-events: none !important;
+    }
+    
+    .batch-tooltip:active .tooltip-text {
+        display: block !important;
+    }
+}
+
+/* ========================================
+   HEATMAP MODAL - MOBILE OPTIMIZATION
+   ======================================== */
+@media (max-width: 768px) {
+    .heatmap-modal {
+        padding: 10px !important;
+    }
+    
+    .heatmap-modal-content {
+        width: 95% !important;
+        max-width: 100% !important;
+        max-height: 90vh !important;
+        border-radius: 20px !important;
+        padding: 15px !important;
+    }
+    
+    .heatmap-header h2 {
+        font-size: 1.3rem !important;
+    }
+    
+    .close-heatmap-btn {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 24px !important;
+    }
+    
+    /* Stats bar - vertical on mobile */
+    .heatmap-stats-bar {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .heatmap-stat-item {
+        padding: 10px !important;
+        border-radius: 10px !important;
+    }
+    
+    .stat-label {
+        font-size: 11px !important;
+    }
+    
+    .stat-value {
+        font-size: 15px !important;
+    }
+    
+    /* Heatmap grid - scroll horizontally */
+    .heatmap-container-wrapper {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: 10px !important;
+    }
+    
+    .heatmap-grid {
+        min-width: 600px !important;
+        transform: scale(0.85) !important;
+        transform-origin: left top !important;
+    }
+    
+    .heatmap-day {
+        width: 10px !important;
+        height: 10px !important;
+    }
+    
+    .heatmap-legend {
+        justify-content: center !important;
+        margin-top: 15px !important;
+    }
+    
+    .legend-box {
+        width: 12px !important;
+        height: 12px !important;
+    }
+}
+
+/* ========================================
+   TABLET OPTIMIZATION (769px - 1024px)
+   ======================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    /* Keep desktop chart but make it responsive */
+    .chart-container {
+        max-width: 100% !important;
+        padding: 0 20px !important;
+    }
+    
+    .timer-container {
+        padding: 20px 15px 80px 15px !important;
+    }
+    
+    .stats-container {
+        max-width: 700px !important;
+        margin: 20px auto !important;
+    }
+    
+    .stats-box {
+        padding: 20px !important;
+    }
+    
+    /* Badges - slightly larger on tablet */
+    .batch-container {
+        top: 15px !important;
+        right: 15px !important;
+        gap: 10px !important;
+    }
+    
+    .batch-tooltip {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    .batch-wrapper {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    .batch {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    .lock-overlay {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    .lock-icon {
+        width: 30px !important;
+        height: 30px !important;
+    }
+}
+
+/* ========================================
+   SMALL MOBILE (≤480px)
+   ======================================== */
+@media (max-width: 480px) {
+    .timer-container {
+        padding: 10px 5px 80px 5px !important;
+    }
+    
+    .header-controls h1 {
+        font-size: 1.5rem !important;
+    }
+    
+    .stats-box {
+        padding: 12px !important;
+        border-radius: 14px !important;
+    }
+    
+    .stat-item {
+        padding: 6px 10px !important;
+    }
+    
+    .stat-item p {
+        font-size: 13px !important;
+    }
+    
+    .mobile-day-card {
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+    
+    .day-name {
+        font-size: 15px !important;
+    }
+    
+    .day-date {
+        font-size: 12px !important;
+    }
+    
+    .day-hours {
+        font-size: 16px !important;
+    }
+    
+    .day-progress-bar {
+        height: 6px !important;
+    }
+    
+    .day-details {
+        font-size: 11px !important;
+    }
+    
+    /* Badges - even smaller */
+    .batch-container {
+        top: 8px !important;
+        right: 8px !important;
+        gap: 6px !important;
+    }
+    
+    .batch-tooltip {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    
+    .batch-wrapper {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    
+    .batch {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    
+    .lock-overlay {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    
+    .lock-icon {
+        width: 20px !important;
+        height: 20px !important;
+    }
+}
+
+/* ========================================
+   TASKBAR - SAME AS TIMER PAGE
+   ======================================== */
+@media (max-width: 1024px) {
+    /* Override all desktop styles */
+    body .control-box-taskbar,
+    body:not(.weekly-progress-page) .control-box-taskbar,
+    .weekly-progress-page .control-box-taskbar {
+        position: fixed !important;
+        bottom: 12px !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        width: 280px !important;
+        max-width: 280px !important;
+        min-width: 280px !important;
+        
+        border-radius: 24px !important;
+        background: rgba(20, 20, 30, 0.85) !important;
+        backdrop-filter: blur(20px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                    0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+        
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-behavior: smooth !important;
+        scroll-snap-type: x mandatory !important;
+        
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        
+        padding: 10px 12px !important;
+        gap: 10px !important;
+        min-height: 64px !important;
+        
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+        z-index: 1000 !important;
+    }
+    
+    body .control-box-taskbar::-webkit-scrollbar,
+    .control-box-taskbar::-webkit-scrollbar {
+        display: none !important;
+    }
+    
+    body .control-box-taskbar .btn-icon,
+    .control-box-taskbar .btn-icon {
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        max-width: 48px !important;
+        max-height: 48px !important;
+        font-size: 19px !important;
+        border-radius: 12px !important;
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
+        scroll-snap-align: center !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    }
+}
+
+/* ========================================
+   ANIMATIONS & TRANSITIONS
+   ======================================== */
+@media (max-width: 768px) {
+    * {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    button, .mobile-day-card {
+        touch-action: manipulation !important;
+    }
+}

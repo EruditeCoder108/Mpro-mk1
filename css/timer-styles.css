@@ -1,0 +1,1750 @@
+/* ========================================
+   TIMER STYLES - CONSOLIDATED
+   All timer styles in one place to eliminate conflicts
+   ======================================== */
+
+/* ========================================
+   BASE TIMER CONTAINER STYLES
+   ======================================== */
+
+.timer-container {
+    /* Use CSS custom properties for background color and opacity */
+    background-color: rgba(var(--timer-bg-rgb, 18, 22, 32), var(--timer-bg-opacity, 0.85));
+
+    /* Perfect sizing from styles 7 & 8 */
+    padding: 0 30px;
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+    width: 95%;
+    max-width: 600px;
+    height: 220px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+
+    /* Additional base styles */
+    z-index: 2;
+    min-width: 320px;
+    font-size: 1.1rem;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    transform-origin: center;
+    will-change: transform;
+}
+
+/* ========================================
+   BASE TIMER DISPLAY STYLES
+   ======================================== */
+
+.display {
+    /* Perfect sizing from styles 7 & 8 */
+    line-height: 1;
+    width: auto;
+    max-width: 100%;
+    text-align: center;
+    font-size: 6.5rem; /* Increased from 5rem */
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    padding: 0;
+    box-sizing: content-box;
+    transition: all 0.3s ease;
+}
+
+
+/* Colon between numbers */
+.display span:not(:last-child) {
+    margin-right: 2px;
+}
+
+/* Style for colons in timer */
+.display .colon {
+    margin: 0 0.1em 0 0.1em;
+    position: relative;
+    top: -0.1em;
+    width: auto;
+}
+
+/* ========================================
+   QUOTES HIDDEN - CENTER TIMER DIGITS
+   ======================================== */
+
+/* Center timer digits when quotes are hidden */
+.timer-container.quotes-hidden {
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.timer-container.quotes-hidden .time-display-container {
+    margin-top: 0 !important;
+    transform: none !important;
+}
+
+.timer-container.quotes-hidden .display,
+.timer-container.quotes-hidden .time-display {
+    margin-top: 0 !important;
+    transform: none !important;
+}
+
+/* Style-specific overrides for quotes hidden */
+.timer-style-4.quotes-hidden .display,
+.timer-style-4.quotes-hidden .time-display {
+    transform: none !important;
+}
+
+.timer-style-3.quotes-hidden .display,
+.timer-style-3.quotes-hidden .time-display {
+    transform: none !important;
+}
+
+/* ========================================
+   TIMER STYLE 1 - DEFAULT
+   ======================================== */
+
+.timer-style-1 {
+    --timer-bg-rgb: 18, 22, 32;
+    --timer-bg-opacity: 0.85;
+
+    /* Style 1 specific overrides */
+    padding: 40px 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+}
+
+.timer-style-1 .time-display,
+.timer-style-1 .display {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+.timer-style-1 .time-picker-popup .time-item {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 500;
+}
+
+/* ========================================
+   TIMER STYLE 2 - PERFECT FROSTED GLASS MORPHISM
+   ======================================== */
+
+.timer-style-2 {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    padding: 30px 40px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+
+    /* Override base height for style 2 */
+    height: auto;
+    min-height: 220px;
+}
+
+.timer-style-2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    border-radius: 24px;
+    pointer-events: none;
+}
+
+.timer-style-2:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.timer-style-2 .time-display,
+.timer-style-2 .display {
+    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace !important;
+    font-size: 6rem;
+    font-weight: 300;
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(255, 255, 255, 0.1);
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.timer-style-2 .time-display-container {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 25px 35px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.timer-style-2 .time-display:hover {
+    transform: scale(1.02);
+    text-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.4),
+        0 0 25px rgba(255, 255, 255, 0.15);
+}
+
+.timer-style-2 .time-picker-popup {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    padding: 15px;
+}
+
+.timer-style-2 .time-picker-popup .picker-content {
+    background: transparent;
+}
+
+.timer-style-2 .time-picker-popup .time-item {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+    font-size: 1rem;
+    padding: 10px 20px;
+    margin: 2px 0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.timer-style-2 .time-picker-popup .time-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.95);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(2px);
+}
+
+.timer-style-2 .time-picker-popup .time-item.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 1);
+    font-weight: 500;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.timer-style-2 .time-picker-popup .time-separator {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    margin: 0 8px;
+}
+
+/* ========================================
+   TIMER STYLE 3 - BRUTALIST DESIGN
+   ======================================== */
+
+@keyframes brutalistGlitch {
+    0%, 100% { 
+        transform: translate(0);
+        text-shadow: 2px 0 0 #ff0000, -2px 0 0 #00ff00;
+    }
+    25% { 
+        transform: translate(-1px, 1px);
+        text-shadow: -2px 0 0 #ff0000, 2px 0 0 #00ff00;
+    }
+    50% { 
+        transform: translate(1px, -1px);
+        text-shadow: 2px 0 0 #ff0000, -2px 0 0 #00ff00;
+    }
+    75% { 
+        transform: translate(-1px, -1px);
+        text-shadow: -2px 0 0 #ff0000, 2px 0 0 #00ff00;
+    }
+}
+
+@keyframes brutalistPulse {
+    0%, 100% { 
+        box-shadow: 
+            8px 8px 0 #ffee00,
+            16px 16px 0 #ff0000;
+    }
+    50% { 
+        box-shadow: 
+            12px 12px 0 #ffee00,
+            24px 24px 0 #ff0000;
+    }
+}
+
+.timer-style-3 {
+    background: #ffd700;
+    border: 8px solid #000000;
+    border-radius: 0;
+    box-shadow: 
+        8px 8px 0 #000000,
+        16px 16px 0 #333333;
+    padding: 20px 30px;
+    position: relative;
+    overflow: visible;
+    transition: all 0.2s ease;
+    transform: rotate(-1deg);
+
+    /* Override base height for style 3 */
+    height: auto;
+    min-height: 220px;
+}
+
+.timer-style-3::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background: repeating-linear-gradient(
+        45deg,
+        #ffff00,
+        #ffee00 2px,
+        #ff0000 2px,
+        #ff0000 4px
+    );
+    z-index: -1;
+}
+
+.timer-style-3::after {
+    content: 'BRUTAL';
+    position: absolute;
+    top: -15px;
+    left: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: #ff0000;
+    background: #000000;
+    padding: 2px 8px;
+    border: 2px solid #000000;
+    transform: rotate(-2deg);
+}
+
+.timer-style-3:hover {
+    transform: rotate(1deg) scale(1.02);
+    animation: brutalistPulse 0.5s ease-in-out;
+}
+
+.timer-style-3 .time-display,
+.timer-style-3 .display {
+    font-family: 'Courier New', 'Monaco', monospace !important;
+    font-size: 6rem;
+    font-weight: 900;
+    letter-spacing: 8px;
+    color: #000000;
+    text-shadow: 
+        4px 4px 0 #ff0000,
+        8px 8px 0 #00ff00;
+    margin: 0;
+    padding: 0;
+    line-height: 0.9;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    transform: skew(-2deg);
+}
+
+.timer-style-3 .time-display:hover {
+    animation: brutalistGlitch 0.3s ease-in-out;
+}
+
+.timer-style-3 .time-display-container {
+    background: #fff200;
+    border: 6px solid #000000;
+    border-radius: 0;
+    padding: 15px 25px;
+    box-shadow: 
+        4px 4px 0 #000000,
+        inset 4px 4px 0 rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: all 0.2s ease;
+    transform: rotate(1deg);
+}
+
+.timer-style-3 .time-display-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: #eeff00 !;
+    z-index: -1;
+}
+
+.timer-style-3 .time-display-container:hover {
+    transform: rotate(-1deg) scale(1.05);
+    box-shadow: 
+        6px 6px 0 #000000,
+        inset 6px 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+.timer-style-3 .time-picker-popup {
+    background: #ffd700;
+    border: 4px solid #000000;
+    border-radius: 0;
+    box-shadow: 
+        6px 6px 0 #000000,
+        inset 2px 2px 0 rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    transform: rotate(2deg);
+}
+
+.timer-style-3 .time-picker-popup .picker-content {
+    background: #fff200;
+    border: 2px solid #000000;
+    padding: 5px;
+}
+
+.timer-style-3 .time-picker-popup .time-item {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+    color: #000000;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 8px 12px;
+    margin: 2px 0;
+    border-radius: 0;
+    transition: all 0.1s ease;
+    background: #fff200;
+    border: 2px solid #000000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.timer-style-3 .time-picker-popup .time-item:hover {
+    background: #000000;
+    color: #ffffff;
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #ff0000;
+}
+
+.timer-style-3 .time-picker-popup .time-item.active {
+    background: #ff0000;
+    color: #ffffff;
+    font-weight: 900;
+    border-color: #000000;
+    transform: translate(1px, 1px);
+    box-shadow: 3px 3px 0 #000000;
+}
+
+.timer-style-3 .time-picker-popup .time-separator {
+    color: #ff0000;
+    font-weight: 900;
+    margin: 0 4px;
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 0 #000000;
+}
+
+/* Make quotes more readable in brutalist design */
+.timer-style-3 .quote-container,
+.timer-style-3 #quote-display {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border: 3px solid #ff0000 !important;
+    border-radius: 0 !important;
+    padding: 15px 20px !important;
+    font-family: 'Courier New', 'Monaco', monospace !important;
+    font-weight: 700 !important;
+    font-size: 20px !important;
+    color: #ffffff !important;
+    text-shadow: 
+        2px 2px 0 #000000,
+        4px 4px 0 #ff0000,
+        0 0 10px rgba(255, 255, 255, 0.8) !important;
+    letter-spacing: 1px !important;
+    line-height: 1.3 !important;
+    text-transform: uppercase !important;
+    box-shadow: 
+        4px 4px 0 #000000,
+        8px 8px 0 #333333 !important;
+    position: relative !important;
+    z-index: 20 !important;
+    transform: translate(-25px, -10px) !important;
+}
+
+/* ========================================
+   TIMER STYLE 4 - MINIMALISTIC ROUND CLOCK
+   ======================================== */
+
+.timer-style-4 {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    padding: 0;
+    position: relative;
+    overflow: visible;
+    width: 280px;
+    height: 280px;
+    min-width: 280px;
+    min-height: 280px;
+    max-width: 280px;
+    max-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+/* Progress indicator border */
+.timer-style-4::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 0deg,
+        #4a9eff 0deg,
+        #4a9eff var(--progress-angle, 0deg),
+        rgba(255, 255, 255, 0.1) var(--progress-angle, 0deg),
+        rgba(255, 255, 255, 0.1) 360deg
+    );
+    z-index: -1;
+    transition: all 0.3s ease;
+}
+
+/* Inner glow effect */
+.timer-style-4::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Ensure quotes appear above style 4 clock */
+.timer-style-4 .quote-container,
+.timer-style-4 #quote-display {
+    position: relative;
+    z-index: 15 !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 300 !important;
+    letter-spacing: 0.5px !important;
+    line-height: 1.4 !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.timer-style-4:hover {
+    transform: scale(1.02);
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.timer-style-4:hover::before {
+    background: conic-gradient(
+        from 0deg,
+        #66b3ff 0deg,
+        #66b3ff var(--progress-angle, 0deg),
+        rgba(255, 255, 255, 0.15) var(--progress-angle, 0deg),
+        rgba(255, 255, 255, 0.15) 360deg
+    );
+}
+
+/* Time display - hours, minutes, and seconds */
+.timer-style-4 .time-display,
+.timer-style-4 .display {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 3.2rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(74, 158, 255, 0.2);
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.05em;
+    transform: translateY(-15px);
+}
+
+/* Colon styling */
+.timer-style-4 .time-display .colon,
+.timer-style-4 .display .colon {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 3.2rem;
+    font-weight: 300;
+    line-height: 1;
+    vertical-align: middle;
+    margin: 0 0.05em;
+    position: relative;
+    top: 0;
+    color: rgba(255, 255, 255, 0.7);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* Show all time units in style 4 */
+.timer-style-4 .display-seconds,
+.timer-style-4 #display-seconds {
+    display: inline !important;
+}
+
+/* Time display container */
+.timer-style-4 .time-display-container {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+/* Time picker popup */
+.timer-style-4 .time-picker-popup {
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(74, 158, 255, 0.1);
+    padding: 20px;
+}
+
+.timer-style-4 .time-picker-popup .picker-content {
+    background: transparent;
+}
+
+.timer-style-4 .time-picker-popup .time-item {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+    font-size: 1rem;
+    padding: 12px 20px;
+    margin: 4px 0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.timer-style-4 .time-picker-popup .time-item:hover {
+    background: rgba(74, 158, 255, 0.1);
+    color: rgba(255, 255, 255, 0.95);
+    border-color: rgba(74, 158, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.timer-style-4 .time-picker-popup .time-item.active {
+    background: rgba(74, 158, 255, 0.2);
+    color: #ffffff;
+    font-weight: 500;
+    border-color: rgba(74, 158, 255, 0.5);
+    box-shadow: 0 0 15px rgba(74, 158, 255, 0.2);
+}
+
+.timer-style-4 .time-picker-popup .time-separator {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+    margin: 0 8px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .timer-style-4 {
+        width: 240px;
+        height: 240px;
+        min-width: 240px;
+        min-height: 240px;
+        max-width: 240px;
+        max-height: 240px;
+    }
+    
+    .timer-style-4 .time-display,
+    .timer-style-4 .display {
+        font-size: 2.6rem;
+        transform: translateY(-12px);
+    }
+    
+    .timer-style-4 .time-display .colon,
+    .timer-style-4 .display .colon {
+        font-size: 2.6rem;
+    }
+    
+    .timer-style-4 .quote-container,
+    .timer-style-4 #quote-display {
+        font-size: 14px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .timer-style-4 {
+        width: 200px;
+        height: 200px;
+        min-width: 200px;
+        min-height: 200px;
+        max-width: 200px;
+        max-height: 200px;
+    }
+    
+    .timer-style-4 .time-display,
+    .timer-style-4 .display {
+        font-size: 2.2rem;
+        transform: translateY(-10px);
+    }
+    
+    .timer-style-4 .time-display .colon,
+    .timer-style-4 .display .colon {
+        font-size: 2.2rem;
+    }
+    
+    .timer-style-4 .quote-container,
+    .timer-style-4 #quote-display {
+        font-size: 12px !important;
+    }
+}
+
+/* ========================================
+   TIMER STYLE 5 - TERMINAL MODE
+   ======================================== */
+
+.timer-style-5 {
+    background: #0a0e17 ;
+    border: 1px solid #1e2a3a ;
+    border-radius: 8px ;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) ;
+    padding: 25px 40px 35px 30px ;
+    font-family: 'Source Code Pro', monospace ;
+    position: relative;
+    overflow: visible;
+    min-width: 400px;
+    box-sizing: border-box;
+
+    /* Override base height for style 5 */
+    height: auto;
+    min-height: 220px;
+}
+
+.timer-style-5::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #ff5f5f, #ff9a5f, #fff05f, #5fff87, #5f9fff, #9f5fff, #ff5fd0);
+    animation: terminalScan 8s linear infinite;
+    background-size: 200% 100%;
+}
+
+@keyframes terminalScan {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.timer-style-5 .time-display {
+    font-family: 'Source Code Pro', monospace ;
+    font-size: 5.5rem ;
+    font-weight: 500 ;
+    color: #4af626 ;
+    text-shadow: 0 0 8px rgba(74, 246, 38, 0.5) ;
+    margin: 0 ;
+    padding: 15px 20px 10px 0 ;
+    line-height: 1.1 ;
+    letter-spacing: 2px ;
+    position: relative;
+    text-align: left;
+    white-space: nowrap;
+    display: inline-block;
+    min-width: 100%;
+}
+
+.timer-style-5 .time-display::before {
+    content: '>';
+    position: absolute;
+    left: -25px;
+    color: #ff5f5f;
+    font-weight: 600;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.timer-style-5 .time-display-container {
+    background: rgba(20, 25, 35, 0.7) ;
+    padding: 20px 40px 20px 50px ;
+    border: 1px solid #2a3a4a ;
+    border-radius: 6px ;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5) ;
+    position: relative;
+    transition: all 0.3s ease ;
+    width: auto ;
+    display: inline-block;
+    min-width: 100%;
+    box-sizing: border-box;
+}
+
+.timer-style-5 .time-picker-popup {
+    background: #0f1621 ;
+    border: 1px solid #2a3a4a ;
+    border-radius: 6px ;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4) ;
+    padding: 10px 5px ;
+    font-family: 'Source Code Pro', monospace ;
+}
+
+.timer-style-5 .time-picker-popup .picker-content {
+    background: transparent ;
+    padding: 5px ;
+}
+
+.timer-style-5 .time-picker-popup .time-item {
+    color: #a0a8b8 ;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 400 ;
+    font-size: 1rem ;
+    padding: 8px 15px ;
+    margin: 2px 0 ;
+    border-radius: 4px ;
+    transition: all 0.2s ease ;
+    background: transparent ;
+    border-left: 3px solid transparent ;
+    text-align: left ;
+    letter-spacing: 1px ;
+}
+
+.timer-style-5 .time-picker-popup .time-item:hover {
+    background: rgba(74, 144, 226, 0.1) ;
+    color: #4af626 ;
+    border-left-color: #4af626 ;
+    transform: translateX(3px) ;
+}
+
+.timer-style-5 .time-picker-popup .time-item.active {
+    background: rgba(74, 144, 226, 0.15) ;
+    color: #4af626 ;
+    font-weight: 500 ;
+    border-left-color: #4af626 ;
+}
+
+.timer-style-5 .time-picker-popup .time-separator {
+    color: #4a5a6a ;
+    font-weight: 600 ;
+    margin: 0 5px ;
+    font-family: 'Source Code Pro', monospace ;
+}
+
+/* Add terminal-like status bar at the bottom */
+.timer-style-5::after {
+    content: 'ERUDITE TIMER v1.0.0 | TERMINAL MODE | READY';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(20, 25, 35, 0.9);
+    color: #4af626;
+    font-size: 0.7rem;
+    padding: 5px 15px;
+    border-top: 1px solid #2a3a4a;
+    font-family: 'Source Code Pro', monospace;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+/* Add subtle grid overlay */
+.timer-style-5 {
+    background-image: 
+        linear-gradient(rgba(42, 58, 74, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(42, 58, 74, 0.2) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: center center;
+}
+
+/* Add subtle flicker effect */
+@keyframes terminalFlicker {
+    0%, 100% { opacity: 0.99; }
+    50% { opacity: 0.95; }
+}
+
+.timer-style-5 .time-display-container {
+    animation: terminalFlicker 10s infinite ease-in-out;
+}
+
+/* ========================================
+   TIMER STYLE 6 - PLANT MODE (TRANSPARENT)
+   ======================================== */
+
+.timer-style-6 {
+    background: transparent ;
+    font-family: cursive;
+    font-size: clamp(4.5rem, 10vw, 7.5rem) ;
+    font-weight: 700 ;
+    color: #000000 ;
+    border: none ;
+    box-shadow: none ;
+    padding: 0 ;
+    position: relative;
+    overflow: visible;
+}
+
+.timer-style-6 .time-display {
+    position: relative;
+    z-index: 2;
+}
+
+/* Plant Growth Container */
+.plant-growth-container {
+    position: fixed;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 35px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+    width: 280px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.timer-style-6 .plant-growth-container {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ========================================
+   TIMER STYLE 7 - CUSTOM IMAGE STYLE
+   ======================================== */
+
+.timer-style-7 {
+    background: url('../assets/images-webp/style7.webp') no-repeat center center / cover ;
+    border: none ;
+    border-radius: 8px ;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) ;
+    padding: 0 ;
+    position: relative;
+    overflow: hidden;
+    height: 220px;
+    width: 95%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 30px ;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: 100% 100% ;
+}
+
+.timer-style-7 .time-display {
+    color: white ;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7) ;
+    font-size: 5rem ;
+    font-weight: 600 ;
+    margin: 0 ;
+    padding: 20px 40px ;
+    background: rgba(0, 0, 0, 0.3) ;
+    backdrop-filter: blur(5px) ;
+    -webkit-backdrop-filter: blur(5px) ;
+    border-radius: 12px ;
+    border: 1px solid rgba(255, 255, 255, 0.1) ;
+}
+
+/* ========================================
+   TIMER STYLE 8 - CUSTOM IMAGE STYLE
+   ======================================== */
+
+.timer-style-8 {
+    background: url('../assets/images-webp/style8.webp') no-repeat center center / cover ;
+    border: none ;
+    border-radius: 8px ;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) ;
+    padding: 0 ;
+    position: relative;
+    overflow: hidden;
+    height: 220px;
+    width: 95%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 30px ;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: 100% 100% ;
+}
+
+.timer-style-8 .time-display {
+    color: white ;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7) ;
+    font-size: 5rem ;
+    font-weight: 600 ;
+    margin: 0 ;
+    padding: 20px 40px ;
+    background: rgba(0, 0, 0, 0.3) ;
+    backdrop-filter: blur(5px) ;
+    -webkit-backdrop-filter: blur(5px) ;
+    border-radius: 12px ;
+    border: 1px solid rgba(255, 255, 255, 0.1) ;
+}
+
+/* ========================================
+   TIMER STYLE 9 - LARGE DIGITS FOCUS
+   ======================================== */
+
+.timer-style-9 {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 20px 30px;
+    position: relative;
+    overflow: visible;
+    height: auto;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-style-9 .time-display,
+.timer-style-9 .display {
+    font-family: 'Numans', sans-serif !important;
+    font-size: 8rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 
+        0 0 20px rgba(255, 255, 255, 0.8),
+        0 0 40px rgba(255, 255, 255, 0.4),
+        0 4px 8px rgba(0, 0, 0, 0.3);
+    margin: 0;
+    padding: 0;
+    line-height: 0.9;
+    letter-spacing: -2px;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.05em;
+    transform: none !important;
+}
+
+.timer-style-9 .time-display .colon,
+.timer-style-9 .display .colon {
+    font-family: 'Numans', sans-serif !important;
+    font-size: 8rem;
+    font-weight: 900;
+    line-height: 0.9;
+    vertical-align: middle;
+    margin: 0 0.02em;
+    position: relative;
+    top: -8px;
+    left: 0;
+    letter-spacing: 0;
+    width: auto;
+    display: inline-block;
+    color: #ffffff;
+    text-shadow: 
+        0 0 20px rgba(255, 255, 255, 0.8),
+        0 0 40px rgba(255, 255, 255, 0.4),
+        0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.timer-style-9 .time-display-container {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0;
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+.timer-style-9 .time-picker-popup {
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(255, 255, 255, 0.1);
+    padding: 20px;
+}
+
+.timer-style-9 .time-picker-popup .picker-content {
+    background: transparent;
+}
+
+.timer-style-9 .time-picker-popup .time-item {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 12px 24px;
+    margin: 4px 0;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.timer-style-9 .time-picker-popup .time-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.timer-style-9 .time-picker-popup .time-item.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-weight: 700;
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.timer-style-9 .time-picker-popup .time-separator {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+    margin: 0 8px;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif !important;
+}
+
+/* ========================================
+   ===== COMPREHENSIVE MOBILE OPTIMIZATION FOR TIMER-STYLES.CSS =====
+   All timer styles have been optimized for mobile devices with:
+   - Responsive sizing and positioning
+   - Touch-friendly interactions
+   - Optimized typography and spacing
+   - Enhanced mobile animations
+   - Proper modal behavior on mobile devices
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Style 3 responsive adjustments */
+    .timer-style-3 {
+        padding: 30px 40px ;
+    }
+    
+    .timer-style-3 .time-display {
+        font-size: 5rem ;
+    }
+    
+    /* Style 7 & 8 responsive adjustments */
+    .timer-style-7,
+    .timer-style-8 {
+        height: 180px ;
+        padding: 0 20px ;
+    }
+    
+    .timer-style-7 .time-display,
+    .timer-style-8 .time-display {
+        font-size: 4rem ;
+        padding: 15px 25px ;
+    }
+    
+    /* Plant Mode responsive adjustments */
+    .timer-style-6 .time-display {
+        font-size: clamp(3.5rem, 8vw, 6rem) ;
+        min-height: 100px;
+    }
+    
+    .timer-style-6 .time-display-container {
+        padding: 30px 40px ;
+        min-width: 350px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Style 3 mobile adjustments */
+    .timer-style-3 {
+        padding: 25px 30px ;
+    }
+    
+    .timer-style-3 .time-display {
+        font-size: 4rem ;
+    }
+    
+    /* Style 7 & 8 mobile adjustments */
+    .timer-style-7,
+    .timer-style-8 {
+        height: 160px ;
+        padding: 0 15px ;
+    }
+    
+    .timer-style-7 .time-display,
+    .timer-style-8 .time-display {
+        font-size: 3.5rem ;
+        padding: 12px 20px ;
+    }
+    
+        
+    /* Plant Growth Container - Responsive */
+    .plant-growth-container {
+        width: 240px;
+        left: 15px;
+    }
+    
+    .plant-image-container {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .plant-growth-container {
+        width: 240px;
+        left: 15px;
+    }
+    
+    .plant-image-container {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* Plant Mode - Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+    .plant-growth-container {
+        position: fixed;
+        left: 20px;
+        right: 20px;
+        bottom: 25px;
+        top: auto;
+        transform: none;
+        width: auto;
+        max-width: calc(100% - 40px);
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 25px;
+    }
+    
+    .plant-image-container {
+        width: 80px;
+        height: 80px;
+        margin: 0 15px 0 0;
+        flex-shrink: 0;
+    }
+    
+    .plant-progress-container {
+        flex-grow: 1;
+        margin-top: 0;
+    }
+    
+    .plant-progress-stages {
+        margin-top: 8px;
+    }
+    
+    .progress-stage {
+        font-size: 7px;
+        padding-top: 14px;
+    }
+}
+
+/* Plant Image Container */
+.plant-image-container {
+    width: 240px;
+    height: 240px;
+    margin: -20px auto 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #d4edda 0%, #a5d6a7 50%, #66bb6a 100%);
+    border-radius: 50%;
+    box-shadow: 0 10px 30px rgba(27, 94, 32, 0.3),
+                0 5px 15px rgba(27, 94, 32, 0.2),
+                inset 0 2px 10px rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    border: 4px solid #fff;
+    z-index: 2;
+    transition: all 0.4s ease;
+}
+
+.plant-image-container::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    right: -10%;
+    bottom: -10%;
+    background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(200,250,200,0.1) 70%);
+    border-radius: 50%;
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+/* Plant Image */
+.plant-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    transform-origin: bottom center;
+    transform: scale(1.1);
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.plant-image.fade-out {
+    opacity: 0;
+    transform: scale(0.95) translateY(5px);
+}
+
+.plant-image.fade-in {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95) translateY(5px); }
+    to { opacity: 1; transform: scale(1.1); }
+}
+
+/* Plant Progress Container */
+.plant-progress-container {
+    width: 100%;
+    margin-top: 15px;
+    padding: 0 5px;
+}
+
+/* Plant Progress Bar */
+.plant-progress-bar {
+    height: 12px;
+    background: #f0f0f0;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    --progress: 0%;
+}
+
+.plant-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--progress, 0%);
+    background: linear-gradient(90deg, #81c784, #4caf50);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* Plant Progress Stages */
+.plant-progress-stages {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #333;
+    font-weight: 500;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.7);
+    margin: 15px -5px 0;
+    position: relative;
+    width: calc(100% + 10px);
+}
+
+.progress-stage {
+    text-align: center;
+    flex: 1;
+    position: relative;
+    padding: 22px 5px 0;
+    font-size: 10px;
+    color: #9e9e9e;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    transition: all 0.3s ease;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.progress-stage::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.progress-stage.active {
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+.progress-stage.active::before {
+    background: #4caf50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+    transform: translateX(-50%) scale(1.2);
+}
+
+/* Plant Growth Animation */
+@keyframes plantGrow {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.plant-grow-animation {
+    animation: plantGrow 0.5s ease-out forwards;
+}
+
+/* ========================================
+   TIMER STYLE 10 - PROGRESS CIRCLE CLOCK
+   ======================================== */
+
+.timer-style-10 {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 2rem;
+    padding: 2rem;
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: visible;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-style-10::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.1) 0%, 
+        rgba(34, 197, 94, 0.1) 50%, 
+        rgba(239, 68, 68, 0.1) 100%);
+    border-radius: 2rem;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.timer-style-10:hover {
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 
+        0 0 30px rgba(59, 130, 246, 0.2),
+        0 0 60px rgba(34, 197, 94, 0.1);
+}
+
+/* Circular Progress Container */
+.timer-style-10 .circular-progress-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin: 0 auto 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-style-10 .circular-progress-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
+}
+
+/* Background Circles */
+.timer-style-10 .circle-bg {
+    fill: none;
+    stroke: rgba(30, 41, 59, 0.8);
+    stroke-width: 8;
+    opacity: 0.3;
+}
+
+/* Progress Circles */
+.timer-style-10 .circle-hours {
+    fill: none;
+    stroke: #ef4444;
+    stroke-width: 8;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+    transition: stroke-dashoffset 0.3s linear;
+}
+
+.timer-style-10 .circle-minutes {
+    fill: none;
+    stroke: #3b82f6;
+    stroke-width: 8;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
+    transition: stroke-dashoffset 0.3s linear;
+}
+
+.timer-style-10 .circle-seconds {
+    fill: none;
+    stroke: #22c55e;
+    stroke-width: 8;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.6));
+    transition: stroke-dashoffset 0.3s linear;
+}
+
+/* Time Display */
+.timer-style-10 .time-display,
+.timer-style-10 .display {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Roboto Mono', 'Courier New', monospace !important;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    text-shadow: 
+        0 0 10px rgba(59, 130, 246, 0.5),
+        0 0 20px rgba(34, 197, 94, 0.3);
+    margin: 0;
+    padding: 0;
+    letter-spacing: 2px;
+    text-align: center;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2em;
+}
+
+.timer-style-10 .display .colon {
+    color: #60a5fa;
+    text-shadow: 
+        0 0 8px rgba(96, 165, 250, 0.8),
+        0 0 16px rgba(96, 165, 250, 0.4);
+    margin: 0 0.1em;
+    font-weight: 700;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Time Display Container */
+.timer-style-10 .time-display-container {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Time Picker Popup */
+.timer-style-10 .time-picker-popup {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 1rem;
+    box-shadow: 
+        0 0 30px rgba(59, 130, 246, 0.2),
+        0 0 60px rgba(34, 197, 94, 0.1);
+    padding: 1.5rem;
+}
+
+.timer-style-10 .time-picker-popup .picker-content {
+    background: transparent;
+}
+
+.timer-style-10 .time-picker-popup .time-item {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 12px 20px;
+    margin: 4px 0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    text-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+}
+
+.timer-style-10 .time-picker-popup .time-item:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.5);
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+    transform: translateY(-1px);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.timer-style-10 .time-picker-popup .time-item.active {
+    background: rgba(59, 130, 246, 0.3);
+    color: #ffffff;
+    font-weight: 700;
+    border-color: rgba(59, 130, 246, 0.8);
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+.timer-style-10 .time-picker-popup .time-separator {
+    color: #60a5fa;
+    font-weight: 600;
+    margin: 0 8px;
+    font-family: 'Roboto Mono', 'Courier New', monospace !important;
+    text-shadow: 0 0 5px rgba(96, 165, 250, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .timer-style-10 .circular-progress-container {
+        width: 240px;
+        height: 240px;
+    }
+    
+    .timer-style-10 .time-display,
+    .timer-style-10 .display {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .timer-style-10 {
+        padding: 1.5rem;
+        min-height: 350px;
+    }
+    
+    .timer-style-10 .circular-progress-container {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .timer-style-10 .time-display,
+    .timer-style-10 .display {
+        font-size: 1.5rem;
+    }
+}
+
+/* ========================================
+   POMODORO TIMER STYLES
+   ======================================== */
+
+/* Pomodoro State Styles */
+.timer-container.pomodoro-work {
+    background-color: rgba(255, 99, 71, 0.25) !important; /* More visible tomato color */
+    box-shadow: 0 0 30px rgba(255, 99, 71, 0.2) !important;
+    transition: all 0.5s ease !important;
+}
+
+.timer-container.pomodoro-work .time-display {
+    color: #ff5252 !important;
+    text-shadow: 0 0 15px rgba(255, 82, 82, 0.7) !important;
+}
+
+.timer-container.pomodoro-break {
+    background-color: rgba(144, 238, 144, 0.3) !important; /* More visible light green */
+    box-shadow: 0 0 30px rgba(144, 238, 144, 0.2) !important;
+    transition: all 0.5s ease !important;
+}
+
+.timer-container.pomodoro-break .time-display {
+    color: #4caf50 !important;
+    text-shadow: 0 0 15px rgba(76, 175, 80, 0.7) !important;
+}
+
+.timer-container.pomodoro-long-break {
+    background-color: rgba(100, 149, 237, 0.3) !important; /* More visible blue */
+    box-shadow: 0 0 30px rgba(100, 149, 237, 0.2) !important;
+    transition: all 0.5s ease !important;
+}
+
+.timer-container.pomodoro-long-break .time-display {
+    color: #2196f3 !important;
+    text-shadow: 0 0 15px rgba(33, 150, 243, 0.7) !important;
+}

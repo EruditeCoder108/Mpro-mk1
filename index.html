@@ -1,0 +1,2375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Productivity Toolkit</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Productive study toolkit with timer, flashcards, and ambient sounds for enhanced focus and productivity">
+    <meta name="keywords" content="productivity, study, timer, flashcards, pomodoro, focus, ambient sounds">
+    <link rel="canonical" href="https://ultimateproductivitytimer.netlify.app/">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Productivity Toolkit">
+    <meta property="og:description" content="Boost your productivity with our comprehensive study toolkit featuring timer, flashcards, and ambient sounds">
+    <meta property="og:image" content="https://ultimateproductivitytimer.netlify.app/assets/images-webp/trophy.webp">
+    <meta property="og:url" content="https://ultimateproductivitytimer.netlify.app/">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Productivity Toolkit">
+    <meta name="twitter:description" content="Boost your productivity with our comprehensive study toolkit">
+    <meta name="twitter:image" content="https://ultimateproductivitytimer.netlify.app/assets/images-webp/trophy.webp">
+
+    <!-- reCAPTCHA v3 API -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdPJscrAAAAANzUWzwN62XbCsWP68ymVwB99-Li" defer></script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/icons/icon.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icon (for iOS) -->
+    <link rel="apple-touch-icon" href="assets/icons/ios/180.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/icons/ios/152.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="assets/icons/ios/144.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/icons/ios/120.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="assets/icons/ios/114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="assets/icons/ios/72.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="assets/icons/ios/57.png">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="UPtoolkit">
+
+    <!-- Optimized Google Fonts with font-display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&family=Source+Code+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Cursor Styles -->
+    <link rel="stylesheet" href="css/cursor.css">
+    <link rel="stylesheet" href="css/timer-styles.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/background.css">
+    <link rel="stylesheet" href="css/loading-screens.css">
+    <link rel="stylesheet" href="css/page-transitions.css">
+    <link rel="stylesheet" href="css/ambient-sounds.css">
+    <link rel="stylesheet" href="css/health-toast.css">
+    <link rel="stylesheet" href="css/mobile-responsive.css">
+    <link rel="stylesheet" href="css/goal-countdown.css">
+    <link rel="stylesheet" href="css/study-together.css">
+
+    <!-- Synchronous Background Loader - Prevents FOUC -->
+    <script>
+        (function() {
+            'use strict';
+            
+            // Immediately apply saved background to prevent black screen
+            function applyImmediateBackground() {
+                try {
+                    // Firebase is not loaded yet at this point, so we use default localStorage keys
+                    // The BackgroundManager will handle user-specific keys later
+                    const userSuffix = '';
+                    
+                    // Get background type and source
+                    const backgroundType = localStorage.getItem(`backgroundType${userSuffix}`) || 'static';
+                    const staticImage = localStorage.getItem(`backgroundStaticImage${userSuffix}`);
+                    const solidColorEnabled = localStorage.getItem(`solidColorEnabled${userSuffix}`) === 'true';
+                    const solidColorValue = localStorage.getItem(`solidColorValue${userSuffix}`) || '#000000';
+                    
+                    // Create inline style element
+                    const style = document.createElement('style');
+                    style.id = 'immediate-background';
+                    
+                    let backgroundCSS = '';
+                    
+                    if (solidColorEnabled) {
+                        // Apply solid color background
+                        backgroundCSS = `
+                            body {
+                                background-color: ${solidColorValue} !important;
+                                background-image: none !important;
+                                background-size: initial !important;
+                                background-position: initial !important;
+                                background-repeat: initial !important;
+                            }
+                        `;
+                    } else if (backgroundType === 'static' && staticImage) {
+                        // Apply static background image
+                        backgroundCSS = `
+                            body {
+                                background-image: url('${staticImage}') !important;
+                                background-size: cover !important;
+                                background-position: center !important;
+                                background-repeat: no-repeat !important;
+                                background-attachment: fixed !important;
+                            }
+                        `;
+                    } else {
+                        // Apply default background
+                        backgroundCSS = `
+                            body {
+                                background-image: url('assets/background-images-webp/Bimg41.webp') !important;
+                                background-size: cover !important;
+                                background-position: center !important;
+                                background-repeat: no-repeat !important;
+                                background-attachment: fixed !important;
+                            }
+                        `;
+                    }
+                    
+                    style.textContent = backgroundCSS;
+                    document.head.appendChild(style);
+                    
+                    console.log('Immediate background applied to prevent FOUC');
+                    
+                } catch (error) {
+                    console.warn('Failed to apply immediate background:', error);
+                    // Fallback to default background
+                    const fallbackStyle = document.createElement('style');
+                    fallbackStyle.id = 'immediate-background';
+                    fallbackStyle.textContent = `
+                        body {
+                            background-image: url('assets/background-images-webp/Bimg41.webp') !important;
+                            background-size: cover !important;
+                            background-position: center !important;
+                            background-repeat: no-repeat !important;
+                            background-attachment: fixed !important;
+                        }
+                    `;
+                    document.head.appendChild(fallbackStyle);
+                }
+            }
+            
+            // Apply background immediately
+            applyImmediateBackground();
+            
+            // Remove the immediate background style once BackgroundManager takes over
+            window.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() {
+                    const immediateStyle = document.getElementById('immediate-background');
+                    if (immediateStyle) {
+                        immediateStyle.remove();
+                        console.log('Immediate background style removed - BackgroundManager now active');
+                    }
+                }, 100); // Small delay to ensure BackgroundManager is ready
+
+                // Friends button authentication check
+                const friendsBtn = document.getElementById('friends-btn');
+                if (friendsBtn) {
+                    friendsBtn.addEventListener('click', function() {
+                        // Simple authentication check
+                        if (typeof auth !== 'undefined' && auth && auth.currentUser) {
+                            // User is authenticated, navigate to friends
+                            window.location.href = 'friends.html';
+                        } else {
+                            // User is not authenticated, show toast
+                            toast.warning('Please log in first to access your friends list!');
+                        }
+                    });
+                }
+
+                // Leaderboard button authentication check
+                const leaderboardBtn = document.getElementById('leaderboard-btn');
+                if (leaderboardBtn) {
+                    leaderboardBtn.addEventListener('click', function() {
+                        // Simple authentication check
+                        if (typeof auth !== 'undefined' && auth && auth.currentUser) {
+                            // User is authenticated, navigate to leaderboard
+                            window.location.href = 'leaderboard.html';
+                        } else {
+                            // User is not authenticated, show toast
+                            toast.warning('Please log in first to access the leaderboard!');
+                        }
+                    });
+                }
+            });
+            
+        })();
+    </script>
+
+<!-- Loading screen styles moved to css/loading-screens.css -->
+   </head>
+<body>
+    <!-- Dark Mode Overlay -->
+    <div id="dark-mode-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.3); pointer-events: none; z-index: 1; transition: opacity 0.3s ease;"></div>
+    
+    <!-- Custom Cursor Elements -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
+    <!-- Loading Screen -->
+    <div class="loader">
+        <svg
+          aria-label="loader being flipped clockwise and circled by three white curves fading in and out"
+          role="img"
+          height="56px"
+          width="56px"
+          viewBox="0 0 56 56"
+          class="loader-svg"
+        >
+          <clipPath id="sand-mound-top">
+            <path
+              d="M 14.613 13.087 C 15.814 12.059 19.3 8.039 20.3 6.539 C 21.5 4.789 21.5 2.039 21.5 2.039 L 3 2.039 C 3 2.039 3 4.789 4.2 6.539 C 5.2 8.039 8.686 12.059 9.887 13.087 C 11 14.039 12.25 14.039 12.25 14.039 C 12.25 14.039 13.5 14.039 14.613 13.087 Z"
+              class="loader__sand-mound-top"
+            ></path>
+          </clipPath>
+          <clipPath id="sand-mound-bottom">
+            <path
+              d="M 14.613 20.452 C 15.814 21.48 19.3 25.5 20.3 27 C 21.5 28.75 21.5 31.5 21.5 31.5 L 3 31.5 C 3 31.5 3 28.75 4.2 27 C 5.2 25.5 8.686 21.48 9.887 20.452 C 11 19.5 12.25 19.5 12.25 19.5 C 12.25 19.5 13.5 19.5 14.613 20.452 Z"
+              class="loader__sand-mound-bottom"
+            ></path>
+          </clipPath>
+          <g transform="translate(2,2)">
+            <g
+              transform="rotate(-90,26,26)"
+              stroke-linecap="round"
+              stroke-dashoffset="153.94"
+              stroke-dasharray="153.94 153.94"
+              stroke="hsl(0,0%,100%)"
+              fill="none"
+            >
+              <circle
+                transform="rotate(0,26,26)"
+                r="24.5"
+                cy="26"
+                cx="26"
+                stroke-width="2.5"
+                class="loader__motion-thick"
+              ></circle>
+              <circle
+                transform="rotate(90,26,26)"
+                r="24.5"
+                cy="26"
+                cx="26"
+                stroke-width="1.75"
+                class="loader__motion-medium"
+              ></circle>
+              <circle
+                transform="rotate(180,26,26)"
+                r="24.5"
+                cy="26"
+                cx="26"
+                stroke-width="1"
+                class="loader__motion-thin"
+              ></circle>
+            </g>
+            <g transform="translate(13.75,9.25)" class="loader__model">
+              <path
+                d="M 1.5 2 L 23 2 C 23 2 22.5 8.5 19 12 C 16 15.5 13.5 13.5 13.5 16.75 C 13.5 20 16 18 19 21.5 C 22.5 25 23 31.5 23 31.5 L 1.5 31.5 C 1.5 31.5 2 25 5.5 21.5 C 8.5 18 11 20 11 16.75 C 11 13.5 8.5 15.5 5.5 12 C 2 8.5 1.5 2 1.5 2 Z"
+                fill="hsl(var(--hue),90%,85%)"
+              ></path>
+
+              <g stroke-linecap="round" stroke="hsl(35,90%,90%)">
+                <line
+                  y2="20.75"
+                  x2="12"
+                  y1="15.75"
+                  x1="12"
+                  stroke-dasharray="0.25 33.75"
+                  stroke-width="1"
+                  class="loader__sand-grain-left"
+                ></line>
+                <line
+                  y2="21.75"
+                  x2="12.5"
+                  y1="16.75"
+                  x1="12.5"
+                  stroke-dasharray="0.25 33.75"
+                  stroke-width="1"
+                  class="loader__sand-grain-right"
+                ></line>
+                <line
+                  y2="31.5"
+                  x2="12.25"
+                  y1="18"
+                  x1="12.25"
+                  stroke-dasharray="0.5 107.5"
+                  stroke-width="1"
+                  class="loader__sand-drop"
+                ></line>
+                <line
+                  y2="31.5"
+                  x2="12.25"
+                  y1="14.75"
+                  x1="12.25"
+                  stroke-dasharray="54 54"
+                  stroke-width="1.5"
+                  class="loader__sand-fill"
+                ></line>
+                <line
+                  y2="31.5"
+                  x2="12"
+                  y1="16"
+                  x1="12"
+                  stroke-dasharray="1 107"
+                  stroke-width="1"
+                  stroke="hsl(35,90%,83%)"
+                  class="loader__sand-line-left"
+                ></line>
+                <line
+                  y2="31.5"
+                  x2="12.5"
+                  y1="16"
+                  x1="12.5"
+                  stroke-dasharray="12 96"
+                  stroke-width="1"
+                  stroke="hsl(35,90%,83%)"
+                  class="loader__sand-line-right"
+                ></line>
+
+                <g stroke-width="0" fill="hsl(35,90%,90%)">
+                  <path
+                    d="M 12.25 15 L 15.392 13.486 C 21.737 11.168 22.5 2 22.5 2 L 2 2.013 C 2 2.013 2.753 11.046 9.009 13.438 L 12.25 15 Z"
+                    clip-path="url(#sand-mound-top)"
+                  ></path>
+                  <path
+                    d="M 12.25 18.5 L 15.392 20.014 C 21.737 22.332 22.5 31.5 22.5 31.5 L 2 31.487 C 2 31.487 2.753 22.454 9.009 20.062 Z"
+                    clip-path="url(#sand-mound-bottom)"
+                  ></path>
+                </g>
+              </g>
+
+              <g stroke-width="2" stroke-linecap="round" opacity="0.7" fill="none">
+                <path
+                  d="M 19.437 3.421 C 19.437 3.421 19.671 6.454 17.914 8.846 C 16.157 11.238 14.5 11.5 14.5 11.5"
+                  stroke="hsl(0,0%,100%)"
+                  class="loader__glare-top"
+                ></path>
+                <path
+                  transform="rotate(180,12.25,16.75)"
+                  d="M 19.437 3.421 C 19.437 3.421 19.671 6.454 17.914 8.846 C 16.157 11.238 14.5 11.5 14.5 11.5"
+                  stroke="hsla(0,0%,100%,0)"
+                  class="loader__glare-bottom"
+                ></path>
+              </g>
+
+              <rect height="2" width="24.5" fill="hsl(var(--hue),90%,50%)"></rect>
+              <rect
+                height="1"
+                width="19.5"
+                y="0.5"
+                x="2.5"
+                ry="0.5"
+                rx="0.5"
+                fill="hsl(var(--hue),90%,57.5%)"
+              ></rect>
+              <rect
+                height="2"
+                width="24.5"
+                y="31.5"
+                fill="hsl(var(--hue),90%,50%)"
+              ></rect>
+              <rect
+                height="1"
+                width="19.5"
+                y="32"
+                x="2.5"
+                ry="0.5"
+                rx="0.5"
+                fill="hsl(var(--hue),90%,57.5%)"
+              ></rect>
+            </g>
+          </g>
+        </svg>
+    </div>
+
+    <!-- Flashcards Loading Screen -->
+    <div class="flashcards-loader" id="flashcards-loader">
+        <svg xmlns="http://www.w3.org/2000/svg" height="200px" width="200px" viewBox="0 0 200 200" class="pencil">
+            <defs>
+                <clipPath id="pencil-eraser">
+                    <rect height="30" width="30" ry="5" rx="5"></rect>
+                </clipPath>
+            </defs>
+            <circle transform="rotate(-113,100,100)" stroke-linecap="round" stroke-dashoffset="439.82" stroke-dasharray="439.82 439.82" stroke-width="2" stroke="currentColor" fill="none" r="70" class="pencil__stroke"></circle>
+            <g transform="translate(100,100)" class="pencil__rotate">
+                <g fill="none">
+                    <circle transform="rotate(-90)" stroke-dashoffset="402" stroke-dasharray="402.12 402.12" stroke-width="30" stroke="hsl(223,90%,50%)" r="64" class="pencil__body1"></circle>
+                    <circle transform="rotate(-90)" stroke-dashoffset="465" stroke-dasharray="464.96 464.96" stroke-width="10" stroke="hsl(223,90%,60%)" r="74" class="pencil__body2"></circle>
+                    <circle transform="rotate(-90)" stroke-dashoffset="339" stroke-dasharray="339.29 339.29" stroke-width="10" stroke="hsl(223,90%,40%)" r="54" class="pencil__body3"></circle>
+                </g>
+                <g transform="rotate(-90) translate(49,0)" class="pencil__eraser">
+                    <g class="pencil__eraser-skew">
+                        <rect height="30" width="30" ry="5" rx="5" fill="hsl(223,90%,70%)"></rect>
+                        <rect clip-path="url(#pencil-eraser)" height="30" width="5" fill="hsl(223,90%,60%)"></rect>
+                        <rect height="20" width="30" fill="hsl(223,10%,90%)"></rect>
+                        <rect height="20" width="15" fill="hsl(223,10%,70%)"></rect>
+                        <rect height="20" width="5" fill="hsl(223,10%,80%)"></rect>
+                        <rect height="2" width="30" y="6" fill="hsla(223,10%,10%,0.2)"></rect>
+                        <rect height="2" width="30" y="13" fill="hsla(223,10%,10%,0.2)"></rect>
+                    </g>
+                </g>
+                <g transform="rotate(-90) translate(49,-30)" class="pencil__point">
+                    <polygon points="15 0,30 30,0 30" fill="hsl(33,90%,70%)"></polygon>
+                    <polygon points="15 0,6 30,0 30" fill="hsl(33,90%,50%)"></polygon>
+                    <polygon points="15 0,20 10,10 10" fill="hsl(223,10%,10%)"></polygon>
+                </g>
+            </g>
+        </svg>
+        <div class="loading-text">Loading Flashcards...</div>
+    </div>
+
+    <!-- Progress Loading Screen -->
+    <div class="progress-loader" id="progress-loader">
+        <div class="loading-wave">
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+            <div class="loading-bar"></div>
+        </div>
+        <div class="loading-text">Loading Focus Report...</div>
+    </div>
+
+    <!-- Checklist Loading Screen -->
+    <div class="checklist-loader" id="checklist-loader">
+        <div class="book">
+            <div class="book__pg-shadow"></div>
+            <div class="book__pg"></div>
+            <div class="book__pg book__pg--2"></div>
+            <div class="book__pg book__pg--3"></div>
+            <div class="book__pg book__pg--4"></div>
+            <div class="book__pg book__pg--5"></div>
+        </div>
+        <div class="loading-text">Loading Checklist...</div>
+    </div>
+    
+    <!-- Rotating images container - will be populated by settings.js -->
+    <div class="rotating-image-container" id="rotating-images">
+        <!-- Images will be added dynamically by settings.js -->
+    </div>
+
+
+    
+    <div class="time-selector" style="display: flex;">
+        <div class="time-display-container">
+            <div class="time-display" id="time-display">00:00</div>
+            
+            <div class="time-picker-popup" id="time-picker-popup">
+                <div class="picker-content">
+                    <div id="hours-column" class="time-column" tabindex="0">
+                        <div class="time-column-content" id="hours-content">
+                            <!-- Hours 0-23 will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="colon-separator">:</div>
+                    <div id="minutes-column" class="time-column" tabindex="0">
+                        <div class="time-column-content" id="minutes-content">
+                            <!-- Minutes 00-59 will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hidden native select elements for backward compatibility -->
+            <select id="hours" style="display: none;">
+                <option value="0">00</option>
+                <option value="1">01</option>
+                <option value="2">02</option>
+                <option value="3">03</option>
+                <option value="4">04</option>
+                <option value="5">05</option>
+                <option value="6">06</option>
+                <option value="7">07</option>
+                <option value="8">08</option>
+                <option value="9">09</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+            </select>
+            <select id="minutes" style="display: none;">
+                <option value="0">00</option>
+                <option value="1">01</option>
+                <option value="2">02</option>
+                <option value="3">03</option>
+                <option value="4">04</option>
+                <option value="5">05</option>
+                <option value="6">06</option>
+                <option value="7">07</option>
+                <option value="8">08</option>
+                <option value="9">09</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+                <option value="24">24</option>
+                <option value="25">25</option>
+                <option value="26">26</option>
+                <option value="27">27</option>
+                <option value="28">28</option>
+                <option value="29">29</option>
+                <option value="30">30</option>
+                <option value="31">31</option>
+                <option value="32">32</option>
+                <option value="33">33</option>
+                <option value="34">34</option>
+                <option value="35">35</option>
+                <option value="36">36</option>
+                <option value="37">37</option>
+                <option value="38">38</option>
+                <option value="39">39</option>
+                <option value="40">40</option>
+                <option value="41">41</option>
+                <option value="42">42</option>
+                <option value="43">43</option>
+                <option value="44">44</option>
+                <option value="45">45</option>
+                <option value="46">46</option>
+                <option value="47">47</option>
+                <option value="48">48</option>
+                <option value="49">49</option>
+                <option value="50">50</option>
+                <option value="51">51</option>
+                <option value="52">52</option>
+                <option value="53">53</option>
+                <option value="54">54</option>
+                <option value="55">55</option>
+                <option value="56">56</option>
+                <option value="57">57</option>
+                <option value="58">58</option>
+                <option value="59">59</option>
+            </select>
+        </div>
+        
+        <!-- Task Dropdown Container -->
+        <div class="task-selector-inline">
+            <div class="task-display-container">
+                <div class="task-display" id="task-display">
+                    <div class="task-display-header">
+                        <span class="task-display-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 64 64" role="img" aria-labelledby="tasksIcon">
+                                <title id="tasksIcon">Tasks Icon</title>
+                                <defs>
+                                    <!-- Paper gradient -->
+                                    <linearGradient id="paperGrad" x1="0" x2="1" y1="0" y2="1">
+                                        <stop offset="0" stop-color="#ffffff"/>
+                                        <stop offset="1" stop-color="#f4f7fb"/>
+                                    </linearGradient>
+                                    <!-- Pencil gradient -->
+                                    <linearGradient id="pencilGrad" x1="0" x2="1">
+                                        <stop offset="0" stop-color="#ffb95e"/>
+                                        <stop offset="1" stop-color="#ff774d"/>
+                                    </linearGradient>
+                                    <!-- Drop shadow -->
+                                    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feDropShadow dx="0" dy="2" stdDeviation="2.2" flood-color="#000" flood-opacity="0.15"/>
+                                    </filter>
+                                </defs>
+
+                                <!-- Background circle -->
+                                <circle cx="32" cy="32" r="30" fill="#f0f6ff"/>
+
+                                <!-- Notebook -->
+                                <g filter="url(#shadow)">
+                                    <rect x="14" y="12" width="28" height="40" rx="4" fill="url(#paperGrad)" stroke="#d8e0ed" stroke-width="1.2"/>
+                                    <!-- Top band -->
+                                    <rect x="14" y="12" width="28" height="6" rx="3" fill="#f9fbff"/>
+                                    <!-- Lines -->
+                                    <g stroke="#b5c6e3" stroke-width="1.2" stroke-linecap="round">
+                                        <line x1="18" y1="22" x2="38" y2="22"/>
+                                        <line x1="18" y1="28" x2="38" y2="28"/>
+                                        <line x1="18" y1="34" x2="38" y2="34"/>
+                                        <line x1="18" y1="40" x2="38" y2="40"/>
+                                    </g>
+                                    <!-- Check marks -->
+                                    <g stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="18,22 20,24 24,20"/>
+                                        <polyline points="18,34 20,36 24,32"/>
+                                    </g>
+                                </g>
+
+                                <!-- Pencil -->
+                                <g transform="translate(30,38) rotate(-35)" filter="url(#shadow)">
+                                    <!-- Eraser -->
+                                    <rect x="-6" y="-2" width="5.2" height="8" rx="1.5" fill="#444"/>
+                                    <!-- Pencil body -->
+                                    <rect x="-1" y="-2" width="28" height="8" rx="2" fill="url(#pencilGrad)"/>
+                                    <!-- Metal band -->
+                                    <rect x="22" y="-2" width="4" height="8" rx="1" fill="#ccd6e9"/>
+                                    <!-- Tip -->
+                                    <polygon points="26,-2 34,2 26,6" fill="#f5e0bf"/>
+                                    <polygon points="26,-2 29,2 26,6" fill="#d2b48c"/>
+                                </g>
+                            </svg>
+                        </span>
+                        <span class="task-display-text">Tasks</span>
+                        <span class="task-display-arrow">▼</span>
+                    </div>
+                </div>
+                
+                <div class="task-dropdown-popup" id="task-dropdown-popup">
+                    <div class="task-dropdown-content">
+                        <button id="add-task-btn" class="add-task-btn" aria-label="Add New Task">
+                            <span class="add-task-icon">+</span>
+                            Add a Task
+                        </button>
+                        
+                        <div class="task-list" id="task-list">
+                            <!-- Tasks will be populated here dynamically -->
+                            <div class="no-tasks-message" id="no-tasks-message">
+                                No tasks yet. Click "Add a Task" to get started!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Plant Growth Container -->
+    <div class="plant-growth-container" id="plant-growth-container">
+        <div class="plant-image-container">
+                            <img src="assets/images-webp/seed.webp" alt="Plant Growth Stage" id="plant-growth-image" class="plant-image" width="48" height="48" loading="lazy">
+        </div>
+        <div class="plant-progress-container">
+            <div class="plant-progress-bar"></div>
+            <div class="plant-progress-stages">
+                <div class="progress-stage" data-stage="0">Seed</div>
+                <div class="progress-stage" data-stage="1">Sprout</div>
+                <div class="progress-stage" data-stage="2">Sapling</div>
+                <div class="progress-stage" data-stage="3">Growing</div>
+                <div class="progress-stage" data-stage="4">Flowering</div>
+                <div class="progress-stage" data-stage="5">Mature</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Video Background - Disabled (Coming Soon) -->
+    <!-- Video background functionality has been temporarily disabled -->
+    
+    <div class="timer-container">
+        <div class="quote-container hidden" id="quote-display">
+            <textarea placeholder="Enter your quote..." class="quote-textarea" maxlength="200"></textarea>
+            <input type="text" placeholder="Quote source (optional)" class="quote-source" maxlength="100">
+        </div>
+        
+        <!-- Circular Progress Container for Style 10 -->
+        <div class="circular-progress-container" id="circular-progress-container" style="display: none;">
+            <svg class="circular-progress-svg" viewBox="0 0 200 200">
+                <!-- Background Circles -->
+                <circle class="circle-bg" cx="100" cy="100" r="90" />
+                <circle class="circle-bg" cx="100" cy="100" r="78" />
+                <circle class="circle-bg" cx="100" cy="100" r="66" />
+                
+                <!-- Progress Circles -->
+                <circle id="hours-circle" class="circle-hours" cx="100" cy="100" r="90" />
+                <circle id="minutes-circle" class="circle-minutes" cx="100" cy="100" r="78" />
+                <circle id="seconds-circle" class="circle-seconds" cx="100" cy="100" r="66" />
+            </svg>
+        </div>
+        
+        <div class="display">
+            <span id="display-hours">00</span>:<span id="display-minutes">00</span>:<span id="display-seconds">00</span>
+        </div>
+    </div>
+    
+    
+    <!-- Modern Taskbar Control Box -->
+        <div class="control-box-taskbar auto-hide">
+          <button id="start-btn" class="btn-icon" aria-label="Start/Pause Timer">
+            <div class="btn-tooltip">Start/Pause</div>
+            <svg class="control-icon play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="control-icon pause-icon" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+          
+          <button id="reset-btn" class="btn-icon" aria-label="Reset Timer">
+            <div class="btn-tooltip">Reset</div>
+            <svg class="control-icon" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          </button>
+          
+          <button id="mode-toggle-btn" class="btn-icon" aria-label="Switch to Stopwatch">
+            <div class="btn-tooltip">Switch to Stopwatch</div>
+            <!-- Timer Icon (default) -->
+            <svg class="control-icon timer-icon" viewBox="0 0 24 24">
+              <g fill="currentColor">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="1" fill="currentColor"/>
+              </g>
+            </svg>
+            <!-- Stopwatch Icon (hidden by default) -->
+            <svg class="control-icon stopwatch-icon" viewBox="0 0 24 24" style="display: none;">
+              <g fill="currentColor">
+                <path d="M12,2c-0.5,0-1,0.4-1,1v1h2V3C13,2.4,12.6,2,12,2z"/>
+                <path d="M15,4H9v1c0,0.6,0.4,1,1,1h4c0.6,0,1-0.4,1-1V4z"/>
+                <circle cx="12" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="13" r="1"/>
+                <path d="M12,8v5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                <path d="M17,8l1-1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                <path d="M7,8L6,7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+              </g>
+            </svg>
+          </button>
+          
+          <div class="taskbar-divider"></div>
+          
+          <a href="checklist.html" class="btn-icon" id="checklist-btn" style="--icon-size: 36px;">
+            <div class="btn-tooltip">Home</div>
+            <svg class="control-icon" width="50" height="50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: var(--icon-size); height: var(--icon-size);">
+              <defs>
+                <!-- Cyan glow -->
+                <filter id="cyanGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+
+                <!-- Orange glow -->
+                <filter id="orangeGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Roof -->
+              <path d="M30 100 L100 45 L170 100 Z"
+                    fill="#00e5ff" stroke="#00e5ff" stroke-width="4" stroke-linejoin="round"
+                    filter="url(#cyanGlow)"/>
+
+              <!-- Chimney -->
+              <rect x="120" y="55" width="20" height="30" rx="5" ry="5"
+                    fill="#00e5ff" filter="url(#cyanGlow)"/>
+
+              <!-- House body -->
+              <rect x="50" y="100" width="100" height="70" rx="12" ry="12"
+                    fill="#00e5ff" filter="url(#cyanGlow)"/>
+
+              <!-- Central window -->
+              <rect x="85" y="120" width="30" height="30" rx="7" ry="7"
+                    fill="black" stroke="#00e5ff" stroke-width="2" filter="url(#cyanGlow)"/>
+              <line x1="100" y1="120" x2="100" y2="150" stroke="#00e5ff" stroke-width="2"/>
+              <line x1="85" y1="135" x2="115" y2="135" stroke="#00e5ff" stroke-width="2"/>
+
+              <!-- Smooth orange checkmark (shifted lower) -->
+              <path d="M70 85 L90 105 L135 65"
+                    fill="none" stroke="#ff7b00" stroke-width="9"
+                    stroke-linecap="round" stroke-linejoin="round"
+                    filter="url(#orangeGlow)"/>
+            </svg>
+          </a>
+          
+          <button id="pomodoro-btn" class="btn-icon" style="--icon-size: 36px;">
+            <div class="btn-tooltip">Pomodoro</div>
+            <svg class="control-icon" width="36" height="36" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: var(--icon-size); height: var(--icon-size);">
+              <defs>
+                <radialGradient id="tomatoGrad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#ff4d4d"/>
+                  <stop offset="100%" stop-color="#b30000"/>
+                </radialGradient>
+                <radialGradient id="leafGrad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#3fa93f"/>
+                  <stop offset="100%" stop-color="#1e6d1e"/>
+                </radialGradient>
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="2" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Tomato body -->
+              <circle cx="80" cy="85" r="60" fill="url(#tomatoGrad)" filter="url(#glow)" />
+
+              <!-- Bunched leaves -->
+              <g filter="url(#glow)">
+                <path d="M70 30 C60 5, 95 5, 80 28 Z" fill="url(#leafGrad)" stroke="darkgreen" stroke-width="2"/>
+                <path d="M90 30 C110 5, 70 5, 80 28 Z" fill="url(#leafGrad)" stroke="darkgreen" stroke-width="2"/>
+                <path d="M62 38 C50 15, 90 12, 80 32 Z" fill="url(#leafGrad)" stroke="darkgreen" stroke-width="2"/>
+                <path d="M98 38 C115 15, 70 12, 80 32 Z" fill="url(#leafGrad)" stroke="darkgreen" stroke-width="2"/>
+              </g>
+
+              <!-- Clock face ticks -->
+              <g stroke="white" stroke-width="2">
+                <line x1="80" y1="25" x2="80" y2="35"/>
+                <line x1="80" y1="135" x2="80" y2="145"/>
+                <line x1="25" y1="85" x2="35" y2="85"/>
+                <line x1="125" y1="85" x2="135" y2="85"/>
+                <line x1="40" y1="40" x2="48" y2="48"/>
+                <line x1="112" y1="122" x2="120" y2="130"/>
+                <line x1="40" y1="130" x2="48" y2="122"/>
+                <line x1="112" y1="48" x2="120" y2="40"/>
+              </g>
+
+              <!-- Clock hands -->
+              <line x1="80" y1="85" x2="80" y2="50" stroke="white" stroke-width="3" stroke-linecap="round"/>
+              <line x1="80" y1="85" x2="110" y2="85" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="80" cy="85" r="3" fill="white"/>
+            </svg>
+          </button>
+          
+          <button id="progress-btn" class="btn-icon" style="--icon-size: 44px;">
+            <div class="btn-tooltip">Focus Report</div>
+            <svg class="control-icon" width="44" height="44" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: var(--icon-size); height: var(--icon-size);">
+
+              <!-- Circular progress ring -->
+              <circle cx="100" cy="100" r="70" stroke="#9d4edd" stroke-width="10" fill="none"
+                      stroke-dasharray="440" stroke-dashoffset="120"/>
+
+              <!-- Report sheet -->
+              <rect x="65" y="55" width="70" height="90" rx="10" ry="10"
+                    fill="#a855f7"/>
+
+              <!-- Bars inside sheet -->
+              <rect x="80" y="120" width="10" height="20" rx="3" fill="white"/>
+              <rect x="95" y="105" width="10" height="35" rx="3" fill="white"/>
+              <rect x="110" y="90" width="10" height="50" rx="3" fill="white"/>
+            </svg>
+          </button>
+          
+          <button id="flashcards-btn" class="btn-icon" style="--icon-size: 36px;">
+            <div class="btn-tooltip">Flashcards</div>
+            <svg class="control-icon" width="36" height="36" viewBox="10 -10 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: var(--icon-size); height: var(--icon-size);">
+              <defs>
+                <!-- Blue glow -->
+                <filter id="blueGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Back card -->
+              <rect x="40" y="50" width="120" height="80" rx="12" ry="12"
+                    fill="#00c6ff" filter="url(#blueGlow)" opacity="0.6" transform="rotate(-5 100 90)"/>
+
+              <!-- Middle card -->
+              <rect x="45" y="55" width="120" height="80" rx="12" ry="12"
+                    fill="#00d9ff" filter="url(#blueGlow)" opacity="0.8" transform="rotate(3 105 95)"/>
+
+              <!-- Front card -->
+              <rect x="50" y="60" width="120" height="80" rx="12" ry="12"
+                    fill="#00e5ff" filter="url(#blueGlow)"/>
+
+              <!-- Question mark on front card -->
+              <text x="110" y="110" font-size="45" text-anchor="middle" fill="white"
+                    filter="url(#blueGlow)" font-family="Arial Rounded MT Bold">?</text>
+            </svg>
+          </button>
+
+          <!-- Study Quest Button -->
+          <button id="study-quest-btn" class="btn-icon" style="--icon-size: 38px;">
+            <div class="btn-tooltip">Study Quest</div>
+            <svg class="control-icon" width="38" height="38" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: var(--icon-size); height: var(--icon-size);">
+              <defs>
+                <!-- RPG glow effect -->
+                <filter id="rpgGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                <!-- Gold glow -->
+                <filter id="goldGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Shield background -->
+              <path d="M100 20 L160 40 L160 100 Q160 160 100 180 Q40 160 40 100 L40 40 Z"
+                    fill="#8b5cf6" stroke="#a855f7" stroke-width="4" filter="url(#rpgGlow)"/>
+
+              <!-- Inner shield detail -->
+              <path d="M100 35 L145 50 L145 100 Q145 145 100 160 Q55 145 55 100 L55 50 Z"
+                    fill="none" stroke="#c084fc" stroke-width="2" filter="url(#rpgGlow)"/>
+
+              <!-- Sword -->
+              <rect x="95" y="60" width="10" height="70" rx="2" fill="#fbbf24" filter="url(#goldGlow)"/>
+              <path d="M85 65 L100 50 L115 65 Z" fill="#fbbf24" filter="url(#goldGlow)"/>
+              <rect x="88" y="125" width="24" height="8" rx="2" fill="#f59e0b" filter="url(#goldGlow)"/>
+
+              <!-- Book pages -->
+              <rect x="70" y="90" width="30" height="40" rx="3" fill="white" stroke="#94a3b8" stroke-width="2"/>
+              <line x1="75" y1="100" x2="95" y2="100" stroke="#64748b" stroke-width="2"/>
+              <line x1="75" y1="108" x2="95" y2="108" stroke="#64748b" stroke-width="2"/>
+              <line x1="75" y1="116" x2="95" y2="116" stroke="#64748b" stroke-width="2"/>
+
+              <!-- XP Star -->
+              <circle cx="140" cy="60" r="15" fill="#fbbf24" filter="url(#goldGlow)"/>
+              <text x="140" y="67" text-anchor="middle" font-size="20" fill="white" font-weight="bold">★</text>
+
+              <!-- Level badge -->
+              <circle cx="60" cy="60" r="12" fill="#ef4444" filter="url(#rpgGlow)"/>
+              <text x="60" y="65" text-anchor="middle" font-size="14" fill="white" font-weight="bold">L</text>
+            </svg>
+          </button>
+
+          <!-- Mock Tests Button -->
+          <button class="btn-icon" id="mocktest-btn" title="Mock Tests" style="--icon-size: 36px;">
+            <div class="btn-tooltip">Mock Tests</div>
+            <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="36" height="36" role="img" aria-label="Mock test computer on wooden table">
+                <defs>
+                    <!-- wood gradient -->
+                    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0" stop-color="#b2793a"/>
+                        <stop offset="0.5" stop-color="#a96f34"/>
+                        <stop offset="1" stop-color="#c08b44"/>
+                    </linearGradient>
+
+                    <!-- subtle wood grain -->
+                    <pattern id="grain" patternUnits="userSpaceOnUse" width="40" height="40">
+                        <path d="M0 20 C10 15 30 25 40 20" stroke="#8a5d2a" stroke-width="1" fill="none" opacity="0.25"/>
+                    </pattern>
+
+                    <!-- screen gradient -->
+                    <linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#0b1220"/>
+                        <stop offset="1" stop-color="#08101a"/>
+                    </linearGradient>
+
+                    <!-- glass reflection -->
+                    <linearGradient id="glassRef" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0" stop-color="#ffffff" stop-opacity="0.06"/>
+                        <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.02"/>
+                        <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+                    </linearGradient>
+
+                    <!-- key gradient -->
+                    <linearGradient id="keyGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+                        <stop offset="1" stop-color="#e6e6e6"/>
+                    </linearGradient>
+
+                    <!-- shadow -->
+                    <filter id="drop" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="6" result="b"/>
+                        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Wooden table -->
+                <rect x="0" y="360" width="800" height="240" fill="url(#wood)"/>
+                <rect x="0" y="360" width="800" height="240" fill="url(#grain)" opacity="0.6"/>
+
+                <!-- Table edge highlight -->
+                <rect x="0" y="350" width="800" height="12" fill="#d9a261" opacity="0.9"/>
+
+                <!-- Monitor stand base shadow -->
+                <ellipse cx="400" cy="486" rx="160" ry="20" fill="#000" opacity="0.18"/>
+
+                <!-- Monitor -->
+                <g transform="translate(140,60)">
+                    <!-- bezel -->
+                    <rect x="40" y="20" width="520" height="300" rx="10" ry="10" fill="#0f1720" stroke="#123" stroke-width="2" filter="url(#drop)"/>
+                    <!-- screen area -->
+                    <rect x="56" y="36" width="488" height="268" rx="6" ry="6" fill="url(#screenGrad)"/>
+                    <!-- glass reflection -->
+                    <rect x="56" y="36" width="488" height="268" rx="6" ry="6" fill="url(#glassRef)"/>
+                    <!-- thin inner frame -->
+                    <rect x="56" y="36" width="488" height="268" rx="6" ry="6" fill="none" stroke="#1f2a38" stroke-width="1"/>
+
+                    <!-- monitor footer -->
+                    <rect x="220" y="328" width="160" height="18" rx="6" ry="6" fill="#11161b"/>
+                    <rect x="275" y="346" width="50" height="12" rx="6" ry="6" fill="#0e1418"/>
+
+                    <!-- content: small mock-test text (left column) -->
+                    <g font-family="sans-serif" font-size="14" fill="#dff8ff" opacity="0.95">
+                        <text x="86" y="70" font-weight="700" font-size="18">Mock Test — Chapter 4</text>
+
+                        <!-- question list -->
+                        <g transform="translate(86,92)">
+                            <!-- Q1 -->
+                            <text x="0" y="0">1. Short question text...</text>
+                            <rect x="0" y="8" width="320" height="8" rx="3" fill="#0f2b3a" opacity="0.6"/>
+                            <g fill="#8ef5b6">
+                                <rect x="4" y="10" width="8" height="3" rx="1.5"/>
+                            </g>
+
+                            <!-- Q2 -->
+                            <g transform="translate(0,28)">
+                                <text x="0" y="0">2. Another question...</text>
+                                <rect x="0" y="8" width="300" height="8" rx="3" fill="#0f2b3a" opacity="0.6"/>
+                                <g fill="#ffd27a">
+                                    <rect x="4" y="10" width="8" height="3" rx="1.5"/>
+                                </g>
+                            </g>
+
+                            <!-- Q3 -->
+                            <g transform="translate(0,56)">
+                                <text x="0" y="0">3. True / False ...</text>
+                                <rect x="0" y="8" width="260" height="8" rx="3" fill="#0f2b3a" opacity="0.6"/>
+                                <g fill="#8ef5b6">
+                                    <rect x="4" y="10" width="8" height="3" rx="1.5"/>
+                                </g>
+                            </g>
+
+                            <!-- progress small bar -->
+                            <g transform="translate(0,96)">
+                                <rect x="0" y="0" width="220" height="8" rx="4" fill="#0e2630" />
+                                <rect x="0" y="0" width="110" height="8" rx="4" fill="#39ffb0" />
+                                <text x="232" y="8" font-size="12" fill="#bfeef0">50%</text>
+                            </g>
+                        </g>
+
+                        <!-- right column: subject / timer -->
+                        <g transform="translate(370,90)" font-size="13">
+                            <text x="0" y="0" fill="#c9f7ff" font-weight="600">Subject: Physics</text>
+                            <text x="0" y="26" fill="#bfeef0">Chapter: Electrostatics</text>
+                            <rect x="0" y="40" width="120" height="38" rx="8" ry="8" fill="#06262f" stroke="#0b6b8a" />
+                            <text x="12" y="64" fill="#bff7ff" font-weight="700">Timer</text>
+                            <text x="12" y="80" fill="#9ff0ea" font-size="16">24:00</text>
+                        </g>
+                    </g>
+                </g>
+
+                <!-- Keyboard -->
+                <g transform="translate(170,420)">
+                    <rect x="0" y="0" width="460" height="70" rx="10" ry="10" fill="#11161a" stroke="#152029" stroke-width="1" filter="url(#drop)"/>
+                    <!-- keys: simple grid -->
+                    <g transform="translate(14,12)" fill="url(#keyGrad)" stroke="#cfcfcf" stroke-width="0.6">
+                        <!-- generate keys in rows -->
+                        <!-- row 1 -->
+                        <rect x="0" y="0" width="28" height="18" rx="4"/>
+                        <rect x="34" y="0" width="28" height="18" rx="4"/>
+                        <rect x="68" y="0" width="28" height="18" rx="4"/>
+                        <rect x="102" y="0" width="28" height="18" rx="4"/>
+                        <rect x="136" y="0" width="60" height="18" rx="6"/> <!-- space for longer keys -->
+                        <!-- row 2 -->
+                        <g transform="translate(0,22)">
+                            <rect x="0" y="0" width="28" height="18" rx="4"/>
+                            <rect x="34" y="0" width="28" height="18" rx="4"/>
+                            <rect x="68" y="0" width="28" height="18" rx="4"/>
+                            <rect x="102" y="0" width="28" height="18" rx="4"/>
+                            <rect x="136" y="0" width="90" height="18" rx="6"/>
+                        </g>
+                    </g>
+                </g>
+
+                <!-- Mouse -->
+                <g transform="translate(650,450)">
+                    <ellipse cx="0" cy="12" rx="34" ry="16" fill="#0f1416" stroke="#222" stroke-width="1" filter="url(#drop)"/>
+                    <path d="M-20 6 q10 -14 40 0" fill="none" stroke="#2b2f33" stroke-width="3" stroke-linecap="round"/>
+                    <rect x="-5" y="0" width="10" height="18" rx="4" fill="#222" stroke="#1e2629"/>
+                </g>
+
+                <!-- small ambient shadow under keyboard -->
+                <ellipse cx="400" cy="495" rx="260" ry="24" fill="#000" opacity="0.06"/>
+            </svg>
+          </button>
+
+          <button id="fullscreen-btn" class="btn-icon">
+            <div class="btn-tooltip">Full Screen</div>
+            <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200" style="width: 36px; height: 36px;">
+                <defs>
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <!-- Background circle -->
+                <circle cx="50" cy="50" r="45" fill="none" stroke="cyan" stroke-width="2" filter="url(#glow)" />
+
+                <!-- Fullscreen corners -->
+                <path d="M20 35 V20 H35" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                <path d="M80 35 V20 H65" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                <path d="M20 65 V80 H35" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+                <path d="M80 65 V80 H65" stroke="cyan" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+            </svg>
+          </button>
+          
+          <div class="taskbar-divider"></div>
+          
+          <button id="ambient-popup-btn" class="btn-icon">
+            <div class="btn-tooltip">Ambient Sounds</div>
+            <svg class="control-icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+          </button>
+          
+          <button id="upload-bg-btn" class="btn-icon">
+            <div class="btn-tooltip">Background Image</div>
+            <svg class="control-icon" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          </button>
+          
+          <button id="settings-btn" class="btn-icon">
+            <div class="btn-tooltip">Settings</div>
+            <svg class="control-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          </button>
+          
+          <button id="friends-btn" class="btn-icon">
+            <div class="btn-tooltip">Friends</div>
+            <svg class="control-icon" viewBox="0 0 64 64" width="80" height="80" aria-label="friends icon">
+              <defs>
+                <linearGradient id="c" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0" stop-color="#ff3cac"/>
+                  <stop offset="1" stop-color="#764ba2"/>
+                </linearGradient>
+                <linearGradient id="b" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0" stop-color="#00f5a0"/>
+                  <stop offset="1" stop-color="#00c3ff"/>
+                </linearGradient>
+                <linearGradient id="d" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0" stop-color="#fff" stop-opacity=".45"/>
+                  <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+                </linearGradient>
+                <filter id="a" x="-30%" y="-30%" width="160%" height="160%">
+                  <feOffset dy="1" in="SourceAlpha" result="o"/>
+                  <feGaussianBlur in="o" stdDeviation="2" result="b"/>
+                  <feColorMatrix in="b" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.35 0" result="shadow"/>
+                  <feBlend in="shadow" in2="SourceGraphic"/>
+                </filter>
+              </defs>
+              <g filter="url(#a)" transform="translate(2 -1)">
+                <path d="M14 40c0-4.5 3.6-8.2 8-8.2h2.6c.6 0 1.1.5 1.1 1.1v1.6c0 .6-.5 1.1-1.1 1.1H22c-3.1 0-5.6 2.6-5.6 5.7V43c0 .6-.5 1.1-1.1 1.1H14z" fill="url(#b)" opacity=".95"/>
+                <circle cx="18.5" cy="25.5" r="5.2" fill="url(#b)"/>
+                <circle cx="18.5" cy="25.5" r="5.7" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width=".8"/>
+              </g>
+              <g filter="url(#a)" transform="translate(-2 -1)">
+                <path d="M50 40c0-4.5-3.6-8.2-8-8.2h-2.6c-.6 0-1.1.5-1.1 1.1v1.6c0 .6.5 1.1 1.1 1.1H42c3.1 0 5.6 2.6 5.6 5.7V43c0 .6.5 1.1 1.1 1.1H50z" fill="url(#b)" opacity=".95"/>
+                <circle cx="45.5" cy="25.5" r="5.2" fill="url(#b)"/>
+                <circle cx="45.5" cy="25.5" r="5.7" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width=".8"/>
+              </g>
+              <g filter="url(#a)">
+                <path d="M20 46c0-5.5 6.5-9 12-9s12 3.5 12 9v2H20z" fill="url(#c)"/>
+                <circle cx="32" cy="22" r="8.2" fill="url(#c)"/>
+                <circle cx="32" cy="22" r="8.2" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width=".9"/>
+              </g>
+              <path d="M16 18c6-8 26-8 32 0v6c-6-6-26-6-32 0Z" fill="url(#d)" opacity=".6"/>
+              <circle cx="26.5" cy="17.5" r="1.1" fill="#fff" opacity=".9"/>
+              <circle cx="36.5" cy="17" r=".7" fill="#fff" opacity=".7"/>
+              <path d="M12 48c0-7 8-12 20-12s20 5 20 12" fill="none" stroke="#000" stroke-opacity=".06" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+
+          <button id="leaderboard-btn" class="btn-icon">
+            <div class="btn-tooltip">Leaderboard</div>
+            <svg class="control-icon" viewBox="0 0 64 64" width="80" height="80" aria-label="leaderboard icon">
+              <defs>
+                <linearGradient id="b" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#FFD93D"/>
+                  <stop offset="1" stop-color="#F80"/>
+                </linearGradient>
+                <linearGradient id="d" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#00f5a0"/>
+                  <stop offset="1" stop-color="#00c3ff"/>
+                </linearGradient>
+                <linearGradient id="c" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#ff3cac"/>
+                  <stop offset="1" stop-color="#784ba0"/>
+                </linearGradient>
+                <filter id="a" x="-30%" y="-30%" width="160%" height="160%">
+                  <feOffset dy="2" in="SourceAlpha" result="o"/>
+                  <feGaussianBlur in="o" stdDeviation="2" result="b"/>
+                  <feColorMatrix in="b" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.35 0" result="s"/>
+                  <feBlend in="s" in2="SourceGraphic"/>
+                </filter>
+              </defs>
+              <g filter="url(#a)">
+                <rect x="24" y="22" width="16" height="24" rx="2" fill="url(#b)"/>
+                <text x="32" y="40" font-size="12" font-weight="bold" text-anchor="middle" fill="#fff">1</text>
+              </g>
+              <g filter="url(#a)">
+                <rect x="10" y="28" width="12" height="18" rx="2" fill="url(#c)"/>
+                <text x="16" y="40" font-size="10" font-weight="bold" text-anchor="middle" fill="#fff">2</text>
+              </g>
+              <g filter="url(#a)">
+                <rect x="42" y="30" width="12" height="16" rx="2" fill="url(#d)"/>
+                <text x="48" y="40" font-size="10" font-weight="bold" text-anchor="middle" fill="#fff">3</text>
+              </g>
+              <circle cx="32" cy="16" r="6" fill="url(#b)" stroke="#fff" stroke-opacity=".3" stroke-width="1.2"/>
+              <circle cx="16" cy="22" r="4.5" fill="url(#c)" stroke="#fff" stroke-opacity=".3"/>
+              <circle cx="48" cy="24" r="4.5" fill="url(#d)" stroke="#fff" stroke-opacity=".3"/>
+            </svg>
+          </button>
+
+          <button id="study-together-btn" class="btn-icon">
+            <div class="btn-tooltip">Study Together</div>
+            <svg class="control-icon" viewBox="0 0 200 200" width="80" height="80" aria-label="study together icon" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <filter id="b" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="5" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                <filter id="c" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                <filter id="e" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                <filter id="d" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                <filter id="f" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                <radialGradient id="a" cx="50%" cy="50%" r="60%">
+                  <stop offset="0%" stop-color="#5BA8FF"/>
+                  <stop offset="100%" stop-color="#1E40AF"/>
+                </radialGradient>
+              </defs>
+              <circle cx="100" cy="100" r="90" fill="url(#a)" filter="url(#b)"/>
+              <path d="M40 120q35-25 60 0 25-25 60 0v22q-35-17-60 0-25-17-60 0Z" fill="#fff" filter="url(#b)"/>
+              <circle cx="100" cy="45" r="14" fill="#FFE45E" filter="url(#c)"/>
+              <path d="M85 60q15-8 30 0v15q-15-7-30 0Z" fill="#FFE45E" filter="url(#c)"/>
+              <circle cx="55" cy="80" r="14" fill="#7CF7A4" filter="url(#d)"/>
+              <path d="M40 95q15-10 30 0v13q-15-18-30 0Z" fill="#7CF7A4" filter="url(#d)"/>
+              <circle cx="145" cy="80" r="14" fill="#FF7C7C" filter="url(#e)"/>
+              <path d="M130 95q15-10 30 0v13h-30Z" fill="#FF7C7C" filter="url(#e)"/>
+              <circle cx="100" cy="155" r="14" fill="#C58CFF" filter="url(#f)"/>
+              <path d="M85 165q15 5 30 0v13q-15-6-30 0Z" fill="#C58CFF" filter="url(#f)"/>
+              <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="5" filter="url(#b)"/>
+            </svg>
+          </button>
+
+          <div class="taskbar-divider"></div>
+          
+          <!-- AI Assistant Button -->
+          <button id="ai-assistant-btn" class="btn-icon ai-btn" style="--icon-size: 40px;">
+            <div class="btn-tooltip">AI Assistant</div>
+            <svg class="control-icon ai-icon" width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: var(--icon-size); height: var(--icon-size);">
+              <defs>
+                <!-- Futuristic AI glow effects -->
+                <filter id="aiGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                
+                <!-- Neural network gradient -->
+                <linearGradient id="neuralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#00d4ff"/>
+                  <stop offset="50%" stop-color="#7c3aed"/>
+                  <stop offset="100%" stop-color="#ec4899"/>
+                </linearGradient>
+                
+                <!-- Circuit pattern -->
+                <pattern id="circuitPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <rect width="20" height="20" fill="none"/>
+                  <path d="M0,10 L20,10 M10,0 L10,20" stroke="#00d4ff" stroke-width="0.5" opacity="0.3"/>
+                </pattern>
+              </defs>
+              
+              <!-- Background circuit pattern -->
+              <rect width="200" height="200" fill="url(#circuitPattern)" opacity="0.1"/>
+              
+              <!-- Main AI brain/circuit -->
+              <g filter="url(#aiGlow)">
+                <!-- Central processing unit -->
+                <circle cx="100" cy="100" r="45" fill="url(#neuralGrad)" opacity="0.8"/>
+                
+                <!-- Neural network nodes -->
+                <circle cx="70" cy="70" r="8" fill="#00d4ff" filter="url(#aiGlow)"/>
+                <circle cx="130" cy="70" r="8" fill="#7c3aed" filter="url(#aiGlow)"/>
+                <circle cx="70" cy="130" r="8" fill="#ec4899" filter="url(#aiGlow)"/>
+                <circle cx="130" cy="130" r="8" fill="#00d4ff" filter="url(#aiGlow)"/>
+                
+                <!-- Connection lines -->
+                <path d="M70,70 L100,100 M130,70 L100,100 M70,130 L100,100 M130,130 L100,100" 
+                      stroke="url(#neuralGrad)" stroke-width="2" opacity="0.6"/>
+                
+                <!-- Central AI symbol -->
+                <text x="100" y="110" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">AI</text>
+                
+                <!-- Floating data particles -->
+                <circle cx="50" cy="50" r="2" fill="#00d4ff" opacity="0.7">
+                  <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="150" cy="50" r="2" fill="#7c3aed" opacity="0.7">
+                  <animate attributeName="opacity" values="0.7;1;0.7" dur="2.5s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="50" cy="150" r="2" fill="#ec4899" opacity="0.7">
+                  <animate attributeName="opacity" values="0.7;1;0.7" dur="1.8s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="150" cy="150" r="2" fill="#00d4ff" opacity="0.7">
+                  <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite"/>
+                </circle>
+              </g>
+            </svg>
+          </button>
+          
+          <!-- User Profile Button -->
+          <button id="user-profile-container" class="btn-icon">
+            <!-- Content will be dynamically populated by auth.js -->
+          </button>
+
+        </div>
+    
+    <!-- Futuristic AI Assistant Modal -->
+    <div id="ai-assistant-modal" class="ai-modal" style="display: none;">
+        <div class="ai-modal-backdrop"></div>
+        <div class="ai-modal-container">
+            <!-- Simple Header -->
+            <div class="ai-modal-header">
+                <div class="ai-header-left">
+                    <h2 class="ai-title">AI Study Assistant</h2>
+                    <div id="ai-usage-info" class="ai-usage-info">
+                        <span id="daily-count">0/10</span> messages today
+                    </div>
+                </div>
+                <div class="ai-header-buttons">
+                    <button id="ai-new-chat-btn" class="ai-new-chat-btn" title="Start New Chat">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3v18h18M19 9l-5 5-5-5M9 9h6"/>
+                        </svg>
+                    </button>
+                    <button id="ai-modal-close" class="ai-close-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="ai-modal-content">
+                <!-- AI Chat Interface -->
+                <div id="ai-chat" class="ai-tab-content active">
+                    
+                    <!-- Chat Messages Container -->
+                    <div class="ai-chat-container">
+                        <div id="ai-chat-messages" class="ai-chat-messages">
+                            <div class="ai-welcome-message">
+                                <div class="ai-avatar">
+                                    <svg width="24" height="24" viewBox="0 0 200 200" fill="none">
+                                        <circle cx="100" cy="100" r="40" fill="url(#neuralGrad)"/>
+                                        <text x="100" y="110" text-anchor="middle" fill="white" font-size="16" font-weight="bold">AI</text>
+                                    </svg>
+                                </div>
+                                <div class="ai-message-content">
+                                    <p>Hello! I'm here to help with your studies. What's on your mind?</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Input -->
+                        <div class="ai-chat-input-container">
+                            <div class="ai-chat-input-wrapper">
+                                <textarea 
+                                    id="ai-chat-input" 
+                                    class="ai-chat-input" 
+                                    placeholder="Feel free to share your problems with me..."
+                                    rows="3"
+                                    maxlength="1000"
+                                ></textarea>
+                                <button id="ai-send-btn" class="ai-send-btn" disabled>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="ai-char-count">
+                                <span id="ai-char-count">0</span>/1000
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Study Together Modal -->
+    <div id="study-together-modal" class="study-together-modal" style="display: none;">
+        <div class="study-modal-overlay"></div>
+        <div class="study-modal-container">
+            <div class="study-modal-header">
+                <h2 class="study-modal-title">Study Together</h2>
+                <button id="study-modal-close" class="study-close-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="study-modal-content">
+                <!-- Step 1: Friend Selection -->
+                <div id="study-step-friends" class="study-step active">
+                    <div class="study-step-header">
+                        <h3>Select Friends</h3>
+                        <p class="study-step-subtitle">Choose friends to invite for study session</p>
+                    </div>
+                    
+                    <div class="study-friends-list" id="study-friends-list">
+                        <div class="study-loading">Loading friends...</div>
+                    </div>
+                    
+                    <div class="study-modal-footer">
+                        <button id="study-next-btn" class="study-btn study-btn-primary" disabled>
+                            Next
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Timer Setup -->
+                <div id="study-step-timer" class="study-step">
+                    <div class="study-step-header">
+                        <h3>Set Timer</h3>
+                        <p class="study-step-subtitle">How long do you want to study together?</p>
+                    </div>
+                    
+                    <div class="study-timer-setup">
+                        <div class="study-time-inputs">
+                            <div class="study-time-input-group">
+                                <label>Hours</label>
+                                <input type="number" id="study-hours" min="0" max="23" value="0" class="study-time-input">
+                            </div>
+                            <div class="study-time-separator">:</div>
+                            <div class="study-time-input-group">
+                                <label>Minutes</label>
+                                <input type="number" id="study-minutes" min="0" max="59" value="25" class="study-time-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="study-modal-footer">
+                        <button id="study-back-btn" class="study-btn study-btn-secondary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                            </svg>
+                            Back
+                        </button>
+                        <button id="study-send-invite-btn" class="study-btn study-btn-primary">
+                            Send Invite
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Waiting for Responses -->
+                <div id="study-step-waiting" class="study-step">
+                    <div class="study-step-header">
+                        <h3>Waiting for Responses</h3>
+                        <p class="study-step-subtitle">Invites sent! Waiting for friends to accept</p>
+                    </div>
+                    
+                    <div class="study-waiting-screen">
+                        <div class="study-session-info">
+                            <h4>Session Details</h4>
+                            <div class="study-session-timer" id="study-session-timer">0h 25m</div>
+                            <div class="study-waiting-message" id="study-waiting-message">
+                                Waiting for all friends to respond...
+                            </div>
+                            <div class="study-countdown-timer" id="study-wait-countdown">5:00</div>
+                        </div>
+                        
+                        <div class="study-participants-list" id="study-participants-list">
+                            <!-- Participants will be added dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Study Together Toast Container -->
+    <div class="study-toast-container" id="study-toast-container"></div>
+    
+    <!-- Study Together Quit Danger Modal -->
+    <div id="study-quit-danger-modal" class="study-danger-modal" style="display: none;">
+        <div class="study-danger-overlay"></div>
+        <div class="study-danger-container">
+            <div class="study-danger-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <h2 class="study-danger-title">Quit Study Together Session?</h2>
+            <p class="study-danger-message">
+                If you quit now, <strong>all your friends' timers will also reset to 00:00</strong> and the study session will end for everyone!
+            </p>
+            <div class="study-danger-actions">
+                <button id="study-cancel-quit-btn" class="study-danger-btn study-danger-btn-cancel">Cancel</button>
+                <button id="study-confirm-quit-btn" class="study-danger-btn study-danger-btn-confirm">Yes, Quit Session</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Study Together Break Request Modal -->
+    <div id="study-break-modal" class="study-break-modal" style="display: none;">
+        <div class="study-break-overlay"></div>
+        <div class="study-break-container">
+            <!-- Request Step -->
+            <div id="study-break-request-step" class="study-break-step active">
+                <div class="study-break-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                </div>
+                <h2 class="study-break-title">Request a Break</h2>
+                <p class="study-break-subtitle">How long do you need?</p>
+                <div class="study-break-input-group">
+                    <input type="number" id="study-break-minutes" min="1" max="30" value="5" class="study-break-input">
+                    <span class="study-break-label">minutes</span>
+                </div>
+                <div class="study-break-actions">
+                    <button id="study-break-cancel-btn" class="study-break-btn study-break-btn-cancel">Cancel</button>
+                    <button id="study-break-send-btn" class="study-break-btn study-break-btn-primary">Send Request</button>
+                </div>
+            </div>
+            
+            <!-- Waiting Step -->
+            <div id="study-break-waiting-step" class="study-break-step">
+                <div class="study-break-icon study-break-icon-waiting">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                </div>
+                <h2 class="study-break-title">Waiting for Response...</h2>
+                <p class="study-break-subtitle">Asking friends to approve break</p>
+                <div class="study-break-countdown" id="study-break-response-countdown">30s</div>
+                <div class="study-break-participants" id="study-break-participants-list"></div>
+            </div>
+            
+            <!-- Break Active Step -->
+            <div id="study-break-active-step" class="study-break-step">
+                <div class="study-break-icon study-break-icon-active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    </svg>
+                </div>
+                <h2 class="study-break-title">Break Time! ☕</h2>
+                <p class="study-break-subtitle">Take a rest, you've earned it</p>
+                <div class="study-break-timer" id="study-break-timer">5:00</div>
+                <p class="study-break-message">Timer will resume automatically</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Progress Bar and Trophy Container (unchanged) -->
+        <div class="progress-container auto-hide">
+            <div class="trophy-container">
+                <img src="assets/images-webp/trophy.webp" alt="Achievement Trophy" class="trophy" id="trophy" width="64" height="64" loading="lazy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iZ29sZCI+PHBhdGggZD0iTTE5IDVoLTJWM0g3djJINWMtMS4xIDAtMiAuOS0yIDJ2MWMwIDIuNTUgMS41NiA0LjczIDMuNzggNS42Ni0uODMgLjgzLTEuMzEgMS45NS0xLjM0IDMuMTN2LjAxTDUgMTkuNzVDNSAyMC45OSA1Ljc1IDIyIDYuNzUgMjJIMTdjMS4xIDAgMi0uOSAyLTJ2LTIuMDRjLS4wMS0xLjExLS40NS0yLjE1LTEuMi0yLjk1IDEuOTItLjk0IDMuMjUtMi45IDMuMi01LjA3VjdjMC0xLjEtLjktMi0yLTJ6TTE3IDhoLjc1YzAgMS45OC0xLjM5IDMuODEtMy4zNSA0LjI2LS4xNi4wMy0uMzIuMDctLjQ5LjExQzE1LjU1IDExLjc2IDE3IDkuOTggMTcgOHpNMTIgMTkuMDRsLTMuNCAxLjQ1Yy0uMzcuMTYtLjc3LS4xNC0uNzctLjU1bC4wNy0xLjQyYy4wOS0uNjguMy0xLjMyLjYyLTEuODZsLjM1LS41Yy41Ny0uODEgMS40OS0xLjMzIDIuNDgtMS4zOUMxMi4yIDE0Ljc5IDEyLjUgMTUgMTIuODMgMTVjLjQ3IDAgLjktLjE5IDEuMjEtLjVsLjQtLjM4Yy44LS43MyAxLjktMS4xNSAzLjAzLTEuMTcuMzIgMCAuNjMuMDQuOTMuMTEtLjY0LjkxLTEuNDkgMS41My0yLjQ4IDEuODNDMTUuMzUgMTUuMDYgMTUgMTUuNTEgMTUgMTZWMTloLTN2LjA0ek05IDhoLjc5Yy0uMTUgMS4xNS43NCAyLjU3IDEuOTYgMy4xNS4zNS0uNS42NC0xLjA3Ljg1LTEuNjUuMjEtLjU4LjMxLTEuMTUuMzUtMS42M0M4Ljk4IDYuOTUgNi4yNSA3Ljk5IDcgOHoiLz48L3N2Zz4='">
+            </div>
+            <div class="progress-bar-container" id="progress-bar-container"> 
+                <div class="progress-bar" id="progress-bar"></div>
+                <!-- Add separator lines -->
+                <div class="segment-line" style="bottom: 20%;"></div>
+                <div class="segment-line" style="bottom: 40%;"></div>
+                <div class="segment-line" style="bottom: 60%;"></div>
+                <div class="segment-line" style="bottom: 80%;"></div>
+            </div>
+        </div>
+        
+    <!-- Background Upload Input -->
+    <input type="file" id="bg-upload-input" accept="image/*" style="display: none;">
+    
+    <!-- Background Selection Menu -->
+    <div id="background-selection-menu" style="display: none; position: fixed; left: 20px; top: calc(50% - 20px); transform: translateY(-50%); background-color: rgba(0, 0, 0, 0.8); border-radius: 10px; padding: 20px; max-width: 350px; max-height: 80vh; overflow-y: auto; z-index: 2000; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);">
+        <div class="background-menu-header">
+            <h2>Choose Background</h2>
+            <button class="close-menu-btn" title="Close">&times;</button>
+        </div>
+        
+        <!-- Toggle Controls Section -->
+        <div class="solid-color-toggle-section" style="display: flex; gap: 10px; align-items: center;">
+            <div class="toggle-container">
+                <label for="solid-color-toggle" class="toggle-label">Solid Color</label>
+                <div class="simple-checkbox-container">
+                    <input type="checkbox" id="solid-color-toggle" class="simple-checkbox">
+                    <label for="solid-color-toggle" class="simple-checkbox-label">
+                        <span class="checkmark">✓</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="toggle-container">
+                <label for="dark-mode-toggle" class="toggle-label">Dark Mode</label>
+                <div class="simple-checkbox-container">
+                    <input type="checkbox" id="dark-mode-toggle" class="simple-checkbox">
+                    <label for="dark-mode-toggle" class="simple-checkbox-label">
+                        <span class="checkmark">✓</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Solid Color Picker (Hidden by default) -->
+        <div id="solid-color-section" class="solid-color-section" style="display: none;">
+            <div class="solid-color-picker-container">
+                <label for="solid-color-picker">Choose Color:</label>
+                <div class="modern-color-picker">
+                    <input type="color" id="solid-color-picker" value="#000000" title="Choose a solid background color">
+                </div>
+            </div>
+        </div>
+
+        <!-- Background Tabs -->
+        <div class="background-tabs" id="background-tabs">
+            <button class="tab-btn active" data-tab="static-backgrounds">Static</button>
+            <button class="tab-btn" data-tab="live-wallpapers">Live</button>
+            <button class="tab-btn" data-tab="custom-backgrounds">Custom</button>
+        </div>
+        
+        <!-- Static Backgrounds Tab -->
+        <div id="static-backgrounds" class="tab-content active">
+            <div class="background-grid" id="background-grid">
+                <!-- Background images will be loaded here dynamically -->
+                <div class="loading">Loading background images...</div>
+            </div>
+        </div>
+        
+        <!-- Live Wallpapers Tab -->
+        <div id="live-wallpapers" class="tab-content">
+            <div id="live-wallpapers-container" class="coming-soon-container">
+                <div class="coming-soon-content">
+                    <div class="coming-soon-icon">🎬</div>
+                    <h3>Live Wallpapers</h3>
+                    <p>Coming Soon!</p>
+                    <p class="coming-soon-description">
+                        We're working on bringing you beautiful animated backgrounds. 
+                        Stay tuned for updates!
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Custom Backgrounds Tab -->
+        <div id="custom-backgrounds" class="tab-content">
+            <div class="custom-backgrounds-section">
+                <h3>My Custom Backgrounds</h3>
+                <!-- FIREBASE INTEGRATION: Custom backgrounds will be loaded from Firebase Storage -->
+                <div id="custom-backgrounds-grid" class="custom-backgrounds-grid">
+                    <!-- Custom uploaded backgrounds will be displayed here -->
+                    <!-- TODO: Load from Firebase Storage users/{userId}/backgrounds/ -->
+                    <div class="no-custom-backgrounds">
+                        No custom backgrounds yet. Upload your first image!
+                    </div>
+                </div>
+                <div class="custom-upload-option">
+                    <!-- FIREBASE INTEGRATION: Upload to Firebase Storage -->
+                    <button id="menu-custom-upload-btn">Upload from PC</button>
+                    <div class="upload-info">
+                        <small>Max 10 images • Max 10MB each</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ambient Sound Modal -->
+    <div id="soundModal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2>Ambient Sound Mixer</h2>
+                <button id="closeModalBtn" aria-label="Close modal">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+        </div>
+
+            <!-- Modal Body with Scroll -->
+            <div id="soundsContainer" class="custom-scrollbar">
+                <!-- Sound sliders will be dynamically injected here -->
+            </div>
+
+            <!-- Saved Mixes Section -->
+            <div class="saved-mixes-section">
+                <h3>Saved Mixes</h3>
+                <div id="savedMixesList" class="saved-mixes-list">
+                    <!-- Saved mixes will be dynamically injected here -->
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                 <div class="master-volume-container">
+                    <label for="masterVolume">Master Volume:</label>
+                    <input type="range" id="masterVolume" name="masterVolume" min="0" max="1" step="0.01" value="0.75">
+                </div>
+                <div class="footer-buttons">
+                    <button id="playPauseAllBtn" data-playing="false">
+                        Play All
+                    </button>
+                    <button id="saveMixBtn">
+                        Save Mix
+                    </button>
+                    <button id="resetAllBtn">
+                        Reset All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Ambient Sound Modal -->
+
+    <!-- Task Creation Modal -->
+    <div id="task-modal" class="task-modal" style="display: none;">
+        <div class="task-modal-container">
+            <div class="task-modal-header">
+                <h2>Add New Task</h2>
+                <button id="task-modal-close" class="task-modal-close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="task-modal-content">
+                <div class="task-input-group">
+                    <label for="task-name-input">Task Name</label>
+                    <input type="text" id="task-name-input" class="task-name-input" placeholder="Enter your task..." maxlength="100">
+                    <div class="task-char-count">
+                        <span id="task-char-count">0</span>/100
+                    </div>
+                </div>
+                
+                <div class="task-color-group">
+                    <label>Task Color</label>
+                    <input type="color" id="task-color-picker" value="#4F46E5" class="task-color-picker">
+                    <div class="task-modal-buttons">
+                        <button id="task-cancel-btn" class="task-btn task-btn-secondary">Cancel</button>
+                        <button id="task-save-btn" class="task-btn task-btn-primary" disabled>Save Task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Popup -->
+    <div id="settings-popup" class="settings-popup">
+        <button class="close-popup-btn" title="Close">&times;</button>
+        <h2>SETTINGS</h2>
+        
+        <!-- Timer Style Section -->
+        <div class="settings-section">
+            <div class="settings-header">
+                <h3>Timer Style</h3>
+                <span class="settings-arrow">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="settings-description">Choose from different timer display styles</div>
+                <div class="settings-control select-container">
+                    <select id="timer-style-select" class="settings-select">
+                        <option value="1">Clean Modern</option>
+                        <option value="2">Frosted Glass</option>
+                        <option value="3">Brutalist</option>
+                        <option value="4">Minimalistic Clock</option>
+                        <option value="5">Terminal</option>
+                        <option value="6">Plant Mode</option>
+                        <option value="7">Custom Image A</option>
+                        <option value="8">Custom Image B</option>
+                        <option value="9">Large Digits Focus</option>
+                        <option value="10">Progress Circle Clock</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Timer Container Section -->
+        <div class="settings-section">
+            <div class="settings-header">
+                <h3>Timer Container</h3>
+                <span class="settings-arrow">▼</span>
+            </div>
+            <div class="settings-content">
+                <!-- Clean Timer Container Settings -->
+                <div class="settings-control-group clean-timer-container-settings">
+                    <label>Timer Container:</label>
+                    <div class="clean-timer-controls">
+                        <!-- Row 1: Color Pickers -->
+                        <div class="timer-color-row">
+                            <div class="color-picker-group">
+                                <label class="color-label">Background</label>
+                                <div class="color-picker-container">
+                                    <input type="color" id="container-bg-color-picker" value="#000000" title="Choose a color for the timer container background">
+                                    <div class="color-circle" id="container-bg-color-display"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="color-picker-group">
+                                <label class="color-label">Digits</label>
+                                <div class="color-picker-container">
+                                    <input type="color" id="digit-color-picker" value="#ffffff" title="Choose a color for timer digits">
+                                    <div class="color-circle" id="digit-color-display"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Row 2: Size Slider and Draggable Toggle -->
+                        <div class="timer-controls-row">
+                            <div class="size-control-group">
+                                <label class="control-label">Size: <span id="timer-size-value">100%</span></label>
+                                <input type="range" id="timer-size-slider" min="50" max="150" value="100" class="clean-slider">
+                            </div>
+                            
+                            <div class="toggle-control-group">
+                                <label class="control-label">Draggable</label>
+                                <div class="custom-toggle-container">
+                                    <input type="checkbox" id="timer-draggable-toggle" class="custom-toggle-input" checked>
+                                    <label for="timer-draggable-toggle" class="custom-toggle-switch"></label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Row 3: Reset Button -->
+                        <div class="timer-reset-row">
+                            <button id="reset-timer-position" class="clean-reset-btn">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pomodoro Timer Section -->
+        <div class="settings-section">
+            <div class="settings-header">
+                <h3>Pomodoro</h3>
+                <span class="settings-arrow">▼</span>
+            </div>
+            <div class="settings-content">
+                <!-- Compact Pomodoro Settings -->
+                <div class="settings-control-group compact-pomodoro-settings">
+                    <label>Pomodoro Timer:</label>
+                    <div class="compact-pomodoro-controls">
+                        <!-- Time Settings Row -->
+                        <div class="pomodoro-time-row">
+                            <div class="time-setting-group">
+                                <label class="time-label">Work</label>
+                                <div class="compact-time-inputs">
+                                    <input type="number" id="pomodoro-hours" min="0" max="23" value="0" class="compact-time-input">
+                                    <span class="time-unit">h</span>
+                                    <input type="number" id="pomodoro-minutes" min="0" max="59" value="25" class="compact-time-input">
+                                    <span class="time-unit">m</span>
+                                </div>
+                            </div>
+                            
+                            <div class="time-setting-group">
+                                <label class="time-label">Short</label>
+                                <div class="compact-time-inputs">
+                                    <input type="number" id="short-break-minutes" min="1" max="59" value="5" class="compact-time-input">
+                                    <span class="time-unit">m</span>
+                                </div>
+                            </div>
+                            
+                            <div class="time-setting-group">
+                                <label class="time-label">Long</label>
+                                <div class="compact-time-inputs">
+                                    <input type="number" id="long-break-minutes" min="1" max="59" value="15" class="compact-time-input">
+                                    <span class="time-unit">m</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sessions Control Row -->
+                        <div class="pomodoro-sessions-row">
+                            <label class="sessions-label">Sessions per Cycle:</label>
+                            <select id="sessions-per-cycle" class="compact-sessions-select">
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4" selected>4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Transparency Controls Section -->
+        <div class="settings-section">
+            <div class="settings-header">
+                <h3>Transparency</h3>
+                <span class="settings-arrow">▼</span>
+            </div>
+            <div class="settings-content">
+                <!-- Timer Container Opacity -->
+                <div class="settings-control-group">
+                    <label for="timer-opacity-slider">Timer Container:</label>
+                    <div class="slider-with-value">
+                        <input type="range" id="timer-opacity-slider" min="0.1" max="1" step="0.05" value="0.85" class="settings-slider">
+                        <span id="timer-opacity-value" class="slider-value">85%</span>
+                    </div>
+                </div>
+                
+                <!-- Button Container Opacity -->
+                <div class="settings-control-group">
+                    <label for="button-opacity-slider">Button Container:</label>
+                    <div class="slider-with-value">
+                        <input type="range" id="button-opacity-slider" min="0.1" max="1" step="0.05" value="0.85" class="settings-slider">
+                        <span id="button-opacity-value" class="slider-value">85%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rotating Images Controls Section -->
+        <div class="settings-section">
+            <div class="settings-header">
+                <h3>Rotating Images</h3>
+                <span class="settings-arrow">▼</span>
+            </div>
+            <div class="settings-content">
+                <!-- Compact Rotating Images Settings -->
+                <div class="settings-control-group compact-rotating-images-settings">
+                    <label>Rotating Images:</label>
+                    <div class="compact-rotating-controls">
+                        <!-- Image Source Row -->
+                        <div class="image-source-row">
+                            <div class="image-source-radio-group">
+                                <label class="radio-button">
+                                    <input type="radio" name="image-source" id="no-images-radio" checked>
+                                    <span>None</span>
+                                </label>
+                                <label class="radio-button">
+                                    <input type="radio" name="image-source" id="personal-images-radio">
+                                    <span>Personal</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Controls Container - Hidden when functionality is off -->
+                        <div id="rotating-images-controls-container" class="rotating-images-controls-container" style="display: none;">
+                            <!-- Image Controls Row -->
+                            <div class="image-controls-row">
+                                <div class="image-control-group">
+                                    <label class="control-label">Opacity</label>
+                                    <div class="compact-slider-container">
+                                        <input type="range" id="rotating-image-opacity-slider" min="0.1" max="1" step="0.05" value="0.8" class="compact-slider">
+                                        <span id="rotating-image-opacity-value" class="compact-slider-value">80%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="image-control-group">
+                                    <label class="control-label">Size</label>
+                                    <div class="compact-slider-container">
+                                        <input type="range" id="rotating-image-size-slider" min="60" max="300" step="10" value="120" class="compact-slider">
+                                        <span id="rotating-image-size-value" class="compact-slider-value">120px</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Toggle Controls Row -->
+                            <div class="image-toggles-row">
+                                <div class="toggle-control-group">
+                                    <label class="toggle-label">Lock Position</label>
+                                    <div class="toggle-container">
+                                        <input type="checkbox" id="rotating-image-lock-position-toggle" class="settings-toggle">
+                                        <label for="rotating-image-lock-position-toggle" class="toggle-switch"></label>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Personal Images Upload Section -->
+                <div id="personal-images-section" class="image-upload-container" style="display: none;">
+                    <p class="upload-instructions">Click on an empty slot to upload an image (max 5 images)</p>
+                    <!-- FIREBASE INTEGRATION: Personal images will be stored in Firebase Storage -->
+                    <div id="personal-images-grid" class="personal-images-grid">
+                        <!-- Grid will be populated dynamically with JavaScript -->
+                        <!-- TODO: Load from Firebase Storage users/{userId}/rotatingImages/ -->
+                    </div>
+                    <!-- FIREBASE INTEGRATION: Upload to Firebase Storage -->
+                    <input type="file" id="personal-image-input" class="file-input" accept="image/*">
+                </div>
+                
+                <!-- Hidden inputs for compatibility -->
+                <input type="hidden" id="rotating-image-count-slider" value="1">
+                <span id="rotating-image-count-value" style="display:none;">1</span>
+                <input type="hidden" id="rotating-image-duration-slider" value="3">
+            </div>
+        </div>
+        
+        <!-- Cursor Settings Section -->
+        <div class="settings-section">
+            <div class="settings-header">
+                <h3>Cursors</h3>
+                <span class="settings-arrow">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="settings-control-group">
+                    <label for="custom-cursor-toggle">Enable Custom Cursor:</label>
+                    <div class="toggle-container">
+                        <input type="checkbox" id="custom-cursor-toggle" class="settings-toggle" checked>
+                        <label for="custom-cursor-toggle" class="toggle-switch"></label>
+                    </div>
+                </div>
+                
+                <div class="settings-control-group" id="cursor-style-group">
+                    <label for="cursor-style-select">Cursor Style:</label>
+                    <div class="select-container">
+                        <select id="cursor-style-select" class="settings-select">
+                            <option value="fluid">Fluid Cursor</option>
+                            <option value="context">Context-Aware Cursor</option>
+                            <option value="comet">Comet Cursor</option>
+                        </select>
+                    </div>
+                    <div class="settings-note">Choose from different cursor styles with unique animations and effects</div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- Motivational Quotes Section -->
+        <div class="settings-section">
+            <div class="settings-header">
+                <h3>Motivational Quotes</h3>
+                <span class="settings-arrow">▼</span>
+            </div>
+            <div class="settings-content">
+                <!-- Compact Quote Settings -->
+                <div class="settings-control-group compact-quotes-settings">
+                    <label>Motivational Quotes:</label>
+                    <div class="compact-quotes-controls">
+                        <div class="quote-mode-radio-group">
+                            <label class="radio-button">
+                                <input type="radio" name="quote_mode_selection" id="quote-mode-off" value="off">
+                                <span>OFF</span>
+                            </label>
+                            <label class="radio-button">
+                                <input type="radio" name="quote_mode_selection" id="quote-mode-default" value="default" checked>
+                                <span>Default</span>
+                            </label>
+                            <label class="radio-button">
+                                <input type="radio" name="quote_mode_selection" id="quote-mode-custom" value="custom">
+                                <span>Custom</span>
+                            </label>
+                        </div>
+                        <div class="quote-color-circle-container">
+                            <input type="color" id="quote-color-picker" value="#ffffff" title="Choose a color for motivational quotes">
+                            <div class="color-circle" id="quote-color-display"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Personal Quotes Management Area -->
+                <div id="personal-quotes-manager" style="display: none;">
+                    <!-- FIREBASE INTEGRATION: Personal quotes will be stored in Firestore -->
+                    <div id="personal-quotes-input-list">
+                        <!-- This will be populated dynamically with JavaScript -->
+                        <!-- TODO: Load from Firestore users/{userId}/personalQuotes/ -->
+                        <div class="quote-input-container">
+                            <textarea placeholder="Enter your quote..." class="quote-textarea"></textarea>
+                        </div>
+                    </div>
+                    <div class="quotes-actions">
+                        <button id="add-new-quote-field-btn" class="quote-action-btn">+ Add Another Quote</button>
+                        <!-- FIREBASE INTEGRATION: Save to Firestore -->
+                        <button id="save-personal-quotes-btn" class="quote-action-btn save-btn">Save Personal Quotes</button>
+                        <!-- TODO: Save to Firestore users/{userId}/personalQuotes/ -->
+                    </div>
+                    <p class="settings-note">Max 20 quotes.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Health Reminders Section -->
+        <div class="settings-section">
+            <div class="settings-header">
+                <h3>Health Reminders</h3>
+                <span class="settings-arrow">▼</span>
+            </div>
+            <div class="settings-content">
+                <div class="settings-description">Get gentle reminders for your health during focus sessions</div>
+                <div class="settings-control-group compact-health-settings">
+                    <div class="health-reminder-row">
+                        <div class="health-reminder-item">
+                            <div class="health-reminder-info">
+                                <span class="health-icon">👁️</span>
+                                <div class="health-text">
+                                    <span class="health-label">20-20-20 Rule</span>
+                                    <span class="health-desc">Every 20 min</span>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <input type="checkbox" id="eye-strain-toggle" class="settings-toggle" checked>
+                                <label for="eye-strain-toggle" class="toggle-switch"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="health-reminder-item">
+                            <div class="health-reminder-info">
+                                <span class="health-icon">🧘</span>
+                                <div class="health-text">
+                                    <span class="health-label">Posture Check</span>
+                                    <span class="health-desc">Every 45 min</span>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <input type="checkbox" id="posture-toggle" class="settings-toggle" checked>
+                                <label for="posture-toggle" class="toggle-switch"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="health-reminder-item">
+                            <div class="health-reminder-info">
+                                <span class="health-icon">💧</span>
+                                <div class="health-text">
+                                    <span class="health-label">Hydration</span>
+                                    <span class="health-desc">Every 60 min</span>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <input type="checkbox" id="hydration-toggle" class="settings-toggle" checked>
+                                <label for="hydration-toggle" class="toggle-switch"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="health-reminder-item">
+                            <div class="health-reminder-info">
+                                <span class="health-icon">🔔</span>
+                                <div class="health-text">
+                                    <span class="health-label">Sound</span>
+                                    <span class="health-desc">Notification bell</span>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <input type="checkbox" id="health-sound-toggle" class="settings-toggle" checked>
+                                <label for="health-sound-toggle" class="toggle-switch"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Widgets Section -->
+        <div class="settings-section">
+            <div class="settings-header">
+                <h3>Widgets</h3>
+                <span class="settings-arrow">▼</span>
+    </div>
+            <div class="settings-content">
+                <div class="settings-description">Enable and configure widgets for your session.</div>
+
+                <div class="settings-control-group">
+                    <label for="youtube-widget-toggle">YouTube Music Player:</label>
+                    <div class="toggle-container">
+                        <input type="checkbox" id="youtube-widget-toggle" class="settings-toggle">
+                        <label for="youtube-widget-toggle" class="toggle-switch"></label>
+        </div>
+            </div>
+
+                <div id="youtube-widget-config" class="widget-config-container hidden">
+                    <!-- Sign in section -->
+                    <div id="yt-auth-section" class="auth-section">
+                        <button id="yt-auth-btn" class="google-signin-btn">
+                            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" width="20" height="20">
+                            <span>Sign in with Google</span>
+                        </button>
+                    </div>
+
+                    <!-- User controls section -->
+                    <div id="yt-user-info" class="user-controls hidden">
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label for="youtube-playlist-select">Playlist</label>
+                                <select id="youtube-playlist-select" class="modern-select">
+                                    <option value="">-- Loading --</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="youtube-player-size">Size</label>
+                                <div class="slider-group">
+                                    <input type="range" id="youtube-player-size" class="modern-slider" min="380" max="800" value="420" step="20">
+                                    <span id="size-value" class="size-display">420px</span>
+                                </div>
+        </div>
+    </div>
+
+                        <div class="action-buttons">
+                            <button id="yt-retry-btn" class="action-btn secondary" style="display: none;">Try Standard</button>
+                            <button id="yt-signout-btn" class="action-btn danger">Sign Out</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-control-group">
+                    <label for="pie-chart-widget-toggle">Task Breakdown Chart:</label>
+                    <div class="toggle-container">
+                        <input type="checkbox" id="pie-chart-widget-toggle" class="settings-toggle">
+                        <label for="pie-chart-widget-toggle" class="toggle-switch"></label>
+                    </div>
+                </div>
+
+                <div class="settings-control-group">
+                    <label for="goal-countdown-toggle">Goal Countdown:</label>
+                    <div class="toggle-container">
+                        <input type="checkbox" id="goal-countdown-toggle" class="settings-toggle">
+                        <label for="goal-countdown-toggle" class="toggle-switch"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Settings Popup -->
+
+
+
+
+
+    <!-- YouTube Mini Player -->
+    <div id="youtube-mini-player" class="youtube-mini-player hidden">
+        <div id="youtube-player-container">
+        </div>
+        <div class="player-controls">
+            <div class="auto-play-control">
+                <label class="auto-play-toggle">
+                    <input type="checkbox" id="auto-play-next" checked>
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label">Auto</span>
+                </label>
+            </div>
+
+            <div class="player-center-controls">
+                <button id="yt-prev-btn" title="Previous">⏮</button>
+                <button id="yt-play-pause-btn" title="Play/Pause">▶</button>
+                <button id="yt-next-btn" title="Next">⏭</button>
+            </div>
+
+            <div id="playlist-progress" class="playlist-progress hidden">
+                <span id="current-video-info">Video 1 of 1</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie Chart Widget -->
+    <div id="pie-chart-widget" class="pie-chart-widget hidden">
+        <canvas id="pie-chart-canvas"></canvas>
+        <div id="pie-chart-no-data" class="pie-chart-no-data hidden">
+            <div class="no-data-icon">📊</div>
+            <span class="no-data-text">No data yet</span>
+        </div>
+    </div>
+
+    <!-- Goal Countdown Widget -->
+    <div id="goal-countdown-widget" class="goal-countdown-widget">
+        <button class="goal-delete-btn" title="Delete Goal">×</button>
+        <div class="goal-countdown-content">
+            <h3 class="goal-name">Loading...</h3>
+            <div class="goal-days-left">0</div>
+            <div class="goal-days-label">days left</div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Include CSS and JavaScript files -->
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/toast-notifications.css">
+    <script src="js/toast-notifications.js"></script>
+    <script src="js/cursor.js"></script>
+    
+    <!-- FIREBASE INTEGRATION: Firebase SDK scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-init.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/firebase-utils.js"></script>
+    <script src="js/firebase-storage-utils.js"></script>
+    
+    <!-- Chart.js for pie chart widget -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script defer src="js/background.js"></script>
+    <script defer src="js/settings.js"></script>
+    <script defer src="js/timer-electron.js"></script>
+    <script defer src="js/timer.js"></script>
+    <script defer src="js/pomodoro.js"></script>
+    <script defer src="js/ambient-sounds.js"></script>
+    <script defer src="js/ai-logic.js"></script>
+    <script defer src="js/youtube-widget.js"></script>
+    <script defer src="js/pie-chart-widget.js"></script>
+    <script defer src="js/goal-countdown.js"></script>
+    <script defer src="js/health-reminders.js"></script>
+    <script defer src="js/mobile-taskbar.js"></script>
+    <script defer src="js/study-together.js"></script>
+    <!-- Page transition styles moved to css/page-transitions.css -->
+    
+
+    
+
+    <!-- Service Worker Registration for PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

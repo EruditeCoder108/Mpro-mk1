@@ -1,0 +1,873 @@
+/* ========================================
+   MOBILE & TABLET RESPONSIVE STYLES
+   Comprehensive mobile optimization
+   ======================================== */
+
+/* ========================================
+   MOBILE BREAKPOINTS
+   ======================================== */
+/* Small Mobile: 0-480px */
+/* Mobile: 481-768px */
+/* Tablet: 769-1024px */
+
+/* ========================================
+   DISABLE DRAGGING ON MOBILE/TABLET
+   ======================================== */
+@media (max-width: 1024px) {
+    .timer-container {
+        cursor: default !important;
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        margin: 0 auto !important;
+        transform: none !important;
+        pointer-events: auto !important;
+    }
+    
+    /* Prevent drag events on mobile */
+    .timer-container * {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+}
+
+/* ========================================
+   TIMER CONTAINER - MOBILE OPTIMIZATION
+   ======================================== */
+@media (max-width: 768px) {
+    .timer-container {
+        width: 92% !important;
+        max-width: 100% !important;
+        min-width: 280px !important;
+        height: auto !important;
+        min-height: 180px !important;
+        padding: 20px 15px !important;
+        margin: 10px auto !important;
+        border-radius: 12px !important;
+    }
+    
+    /* Timer digits - prevent overflow */
+    .display {
+        font-size: 3.5rem !important;
+        line-height: 1.1 !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        padding: 0 5px !important;
+    }
+    
+    .time-display {
+        font-size: 3.5rem !important;
+        line-height: 1.1 !important;
+        max-width: 100% !important;
+    }
+    
+    /* Adjust colon spacing */
+    .display .colon {
+        margin: 0 0.05em !important;
+    }
+    
+    /* Style-specific adjustments */
+    .timer-style-1 {
+        padding: 25px 15px !important;
+    }
+    
+    .timer-style-2 {
+        padding: 20px 15px !important;
+    }
+    
+    .timer-style-3 {
+        padding: 20px 15px !important;
+    }
+    
+    .timer-style-4 .display {
+        font-size: 3.2rem !important;
+    }
+    
+    .timer-style-5 .display {
+        font-size: 3rem !important;
+    }
+    
+    .timer-style-9 .display {
+        font-size: 4rem !important;
+    }
+    
+    .timer-style-10 .display {
+        font-size: 3rem !important;
+    }
+}
+
+/* Extra small mobile */
+@media (max-width: 480px) {
+    .timer-container {
+        width: 95% !important;
+        min-width: 260px !important;
+        padding: 15px 10px !important;
+    }
+    
+    .display {
+        font-size: 2.8rem !important;
+    }
+    
+    .time-display {
+        font-size: 2.8rem !important;
+    }
+}
+
+/* ========================================
+   QUOTES - MOBILE OPTIMIZATION
+   ======================================== */
+@media (max-width: 768px) {
+    .quote-container {
+        font-size: 16px !important;
+        padding: 0 10px !important;
+        margin-bottom: 8px !important;
+        min-height: 24px !important;
+        line-height: 1.4 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .quote-container {
+        font-size: 14px !important;
+        padding: 0 5px !important;
+    }
+}
+
+/* ========================================
+   TIME SELECTOR - MOBILE OPTIMIZATION
+   ======================================== */
+@media (max-width: 768px) {
+    .time-selector {
+        gap: 10px !important;
+        top: 10px !important;
+        flex-wrap: wrap !important;
+    }
+    
+    .time-display {
+        font-size: 1.1rem !important;
+        padding: 8px 14px !important;
+        min-width: 80px !important;
+    }
+    
+    .time-picker-popup {
+        width: 160px !important;
+    }
+    
+    .time-column {
+        width: 60px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .time-selector {
+        gap: 8px !important;
+        top: 8px !important;
+    }
+    
+    .time-display {
+        font-size: 1rem !important;
+        padding: 6px 12px !important;
+        min-width: 70px !important;
+    }
+}
+
+/* ========================================
+   TASK SELECTOR - MOBILE OPTIMIZATION
+   ======================================== */
+@media (max-width: 768px) {
+    .task-selector {
+        position: relative !important;
+        right: auto !important;
+        transform: none !important;
+    }
+    
+    .task-selector-inline {
+        transform: none !important;
+    }
+    
+    .task-display {
+        font-size: 0.9rem !important;
+        padding: 8px 14px !important;
+        min-width: 80px !important;
+    }
+    
+    .task-dropdown-popup {
+        width: 220px !important;
+        max-height: 180px !important;
+    }
+    
+    .task-name {
+        font-size: 11px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .task-display {
+        font-size: 0.85rem !important;
+        padding: 6px 12px !important;
+    }
+    
+    .task-dropdown-popup {
+        width: 200px !important;
+    }
+}
+
+/* ========================================
+   CONTROL BUTTONS - MOBILE TOUCH TARGETS
+   ======================================== */
+@media (max-width: 768px) {
+    /* Primary buttons - increase touch target */
+    .btn-primary {
+        min-width: 80px !important;
+        min-height: 44px !important;
+        padding: 10px 14px !important;
+        font-size: 14px !important;
+        gap: 6px !important;
+    }
+    
+    /* Icon buttons - minimum 44x44px for touch */
+    .btn-icon {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        font-size: 18px !important;
+    }
+    
+    .btn-icon .control-icon {
+        width: 18px !important;
+        height: 18px !important;
+    }
+    
+    /* Secondary buttons */
+    .btn-secondary {
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        min-height: 36px !important;
+    }
+    
+    /* Control groups */
+    .control-group {
+        gap: 10px !important;
+    }
+    
+    .utility-group {
+        gap: 8px !important;
+    }
+}
+
+/* ========================================
+   TASKBAR - MOBILE DOCK WITH PAGINATION
+   ======================================== */
+@media (max-width: 1024px) {
+    /* Override all desktop styles */
+    body .control-box-taskbar,
+    body:not(.weekly-progress-page) .control-box-taskbar,
+    .weekly-progress-page .control-box-taskbar {
+        /* Container styling - curved dock */
+        position: fixed !important;
+        bottom: 12px !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        width: 280px !important;
+        max-width: 280px !important;
+        min-width: 280px !important;
+        
+        /* Curved edges */
+        border-radius: 24px !important;
+        
+        /* Enhanced glassmorphism */
+        background: rgba(20, 20, 30, 0.85) !important;
+        backdrop-filter: blur(20px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                    0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+        
+        /* Enable horizontal scrolling */
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-behavior: smooth !important;
+        
+        /* Snap scrolling for pagination effect */
+        scroll-snap-type: x mandatory !important;
+        
+        /* Remove wrapping */
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        
+        /* Padding */
+        padding: 10px 12px !important;
+        gap: 10px !important;
+        min-height: 64px !important;
+        
+        /* Hide scrollbar but keep functionality */
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+        
+        /* Z-index */
+        z-index: 1000 !important;
+    }
+    
+    /* Hide scrollbar for Chrome/Safari */
+    body .control-box-taskbar::-webkit-scrollbar,
+    .control-box-taskbar::-webkit-scrollbar {
+        display: none !important;
+        height: 0 !important;
+        width: 0 !important;
+    }
+    
+    /* Bigger, touch-friendly buttons */
+    body .control-box-taskbar .btn-icon,
+    .control-box-taskbar .btn-icon {
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        max-width: 48px !important;
+        max-height: 48px !important;
+        font-size: 19px !important;
+        border-radius: 12px !important;
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
+        
+        /* Snap alignment for pagination */
+        scroll-snap-align: center !important;
+        
+        /* Enhanced styling */
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    body .control-box-taskbar .btn-icon:active,
+    .control-box-taskbar .btn-icon:active {
+        transform: scale(0.9) !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    body .control-box-taskbar .btn-icon .control-icon,
+    .control-box-taskbar .btn-icon .control-icon {
+        width: 19px !important;
+        height: 19px !important;
+        min-width: 19px !important;
+        min-height: 19px !important;
+    }
+    
+    /* Progress button */
+    body .control-box-taskbar .btn-progress,
+    .control-box-taskbar .btn-progress {
+        min-width: 48px !important;
+        height: 48px !important;
+        max-width: 80px !important;
+        padding: 0 12px !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        border-radius: 12px !important;
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
+        scroll-snap-align: center !important;
+        
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    }
+    
+    /* Dividers - more subtle */
+    .taskbar-divider {
+        height: 36px !important;
+        width: 1px !important;
+        margin: 0 6px !important;
+        flex-shrink: 0 !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        opacity: 0.5 !important;
+    }
+    
+    /* Pagination indicators (dots) */
+    .control-box-taskbar::before {
+        content: '';
+        position: absolute;
+        bottom: 4px;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 3px;
+        width: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+        pointer-events: none;
+        z-index: 2;
+    }
+    
+    /* Scroll fade indicators */
+    .control-box-taskbar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 40px;
+        background: linear-gradient(to left, rgba(20, 20, 30, 0.85), transparent);
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 0 24px 24px 0;
+    }
+    
+    .control-box-taskbar.has-scroll-right::after {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .control-box-taskbar {
+        width: 88% !important;
+        max-width: 300px !important;
+        gap: 10px !important;
+        padding: 8px 12px !important;
+        min-height: 62px !important;
+        border-radius: 22px !important;
+    }
+    
+    .control-box-taskbar .btn-icon {
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+        font-size: 20px !important;
+        border-radius: 13px !important;
+    }
+    
+    .control-box-taskbar .btn-icon .control-icon {
+        width: 20px !important;
+        height: 20px !important;
+    }
+    
+    .btn-progress {
+        min-width: 50px !important;
+        height: 50px !important;
+        padding: 0 16px !important;
+        font-size: 14px !important;
+        border-radius: 13px !important;
+    }
+    
+    .taskbar-divider {
+        height: 32px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .control-box-taskbar {
+        width: 90% !important;
+        max-width: 280px !important;
+        gap: 8px !important;
+        padding: 7px 10px !important;
+        min-height: 58px !important;
+        border-radius: 20px !important;
+        bottom: 10px !important;
+    }
+    
+    .control-box-taskbar .btn-icon {
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        font-size: 19px !important;
+        border-radius: 12px !important;
+    }
+    
+    .control-box-taskbar .btn-icon .control-icon {
+        width: 19px !important;
+        height: 19px !important;
+    }
+    
+    .btn-progress {
+        min-width: 48px !important;
+        height: 48px !important;
+        padding: 0 14px !important;
+        font-size: 13px !important;
+        border-radius: 12px !important;
+    }
+    
+    .taskbar-divider {
+        height: 30px !important;
+        margin: 0 5px !important;
+    }
+}
+
+/* ========================================
+   PROGRESS BAR - MOBILE OPTIMIZATION
+   ======================================== */
+@media (max-width: 768px) {
+    .progress-container {
+        top: 10px !important;
+        right: 10px !important;
+        height: 200px !important;
+        width: 16px !important;
+    }
+    
+    .trophy-container {
+        width: 50px !important;
+        height: 50px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .trophy {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    .progress-bar-container {
+        width: 14px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .progress-container {
+        height: 150px !important;
+        width: 12px !important;
+    }
+    
+    .trophy-container {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    .trophy {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    .progress-bar-container {
+        width: 10px !important;
+    }
+}
+
+/* ========================================
+   MODALS - MOBILE OPTIMIZATION
+   ======================================== */
+@media (max-width: 768px) {
+    /* AI Modal */
+    .ai-modal-container {
+        width: 95% !important;
+        max-width: 100% !important;
+        max-height: 90vh !important;
+        margin: 10px !important;
+    }
+    
+    .ai-modal-header {
+        padding: 12px 15px !important;
+    }
+    
+    .ai-modal-content {
+        padding: 15px !important;
+    }
+    
+    .ai-title {
+        font-size: 18px !important;
+    }
+    
+    .ai-chat-container {
+        height: 350px !important;
+    }
+    
+    .ai-chat-input {
+        font-size: 14px !important;
+        min-height: 40px !important;
+    }
+    
+    .ai-send-btn {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    /* Pomodoro Modal */
+    .pomodoro-modal-content {
+        width: 90% !important;
+        max-width: 400px !important;
+        padding: 20px !important;
+    }
+    
+    /* Settings Popup */
+    .settings-popup {
+        width: 95% !important;
+        max-width: 100% !important;
+        max-height: 90vh !important;
+        padding: 15px !important;
+    }
+    
+    .settings-popup h2 {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* ========================================
+   BACKGROUND SELECTION MENU - MOBILE
+   ======================================== */
+@media (max-width: 768px) {
+    #background-selection-menu {
+        width: 90% !important;
+        max-width: 100% !important;
+        max-height: 85vh !important;
+        padding: 15px !important;
+    }
+    
+    .background-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        gap: 10px !important;
+    }
+    
+    .grid-item {
+        min-width: 80px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #background-selection-menu {
+        width: 95% !important;
+        padding: 12px !important;
+    }
+    
+    .background-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
+        gap: 8px !important;
+    }
+}
+
+/* ========================================
+   ROTATING IMAGES - DISABLED ON MOBILE
+   ======================================== */
+@media (max-width: 1024px) {
+    /* Hide rotating images completely on mobile/tablet */
+    .rotating-image-container,
+    #rotating-images {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    
+    .rotating-image {
+        display: none !important;
+    }
+    
+    /* Grey out rotating images settings section on mobile */
+    .settings-section:has(.compact-rotating-images-settings) {
+        opacity: 0.5 !important;
+        pointer-events: none !important;
+        position: relative !important;
+    }
+    
+    .settings-section:has(.compact-rotating-images-settings)::after {
+        content: '📱 Not available on mobile devices';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: rgba(255, 255, 255, 0.9);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+        z-index: 10;
+        pointer-events: none;
+    }
+    
+    /* Disable all rotating image controls */
+    .compact-rotating-images-settings,
+    .compact-rotating-images-settings *,
+    #personal-images-section,
+    #personal-images-section * {
+        pointer-events: none !important;
+        cursor: not-allowed !important;
+    }
+}
+
+/* ========================================
+   YOUTUBE WIDGET - MOBILE OPTIMIZATION
+   ======================================== */
+@media (max-width: 768px) {
+    .youtube-mini-player {
+        width: calc(100vw - 40px) !important;
+        max-width: 400px !important;
+        bottom: 80px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .youtube-mini-player {
+        width: calc(100vw - 20px) !important;
+        max-width: 100% !important;
+        bottom: 70px !important;
+    }
+}
+
+/* ========================================
+   PIE CHART WIDGET - MOBILE OPTIMIZATION
+   ======================================== */
+@media (max-width: 768px) {
+    .pie-chart-widget {
+        width: 120px !important;
+        height: 120px !important;
+        bottom: 80px !important;
+        left: 10px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .pie-chart-widget {
+        width: 100px !important;
+        height: 100px !important;
+        bottom: 70px !important;
+    }
+}
+
+/* ========================================
+   HEALTH TOAST NOTIFICATIONS - MOBILE
+   ======================================== */
+@media (max-width: 768px) {
+    .health-toast-container {
+        top: 10px !important;
+        left: 10px !important;
+        right: 10px !important;
+    }
+    
+    .health-toast {
+        min-width: auto !important;
+        max-width: none !important;
+        width: 100% !important;
+    }
+    
+    .health-toast-timer-number {
+        font-size: 28px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .health-toast {
+        padding: 12px 15px !important;
+    }
+    
+    .health-toast-title {
+        font-size: 14px !important;
+    }
+    
+    .health-toast-message {
+        font-size: 12px !important;
+    }
+}
+
+/* ========================================
+   PREVENT ZOOM ON INPUT FOCUS (iOS)
+   ======================================== */
+@media (max-width: 768px) {
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select {
+        font-size: 16px !important;
+    }
+}
+
+/* ========================================
+   TOUCH IMPROVEMENTS
+   ======================================== */
+@media (max-width: 1024px) {
+    /* Increase tap target sizes */
+    button,
+    a,
+    .clickable {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Remove hover effects on touch devices */
+    * {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Improve scrolling */
+    * {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ========================================
+   LANDSCAPE ORIENTATION ADJUSTMENTS
+   ======================================== */
+@media (max-width: 768px) and (orientation: landscape) {
+    .timer-container {
+        height: auto !important;
+        min-height: 140px !important;
+        padding: 15px 10px !important;
+    }
+    
+    .display {
+        font-size: 2.5rem !important;
+    }
+    
+    .time-display {
+        font-size: 2.5rem !important;
+    }
+    
+    .progress-container {
+        height: 120px !important;
+    }
+}
+
+/* ========================================
+   FIX VIEWPORT HEIGHT ON MOBILE BROWSERS
+   ======================================== */
+@media (max-width: 768px) {
+    body {
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+    }
+    
+    html {
+        height: -webkit-fill-available;
+    }
+}
+
+/* ========================================
+   PREVENT HORIZONTAL SCROLL ON MOBILE
+   ======================================== */
+@media (max-width: 1024px) {
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        position: relative !important;
+    }
+    
+    /* Ensure all containers don't overflow */
+    * {
+        max-width: 100% !important;
+    }
+    
+    /* Exception for taskbar - it needs to scroll internally */
+    .control-box-taskbar,
+    .control-box-taskbar * {
+        max-width: none !important;
+    }
+}
+
+/* ========================================
+   ACCESSIBILITY - REDUCE MOTION
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

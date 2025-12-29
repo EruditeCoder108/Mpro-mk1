@@ -1,0 +1,273 @@
+/* Goal Countdown Widget Styles */
+
+/* Main widget container */
+.goal-countdown-widget {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: rgba(15, 20, 30, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    border-radius: 12px;
+    padding: 14px 18px;
+    min-width: 180px;
+    max-width: 220px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    cursor: move;
+    user-select: none;
+    transition: all 0.3s ease;
+    display: none;
+}
+
+.goal-countdown-widget.active {
+    display: block;
+}
+
+.goal-countdown-widget:hover {
+    box-shadow: 0 12px 48px rgba(0, 200, 255, 0.2);
+    border-color: rgba(100, 200, 255, 0.5);
+}
+
+/* Widget content */
+.goal-countdown-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.goal-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.3px;
+}
+
+.goal-days-left {
+    font-size: 28px;
+    font-weight: 700;
+    color: #00ff88;
+    margin: 4px 0;
+    font-family: 'Orbitron', monospace;
+    text-align: center;
+    text-shadow: 0 0 10px currentColor;
+    transition: color 0.5s ease;
+}
+
+.goal-days-left.warning {
+    color: #ffcc00;
+}
+
+.goal-days-left.danger {
+    color: #ff3366;
+}
+
+.goal-days-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-top: -4px;
+}
+
+/* Delete button */
+.goal-delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 50, 100, 0.15);
+    border: 1px solid rgba(255, 50, 100, 0.3);
+    border-radius: 6px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: all 0.2s ease;
+    padding: 0;
+    font-size: 16px;
+    color: #ff3366;
+}
+
+.goal-delete-btn:hover {
+    opacity: 1;
+    background: rgba(255, 50, 100, 0.25);
+    border-color: rgba(255, 50, 100, 0.6);
+    transform: scale(1.1);
+}
+
+/* Modal styles */
+.goal-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.goal-modal {
+    background: linear-gradient(145deg, rgba(20, 30, 50, 0.98), rgba(10, 15, 30, 0.98));
+    border: 2px solid rgba(100, 200, 255, 0.4);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    transform: scale(0.9);
+    animation: modalSlideIn 0.3s ease forwards;
+}
+
+@keyframes modalSlideIn {
+    to {
+        transform: scale(1);
+    }
+}
+
+.goal-modal-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 24px 0;
+    text-align: center;
+    background: linear-gradient(90deg, #00d4ff, #7c3aed, #ec4899);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.goal-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.goal-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.goal-form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.goal-form-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 15px;
+    color: #fff;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.goal-form-input:focus {
+    outline: none;
+    border-color: rgba(100, 200, 255, 0.6);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(100, 200, 255, 0.1);
+}
+
+.goal-form-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Date input specific styles */
+.goal-form-input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+.goal-modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.goal-modal-btn {
+    flex: 1;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.goal-modal-btn-primary {
+    background: linear-gradient(135deg, #00d4ff, #7c3aed);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(100, 200, 255, 0.3);
+}
+
+.goal-modal-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(100, 200, 255, 0.4);
+}
+
+.goal-modal-btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.goal-modal-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .goal-countdown-widget {
+        min-width: 160px;
+        max-width: 180px;
+        padding: 12px 14px;
+    }
+
+    .goal-name {
+        font-size: 13px;
+    }
+
+    .goal-days-left {
+        font-size: 24px;
+    }
+
+    .goal-modal {
+        padding: 24px;
+        max-width: 90%;
+    }
+
+    .goal-modal-title {
+        font-size: 20px;
+    }
+}
